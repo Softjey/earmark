@@ -3,7 +3,7 @@
 - **Priority:** P0
 - **Area:** frontend
 - **Depends on:** T09, T04
-- **Status:** in progress (code done; wallet transactions not yet smoke-tested in a browser)
+- **Status:** done
 - **Owner:** —
 - **Design (read before coding):** `List.dc.html` (`/`), `Main.dc.html` and `Refund.dc.html` (`/fundraisers/[pubkey]`) in [docs/design/](../design/README.md) · [canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt)
 
