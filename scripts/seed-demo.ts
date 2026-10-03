@@ -1,6 +1,6 @@
 /**
  * Puts the chain into the state docs/DEMO.md expects:
- *  - Eye Clinic verified, all demo wallets funded with SOL and ePLN
+ *  - Kraków Eye Clinic verified, all demo wallets funded with SOL and ePLN
  *  - Fundraiser B: target 1000 ePLN, 300 donated by Donor 1, deadline N seconds from now
  * Run it again for a fresh fundraiser B (every run creates a new one).
  * Usage: pnpm tsx scripts/seed-demo.ts [--deadline-in <seconds>]   (default 120)
@@ -53,7 +53,7 @@ async function main() {
   )[0];
   if (!(await program.account.recipient.fetchNullable(recipientPda))) {
     await program.methods
-      .verifyRecipient("Eye Clinic", "RPWDL-0001")
+      .verifyRecipient("Kraków Eye Clinic", "RPWDL-0001")
       .accounts({ verifier: wallets.verifier.publicKey, wallet: wallets.clinic.publicKey })
       .signers([wallets.verifier])
       .rpc();
