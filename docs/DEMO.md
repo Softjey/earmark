@@ -21,7 +21,7 @@
 | 1 | 30 s | `/new` as Organizer | Create "Therapy for Antoś": the clinic picker only offers verified clinics, so open *Use a different wallet address* and paste the **own wallet** as recipient → error `RecipientNotVerified`. "He can invent a story. He cannot send the money to himself." |
 | 2 | 30 s | `/new` → `/clinic` | Create an honest fundraiser, 1 000 ePLN, for Eye Clinic, attach quote PDF. Status *awaiting clinic*. Switch to the clinic profile → **Confirm** → Active. |
 | 3 | 45 s | `/fundraisers/[id]` | Donor 1 pays 600 (60 %). Donor 2 pays 400 → target hit → **payout in the same transaction**. Explorer: vault 0, clinic +1 000. "The organizer never touched the money. Nobody held it in between." |
-| 4 | 30 s | Fundraiser B | Deadline passed, target missed. Donor 1 → **Get my money back** → +300. "The Lewandowskis got their money back. 6 500 others did not. Here the refund is the same for everyone and needs nobody's permission." |
+| 4 | 30 s | Fundraiser B | Deadline passed, target missed. Keeper running (`pnpm exec tsx scripts/keeper.ts`): within ~2 s of the deadline Donor 1's page flips to **Refunded +300**, no click (the button is only a fallback). "The Lewandowskis got their money back. 6 500 others did not. Here the refund is the same for everyone and needs nobody's permission." |
 | 5 | 20 s | `/audit` | All flows public + red flags (new recipient, unusual volume). |
 | 6 | 10 s | Editor | `donate` and `refund` are the only ways tokens leave the vault. Upgrade authority is *none*. |
 
@@ -56,7 +56,7 @@ vault's authority is a PDA, so no private key exists for it.
 
 **Who can do what? Can you change anything after deployment?**
 Verifier: only mark/unmark clinic wallets. Organizer: create and cancel. Clinic: confirm and cancel.
-Donor: donate and refund their own donation. Us: nothing; the upgrade authority is set to final.
+Donor: donate; refunds go only to their own wallet and are triggered by anyone (keeper or donor). Us: nothing; the upgrade authority is set to final.
 
 **Why blockchain and not a database?**
 A database is controlled by its operator, who can edit balances, pay out to anyone, or refund

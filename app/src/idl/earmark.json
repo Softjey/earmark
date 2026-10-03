@@ -627,8 +627,18 @@
       ],
       "accounts": [
         {
+          "name": "caller",
+          "docs": [
+            "Anyone can trigger a refund (the donor, a keeper bot, a friend). It only pays the",
+            "transaction fee; it has no say over where the tokens go."
+          ],
+          "signer": true
+        },
+        {
           "name": "donor",
-          "signer": true,
+          "docs": [
+            "`donor_token` through the token authority, so the tokens can only reach this donor."
+          ],
           "relations": [
             "donation"
           ]

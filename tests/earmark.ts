@@ -127,11 +127,25 @@ describe("earmark", () => {
     program.methods
       .refund()
       .accounts({
+        caller: donor.publicKey,
         donor: donor.publicKey,
         fundraiser: f,
         donorToken: ata[donor.publicKey.toBase58()],
       })
       .signers([donor])
+      .rpc();
+
+  /** Anyone can trigger the refund; the tokens still go to the donor. */
+  const refundFor = (f: PublicKey, donor: Keypair, caller: Keypair) =>
+    program.methods
+      .refund()
+      .accounts({
+        caller: caller.publicKey,
+        donor: donor.publicKey,
+        fundraiser: f,
+        donorToken: ata[donor.publicKey.toBase58()],
+      })
+      .signers([caller])
       .rpc();
 
   const cancel = (f: PublicKey, signer: Keypair) =>
@@ -482,6 +496,7 @@ describe("earmark", () => {
         program.methods
           .refund()
           .accounts({
+            caller: donor1.publicKey,
             donor: donor1.publicKey,
             fundraiser: f,
             donorToken: ata[stranger.publicKey.toBase58()],
@@ -490,6 +505,33 @@ describe("earmark", () => {
           .rpc(),
         "ConstraintTokenOwner"
       );
+    });
+
+    it("anyone can trigger a refund, but the tokens only reach the donor", async () => {
+      const f = await createActive();
+      const d1 = ata[donor1.publicKey.toBase58()];
+      const before = await bal(d1);
+      const strangerBefore = await bal(ata[stranger.publicKey.toBase58()]);
+      await donate(f, donor1, 100);
+      await cancel(f, organizer);
+      // A stranger pays the fee and cannot redirect the money to themselves.
+      await expectErr(
+        program.methods
+          .refund()
+          .accounts({
+            caller: stranger.publicKey,
+            donor: donor1.publicKey,
+            fundraiser: f,
+            donorToken: ata[stranger.publicKey.toBase58()],
+          })
+          .signers([stranger])
+          .rpc(),
+        "ConstraintTokenOwner"
+      );
+      await refundFor(f, donor1, stranger);
+      expect(await bal(d1)).to.eq(before);
+      expect(await bal(ata[stranger.publicKey.toBase58()])).to.eq(strangerBefore);
+      await expectErr(refundFor(f, donor1, stranger), "AlreadyRefunded");
     });
   });
 });

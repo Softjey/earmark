@@ -30,8 +30,8 @@ Only two code paths move tokens out of a fundraiser vault:
   whole vault goes to the associated token account of the fundraiser's recipient wallet, in the same
   transaction as the donation that hit the target.
 - [`refund.rs`](programs/earmark/src/instructions/refund.rs#L31-L64): after a cancel or a missed
-  deadline, a donor signs for their own refund, and the destination must be a token account owned by
-  that donor.
+  deadline, anyone (typically the keeper bot, or the donor) can trigger a refund, and the destination
+  must be a token account owned by the donor. The caller only pays the fee.
 
 The vault's authority is the fundraiser PDA, so no private key exists for it, and no other
 instruction (`cancel`, `confirm_fundraiser`, `verify_recipient`, …) touches token balances. The
@@ -48,7 +48,7 @@ final (no one can change the program) before the demo.
 | Verifier | mark a wallet as a verified clinic, revoke it | move any money, create or cancel fundraisers |
 | Organizer | create a fundraiser for a verified clinic, cancel it before payout | receive any money, change the target, recipient or deadline |
 | Clinic | confirm or cancel a fundraiser that names it | withdraw before the target is reached |
-| Donor | donate, refund their own donation after a cancel or a missed deadline | refund anyone else's donation |
+| Donor | donate; get a refund after a cancel or a missed deadline (sent automatically by the keeper, or on their own click) | receive anyone else's refund |
 | Us (the deployer) | nothing once the upgrade authority is final | edit balances, pay out, block refunds |
 
 ## What if a party disappears mid-way?
@@ -58,7 +58,7 @@ final (no one can change the program) before the demo.
 - **Clinic never confirms:** the fundraiser stays *awaiting clinic* and cannot accept donations; the
   organizer can cancel it.
 - **Clinic disappears after confirming** (or the verifier revokes it): new donations are blocked, the
-  deadline passes, and every donor refunds on their own, without asking anyone.
+  deadline passes, and every donor is refunded automatically by the keeper (or on their own click), without asking anyone.
 - **We disappear:** the program and the money stay on Solana. Anyone can call it with any client;
   the web app only reads chain data and stores the non-financial story text.
 
@@ -107,7 +107,7 @@ anchor test --validator legacy                 # runs tests/ against a local sol
 ```
 
 `--validator legacy` is used because Anchor's default Surfpool runner did not start on our machines.
-Scripts (run with `pnpm exec tsx scripts/<name>.ts`): `deploy-devnet.sh`, `sync-idl.ts` (IDL → `app/src/idl`), `create-mint.ts`, `setup-faucet.ts` (devnet faucet key + mint authority handover, run once), `set-token-metadata.ts` (names the ePLN mint and sets its logo, from `assets/epln/`), `airdrop.ts <wallet> <amount>`, `seed-demo.ts [--deadline-in <s>]`, `seed-clinics.ts` (verifies four extra demo clinics for the picker on `/new`), `key-to-phantom.ts <keypair.json>` (prints the base58 key for importing a demo wallet into Phantom). Demo wallets are stored in git-ignored `scripts/.keys/`.
+Scripts (run with `pnpm exec tsx scripts/<name>.ts`): `deploy-devnet.sh`, `sync-idl.ts` (IDL → `app/src/idl`), `create-mint.ts`, `setup-faucet.ts` (devnet faucet key + mint authority handover, run once), `set-token-metadata.ts` (names the ePLN mint and sets its logo, from `assets/epln/`), `airdrop.ts <wallet> <amount>`, `seed-demo.ts [--deadline-in <s>]`, `keeper.ts [--once] [--interval <ms>]` (sends permissionless refunds for cancelled / expired fundraisers; run it during the demo), `seed-clinics.ts` (verifies four extra demo clinics for the picker on `/new`), `key-to-phantom.ts <keypair.json>` (prints the base58 key for importing a demo wallet into Phantom). Demo wallets are stored in git-ignored `scripts/.keys/`.
 
 ### Run the web app
 

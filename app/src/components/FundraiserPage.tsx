@@ -3,7 +3,7 @@
 import { BN } from "@anchor-lang/core";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fundraiserTitle } from "./FundraiserCard";
 import { ProgressBar } from "./ProgressBar";
 import { StatusBadge } from "./StatusBadge";
@@ -97,6 +97,17 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
   const activityReady = activityData !== undefined;
   const activity = activityData ?? [];
 
+  // While the keeper is sending this donor's refund, check often so it shows up within seconds.
+  const awaitingRefund = !!data && isRefundable(statusOf(data.fundraiser, now)) && !!data.donation && !data.donation.refunded;
+  useEffect(() => {
+    if (!awaitingRefund) return;
+    const t = setInterval(() => void reload(), 3_000);
+    return () => {
+      clearInterval(t);
+      void reloadActivity(); // history is heavy: refresh it once, when the refund has landed
+    };
+  }, [awaitingRefund, reload, reloadActivity]);
+
   if (!key) return <Notice>This is not a valid fundraiser address.</Notice>;
   if (error && !data) return <ErrorAlert error={error} />;
   if (loading) return <Notice>Loading fundraiser…</Notice>;
@@ -137,7 +148,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
     refund.run(async () => {
       if (!wallet) return;
       const donorToken = getAssociatedTokenAddressSync(config.mint, wallet.publicKey);
-      await program.methods.refund().accountsPartial({ donor: wallet.publicKey, fundraiser: key, donorToken }).rpc();
+      await program.methods.refund().accountsPartial({ caller: wallet.publicKey, donor: wallet.publicKey, fundraiser: key, donorToken }).rpc();
       await Promise.all([reload(), reloadActivity()]);
     });
 
@@ -312,10 +323,13 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
               </div>
               {donation && !donation.refunded ? (
                 <>
+                  <p className="text-[13px] text-muted">
+                    Your refund is being sent automatically, straight from the vault to your wallet. No click needed.
+                  </p>
                   <button type="button" className={btnPrimary} disabled={refund.busy} onClick={onRefund}>
-                    {refund.busy ? "Waiting for wallet…" : "Get my money back"}
+                    {refund.busy ? "Waiting for wallet…" : "Get it now myself"}
                   </button>
-                  <p className="text-[13px] text-muted">Sent from the fundraiser&apos;s vault straight to your wallet.</p>
+                  <p className="text-[13px] text-muted">Nobody can redirect it: only your own token account can receive it.</p>
                 </>
               ) : (
                 <p className="text-[13px] text-muted">

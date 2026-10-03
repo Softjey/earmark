@@ -8,7 +8,7 @@
 
 ## Description
 
-`cancel` by recipient or organizer moves `PendingConfirmation | Active` → `Cancelled`. `refund` lets a donor withdraw their own donation if `Cancelled`, or if `Active && now >= deadline`.
+`cancel` by recipient or organizer moves `PendingConfirmation | Active` → `Cancelled`. `refund` returns a donation to its donor (permissionless: anyone may trigger it, tokens only reach the donor's own account) if `Cancelled`, or if `Active && now >= deadline`.
 
 ## Acceptance criteria
 
@@ -17,6 +17,7 @@
 - [x] Second refund → `AlreadyRefunded`
 - [x] Refund only ever goes to the donor's own token account
 - [x] Emits `Refunded` event
+- [x] Anyone can trigger a refund (keeper), money still only reaches the donor (`scripts/keeper.ts`)
 
 ## Docs to update when done
 

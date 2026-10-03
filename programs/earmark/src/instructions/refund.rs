@@ -7,7 +7,12 @@ use crate::state::*;
 
 #[derive(Accounts)]
 pub struct Refund<'info> {
-    pub donor: Signer<'info>,
+    /// Anyone can trigger a refund (the donor, a keeper bot, a friend). It only pays the
+    /// transaction fee; it has no say over where the tokens go.
+    pub caller: Signer<'info>,
+    /// CHECK: not a signer on purpose. It is tied to `donation` through `has_one` and to
+    /// `donor_token` through the token authority, so the tokens can only reach this donor.
+    pub donor: UncheckedAccount<'info>,
     #[account(
         seeds = [FUNDRAISER_SEED, fundraiser.organizer.as_ref(), &fundraiser.id.to_le_bytes()],
         bump = fundraiser.bump

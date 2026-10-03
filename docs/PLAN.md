@@ -88,7 +88,11 @@ rules keep working. Medical data never goes on-chain (RODO); only the SHA-256 of
 | `confirm_fundraiser()` | recipient wallet | status must be `PendingConfirmation` → `Active` |
 | `donate(amount)` | donor | status `Active`; `now < deadline`; amount capped to `target - raised`; transfer donor → vault; **if `raised == target` → vault → recipient ATA, status `Released`** (same tx) |
 | `cancel()` | recipient wallet **or** organizer | status `PendingConfirmation` or `Active` → `Cancelled` |
-| `refund()` | donor | status `Cancelled`, **or** `Active && now >= deadline`; not yet refunded; vault → donor; mark refunded |
+| `refund()` | **anyone** (`caller` pays the fee; `donor` is not a signer) | status `Cancelled`, **or** `Active && now >= deadline`; not yet refunded; `donation` must belong to `donor`; vault → `donor`'s own token account (token authority = donor); mark refunded |
+
+**Automatic refunds:** a chain has no timers, so `refund` is permissionless and `scripts/keeper.ts` sends it
+for every donor as soon as a fundraiser is cancelled or expired (polls every second). The keeper only pays
+fees and cannot redirect money; if it is down, donors refund themselves from the app.
 
 **The intermediary disappears in `donate` and `refund`:** there is no instruction that sends tokens
 anywhere except the recipient's token account or the donor's own token account.
