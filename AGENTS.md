@@ -56,12 +56,12 @@ Toolchain: Rust, Solana CLI, Anchor 1.1.x (via `avm`), Node + pnpm. Use the `sol
 
 The program is **already deployed** to devnet and `init_config` has been called (IDs in
 [README.md](README.md#deployment)). Devnet SOL is free but the faucet allows only **2 requests per
-8 hours**, so treat it as scarce (~2.7 SOL left after T07/T08).
+8 hours**, so treat it as scarce (~1.96 SOL left after the permissionless-refund upgrade).
 
 - **Do not redeploy** `scripts/deploy-devnet.sh` just to test; use the local validator
   (`anchor test --validator legacy`, or `solana-test-validator` plus `ANCHOR_PROVIDER_URL=http://127.0.0.1:8899`).
   A deploy or upgrade temporarily locks ~1.8 SOL of rent. An upgrade is only allowed while the new `.so`
-  fits the deployed size (347 KB); a bigger one needs `solana program extend` (more SOL).
+  fits the deployed size (357 KB after the refund upgrade); a bigger one needs `solana program extend` (min 10 240 bytes, ~0.07 SOL).
 - **Do not re-run `create-mint.ts`**: config can be initialised only once; it is idempotent and just rewrites `app/.env.local`.
 - `seed-demo.ts` is safe to re-run (costs a few cents, creates a new fundraiser B each time).
 - **Never delete `scripts/.keys/`** (git-ignored): `verifier.json` is the on-chain verifier key and cannot be
