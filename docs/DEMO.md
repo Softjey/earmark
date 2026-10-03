@@ -33,7 +33,7 @@ Animated clips come from [`video/`](../video/README.md) (`pnpm --dir video rende
 
 | # | ~Time | Clip | Content |
 |---|---|---|---|
-| 1 | 31 s | `intro.mp4` | Antoś story → "Today" flow → "With Earmark" flow → title |
+| 1 | 33 s | `intro-voice.mp4` (or silent `intro.mp4`) | Antoś story → "Today" flow → "With Earmark" flow → title |
 | 2 | 15 s | screen + `role-organizer.mov` | `/new`, own wallet as recipient → `RecipientNotVerified` |
 | 3 | 20 s | screen + `role-clinic.mov` | Create honest fundraiser → clinic **Confirm** → Active |
 | 4 | 35 s | screen + `role-donor-1.mov`, `role-donor-2.mov` | 600 + 400 → payout in the same transaction; explorer: vault 0, clinic +1 000 |

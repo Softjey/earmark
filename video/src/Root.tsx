@@ -17,6 +17,7 @@ export function RemotionRoot() {
   return (
     <>
       <Composition id="Intro" component={Intro} durationInFrames={INTRO_FRAMES} {...SIZE} />
+      <Composition id="IntroVoice" component={Intro} durationInFrames={INTRO_FRAMES} defaultProps={{ voice: true }} {...SIZE} />
       <Composition id="Outro" component={Outro} durationInFrames={OUTRO_FRAMES} {...SIZE} />
       {ROLES.map(({ id, props }) => (
         <Composition key={id} id={id} component={RoleBadge} durationInFrames={ROLE_FRAMES} defaultProps={props} {...SIZE} />

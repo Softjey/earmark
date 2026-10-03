@@ -1,0 +1,4 @@
+.venv/
+*.wav
+*.onnx
+voices-*.bin

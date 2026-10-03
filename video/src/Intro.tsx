@@ -1,4 +1,4 @@
-import { AbsoluteFill, Easing, interpolate, Sequence, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Audio, Easing, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { Caption, Kicker } from "./components/Caption";
 import { Flow } from "./components/Flow";
 import { Building, Check, Clinic, Cross, Lock, LogoMark, People, Person } from "./components/Icons";
@@ -6,7 +6,7 @@ import { Node } from "./components/Node";
 import { C, fadeOut, fadeUp, MONO, pop, SANS } from "./theme";
 
 // Scene lengths in frames (30 fps).
-const STORY = 150;
+const STORY = 210;
 const TWIST = 90;
 const TODAY = 270;
 const EARMARK = 330;
@@ -42,7 +42,7 @@ function Story() {
           <div style={{ fontSize: 34, color: "#B9C3BF" }}>raised on a crowdfunding platform</div>
         </div>
       </div>
-      <div style={{ fontSize: 52, fontWeight: 500, marginTop: 64, ...fadeUp(frame, 75) }}>
+      <div style={{ fontSize: 52, fontWeight: 500, marginTop: 64, ...fadeUp(frame, 105) }}>
         to save the sight of a boy named Antoś.
       </div>
     </AbsoluteFill>
@@ -205,7 +205,19 @@ function Title() {
   );
 }
 
-export function Intro() {
+/** Voice-over line for one scene, starting `delay` frames into it (files from voiceover/generate.py). */
+function Voice({ from, delay, name }: { from: number; delay: number; name: string }) {
+  return (
+    <Sequence from={from + delay}>
+      <Audio src={staticFile(`vo/${name}.mp3`)} />
+    </Sequence>
+  );
+}
+
+export function Intro({ voice = false }: { voice?: boolean }) {
+  const today = STORY + TWIST;
+  const earmark = today + TODAY;
+  const title = earmark + EARMARK;
   return (
     <AbsoluteFill style={{ fontFamily: SANS, background: C.ink }}>
       <Sequence durationInFrames={STORY}>
@@ -214,15 +226,24 @@ export function Intro() {
       <Sequence from={STORY} durationInFrames={TWIST}>
         <Twist />
       </Sequence>
-      <Sequence from={STORY + TWIST} durationInFrames={TODAY}>
+      <Sequence from={today} durationInFrames={TODAY}>
         <Today />
       </Sequence>
-      <Sequence from={STORY + TWIST + TODAY} durationInFrames={EARMARK}>
+      <Sequence from={earmark} durationInFrames={EARMARK}>
         <WithEarmark />
       </Sequence>
-      <Sequence from={STORY + TWIST + TODAY + EARMARK} durationInFrames={TITLE}>
+      <Sequence from={title} durationInFrames={TITLE}>
         <Title />
       </Sequence>
+      {voice && (
+        <>
+          <Voice from={0} delay={12} name="story" />
+          <Voice from={STORY} delay={8} name="twist" />
+          <Voice from={today} delay={20} name="today" />
+          <Voice from={earmark} delay={12} name="earmark" />
+          <Voice from={title} delay={8} name="title" />
+        </>
+      )}
     </AbsoluteFill>
   );
 }
