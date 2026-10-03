@@ -40,7 +40,19 @@ the demo.
 
 ## Getting started
 
-_Filled in by ticket T00._
+Prerequisites: Rust, Solana CLI (Agave 3.1.x), Anchor 1.1.x via `avm`, Node 20+, pnpm. Make sure
+`~/.cargo/bin`, `~/.avm/bin` and `~/.local/share/solana/install/active_release/bin` are on `PATH`.
+
+```bash
+pnpm install                                   # JS deps (tests, later app/ and scripts/)
+solana-keygen new -o ~/.config/solana/id.json  # once, if you have no wallet yet
+anchor build                                   # builds the program and target/idl/earmark.json
+anchor test --validator legacy                 # runs tests/ against a local solana-test-validator
+```
+
+`--validator legacy` is used because Anchor's default Surfpool runner did not start on our machines.
+`anchor keys sync` regenerates the program ID from `target/deploy/earmark-keypair.json`; the keypair is
+git-ignored, so on a fresh clone the ID in `declare_id!` and `Anchor.toml` is replaced by T07.
 
 ## Deployment
 

@@ -5,11 +5,11 @@ package_manager = "pnpm"
 resolution = true
 skip-lint = false
 
-[programs.localnet]
-earmark = "C7q4APaxNnmqsaF2dMMJahJuk2bTu2DC9RuDw3ixfzAz"
-
 [programs.devnet]
-earmark = "C7q4APaxNnmqsaF2dMMJahJuk2bTu2DC9RuDw3ixfzAz"
+earmark = "GWaY7mkSSwBzK6KfSGEJa9EriyvyE5k25yZQ9q4PCfMf"
+
+[programs.localnet]
+earmark = "GWaY7mkSSwBzK6KfSGEJa9EriyvyE5k25yZQ9q4PCfMf"
 
 [provider]
 cluster = "localnet"

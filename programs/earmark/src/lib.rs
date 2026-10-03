@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("C7q4APaxNnmqsaF2dMMJahJuk2bTu2DC9RuDw3ixfzAz");
+declare_id!("GWaY7mkSSwBzK6KfSGEJa9EriyvyE5k25yZQ9q4PCfMf");
 
 #[program]
 pub mod earmark {

@@ -3,7 +3,7 @@
 - **Priority:** P0
 - **Area:** infra
 - **Depends on:** —
-- **Status:** todo
+- **Status:** done
 - **Owner:** —
 
 ## Description
@@ -12,10 +12,10 @@ Initialize the Anchor workspace in the repo root (`anchor init` layout: `program
 
 ## Acceptance criteria
 
-- [ ] `anchor build` succeeds and produces `target/idl/earmark.json`
-- [ ] `anchor test` runs an empty test against the local validator
-- [ ] `Anchor.toml` has `localnet` and `devnet` clusters
-- [ ] README *Getting started* section lists the exact install + build commands
+- [x] `anchor build` succeeds and produces `target/idl/earmark.json`
+- [x] `anchor test` runs an empty test against the local validator
+- [x] `Anchor.toml` has `localnet` and `devnet` clusters
+- [x] README *Getting started* section lists the exact install + build commands
 
 ## Docs to update when done
 

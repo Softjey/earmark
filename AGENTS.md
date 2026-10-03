@@ -32,18 +32,20 @@ to a verified clinic or back to the donors, never to the organizer. Built for th
    account.** Do not add any other exit.
 4. All code, comments, docs, commit messages and UI copy are in **English**.
 5. Commit messages follow Conventional Commits (`feat(program): …`, `fix(app): …`, `docs: …`).
+   Commit automatically as soon as a task (or ticket) is done and verified; do not ask for permission first.
 6. Never commit keypairs, `.env*`, `target/`, `node_modules/`, or the challenge PDFs folder.
 
 ## Commands
 
 ```bash
 anchor build                      # build program + IDL
-anchor test                       # run program tests on a local validator
-anchor test -- --grep "refund"    # run a single test (prefer this over the full suite)
+anchor test --validator legacy                       # run program tests on a local validator
+anchor test --validator legacy -- --grep "refund"    # run a single test (prefer this over the full suite)
 pnpm --dir app dev                # run the frontend
 ```
 
-Toolchain: Rust, Solana CLI, Anchor (via `avm`). Use the `solana-dev` skill if available.
+`--validator legacy` uses `solana-test-validator`; the default Surfpool runner failed to start on the dev machine.
+Toolchain: Rust, Solana CLI, Anchor 1.1.x (via `avm`), Node + pnpm. Use the `solana-dev` skill if available.
 
 ## Keeping the docs alive (required)
 

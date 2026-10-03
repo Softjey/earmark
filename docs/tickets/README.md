@@ -2,7 +2,7 @@
 
 | ID | Title | Priority | Area | Depends on | Status |
 |---|---|---|---|---|---|
-| [T00](T00-toolchain-workspace-setup.md) | Toolchain & workspace setup | P0 | infra | — | todo |
+| [T00](T00-toolchain-workspace-setup.md) | Toolchain & workspace setup | P0 | infra | — | done |
 | [T01](T01-program-state-errors-init_config.md) | Program: state, errors, init_config | P0 | program | T00 | todo |
 | [T02](T02-program-verify_recipient-revoke_recipient.md) | Program: verify_recipient / revoke_recipient | P0 (revoke: P1) | program | T01 | todo |
 | [T03](T03-program-create_fundraiser-confirm_fundraiser.md) | Program: create_fundraiser / confirm_fundraiser | P0 | program | T02 | todo |
