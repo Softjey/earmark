@@ -308,23 +308,33 @@ function Question() {
 
 const VAULT = { x: 960, y: 460 };
 
-function WithEarmark() {
+function WithEarmark({
+  id = "earmark",
+  notOrganizerAt = 0.62,
+  vaultSub = "nobody holds the key",
+  onSolana = false,
+}: {
+  id?: string;
+  notOrganizerAt?: number;
+  vaultSub?: string;
+  onSolana?: boolean;
+}) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const [b0, b1, b2, b3] = beats("earmark");
-  const { frames, lines } = scene("earmark");
-  const notOrganizer = b0 + Math.round(lines[0].frames * 0.62);
+  const [b0, b1, b2, b3] = beats(id);
+  const { frames, lines } = scene(id);
+  const notOrganizer = b0 + Math.round(lines[0].frames * notOrganizerAt);
   const blocked = pop(frame, fps, notOrganizer + 22);
   return (
     <AbsoluteFill style={{ background: C.ground, opacity: fadeOut(frame, frames - 10, 10) }}>
-      <Kicker color={C.accent}>With Earmark</Kicker>
+      <Kicker color={C.accent}>{onSolana ? "With Earmark · on Solana" : "With Earmark"}</Kicker>
       <Flow from={{ x: 535, y: VAULT.y }} to={{ x: 775, y: VAULT.y }} start={b0 + 30} color={C.accent} />
       <Flow from={{ x: 1145, y: VAULT.y }} to={{ x: 1385, y: VAULT.y }} start={b2} color={C.accent} />
       <Flow from={{ x: VAULT.x, y: VAULT.y + 85 }} to={{ x: VAULT.x, y: 735 }} start={notOrganizer} duration={22} stopAt={0.55} color={C.error} coins={false} />
       <Flow from={{ x: 880, y: VAULT.y - 85 }} via={{ x: 650, y: 200 }} to={{ x: 430, y: VAULT.y - 98 }} start={b3} duration={30} color={C.info} />
 
       <Node x={360} y={VAULT.y} title="Donors" icon={(c) => <People size={44} color={c} />} start={b0} />
-      <Node x={VAULT.x} y={VAULT.y} w={370} title="Vault" sub="nobody holds the key" variant="vault" icon={(c) => <Lock size={44} color={c} />} start={b0 + 12} />
+      <Node x={VAULT.x} y={VAULT.y} w={370} title="Vault" sub={vaultSub} variant="vault" icon={(c) => <Lock size={44} color={c} />} start={b0 + 12} />
       <Node x={1560} y={VAULT.y} title="Recipient" sub="clinic · shelter · charity" variant="verified" icon={(c) => <Heart size={44} color={c} />} start={b1} />
       <Node x={VAULT.x} y={830} h={130} title="Organizer" sub="cannot be paid" variant="disabled" icon={(c) => <Person size={36} color={c} />} start={notOrganizer - 8} />
 
@@ -378,10 +388,10 @@ function WithEarmark() {
   );
 }
 
-function Title() {
+function Title({ id = "title", second = "Just rules, written in code, that nobody can bend." }: { id?: string; second?: string }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const [b0, b1] = beats("title");
+  const [b0, b1] = beats(id);
   const s = pop(frame, fps, b1);
   const linesOut = fadeOut(frame, b1 - 8, 8);
   return (
@@ -389,9 +399,7 @@ function Title() {
       {frame < b1 && (
         <div style={{ textAlign: "center", opacity: linesOut }}>
           <div style={{ fontSize: 76, fontWeight: 700, color: C.ink, letterSpacing: -1.5, ...fadeUp(frame, b0) }}>No middleman holding the money.</div>
-          <div style={{ fontSize: 56, fontWeight: 500, color: C.muted, marginTop: 24, ...fadeUp(frame, b0 + 50) }}>
-            Just rules, written in code, that nobody can bend.
-          </div>
+          <div style={{ fontSize: 56, fontWeight: 500, color: C.muted, marginTop: 24, ...fadeUp(frame, b0 + 50) }}>{second}</div>
         </div>
       )}
       {frame >= b1 && (
@@ -409,6 +417,60 @@ function Title() {
   );
 }
 
+const DATABASE = ["Has an owner", "Owner can change the numbers", "Owner decides who gets paid"];
+const CHAIN = ["No owner of the money", "Rules are public code", "Anyone can check every transfer"];
+
+function Why() {
+  const frame = useCurrentFrame();
+  const [b0, b1] = beats("why");
+  const { frames, lines } = scene("why");
+  const column = (title: string, items: string[], start: number, good: boolean) => (
+    <div
+      style={{
+        width: 760,
+        background: good ? C.accentSoft : C.surface,
+        border: `3px solid ${good ? C.accent : C.line}`,
+        borderRadius: 16,
+        padding: "44px 48px",
+        boxSizing: "border-box",
+        ...fadeUp(frame, start, 40),
+      }}
+    >
+      <div style={{ fontSize: 46, fontWeight: 700, color: C.ink, letterSpacing: -1 }}>{title}</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 26, marginTop: 34 }}>
+        {items.map((item, i) => (
+          <div key={item} style={{ display: "flex", alignItems: "center", gap: 18, ...fadeUp(frame, start + 18 + i * 14, 12) }}>
+            <div
+              style={{
+                width: 48,
+                height: 48,
+                flex: "none",
+                borderRadius: 24,
+                background: good ? C.accent : C.errorSoft,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {good ? <Check size={28} color="#fff" stroke={3.2} /> : <Cross size={26} color={C.error} stroke={3.2} />}
+            </div>
+            <div style={{ fontSize: 34, fontWeight: 500, color: C.ink }}>{item}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+  return (
+    <AbsoluteFill style={{ background: C.ground, opacity: fadeOut(frame, frames - 10, 10) }}>
+      <Kicker>Why a blockchain?</Kicker>
+      <div style={{ position: "absolute", left: 160, top: 330, display: "flex", gap: 80 }}>
+        {column("A normal database", DATABASE, b0 + Math.round(lines[0].frames * 0.3), false)}
+        {column("Solana blockchain", CHAIN, b1, true)}
+      </div>
+    </AbsoluteFill>
+  );
+}
+
 const VIEWS: Record<string, () => React.ReactNode> = {
   hook: Hook,
   story: () => <Story />,
@@ -418,8 +480,11 @@ const VIEWS: Record<string, () => React.ReactNode> = {
   scale: Scale,
   today: Today,
   question: Question,
-  earmark: WithEarmark,
-  title: Title,
+  earmark: () => <WithEarmark />,
+  earmarkB: () => <WithEarmark id="earmarkB" notOrganizerAt={0.78} vaultSub="on Solana · nobody holds the key" onSolana />,
+  why: Why,
+  title: () => <Title />,
+  titleB: () => <Title id="titleB" second="Just rules that nobody can bend." />,
 };
 
 export function Intro({ voice = false, variant = "default" }: { voice?: boolean; variant?: Variant }) {

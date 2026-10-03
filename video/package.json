@@ -7,10 +7,11 @@
     "render:intro": "remotion render src/index.ts Intro out/intro.mp4",
     "render:intro-voice": "remotion render src/index.ts IntroVoice out/intro-voice.mp4",
     "render:intro-lewandowski": "remotion render src/index.ts IntroLewandowski out/intro-lewandowski.mp4",
+    "render:intro-lewandowski-v2": "remotion render src/index.ts IntroLewandowskiV2 out/intro-lewandowski-v2.mp4",
     "render:outro": "remotion render src/index.ts Outro out/outro.mp4",
     "render:role": "remotion render src/index.ts --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png",
     "render:roles": "pnpm render:role RoleOrganizer out/role-organizer.mov && pnpm render:role RoleClinic out/role-clinic.mov && pnpm render:role RoleDonor1 out/role-donor-1.mov && pnpm render:role RoleDonor2 out/role-donor-2.mov",
-    "render:all": "pnpm render:intro && pnpm render:intro-voice && pnpm render:intro-lewandowski && pnpm render:outro && pnpm render:roles",
+    "render:all": "pnpm render:intro && pnpm render:intro-voice && pnpm render:intro-lewandowski && pnpm render:intro-lewandowski-v2 && pnpm render:outro && pnpm render:roles",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

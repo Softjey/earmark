@@ -15,7 +15,10 @@ const TAIL: Record<string, number> = {
   today: 24,
   question: 20,
   earmark: 45,
+  earmarkB: 45,
+  why: 40,
   title: 60,
+  titleB: 60,
 };
 
 export type Line = { id: string; from: number; frames: number };

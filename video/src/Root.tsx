@@ -26,6 +26,13 @@ export function RemotionRoot() {
         defaultProps={{ voice: true, variant: "lewandowski" as const }}
         {...SIZE}
       />
+      <Composition
+        id="IntroLewandowskiV2"
+        component={Intro}
+        durationInFrames={introFrames("lewandowski-v2")}
+        defaultProps={{ voice: true, variant: "lewandowski-v2" as const }}
+        {...SIZE}
+      />
       <Composition id="Outro" component={Outro} durationInFrames={OUTRO_FRAMES} {...SIZE} />
       {ROLES.map(({ id, props }) => (
         <Composition key={id} id={id} component={RoleBadge} durationInFrames={ROLE_FRAMES} defaultProps={props} {...SIZE} />

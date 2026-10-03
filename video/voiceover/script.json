@@ -20,6 +20,17 @@
       "question",
       "earmark",
       "title"
+    ],
+    "lewandowski-v2": [
+      "hook",
+      "storyL",
+      "twistL",
+      "scale",
+      "today",
+      "question",
+      "earmarkB",
+      "why",
+      "titleB"
     ]
   },
   "scenes": [
@@ -169,6 +180,53 @@
         },
         {
           "id": "title-2",
+          "text": "This is Earmark."
+        }
+      ]
+    },
+    {
+      "id": "earmarkB",
+      "lines": [
+        {
+          "id": "earmarkB-1",
+          "text": "With Earmark, the money doesn't sit with a company. It waits in a vault on the Solana blockchain, and nobody holds its key. Not the organizer. Not us."
+        },
+        {
+          "id": "earmarkB-2",
+          "text": "It can only go to a verified recipient, like a clinic or a shelter, which confirms the need first."
+        },
+        {
+          "id": "earmarkB-3",
+          "text": "When the target is reached, the money goes straight to the recipient."
+        },
+        {
+          "id": "earmarkB-4",
+          "text": "If it isn't, every donor takes their own money back."
+        }
+      ]
+    },
+    {
+      "id": "why",
+      "lines": [
+        {
+          "id": "why-1",
+          "text": "Why a blockchain? Because a normal database always has an owner, who can change the numbers or pay anyone."
+        },
+        {
+          "id": "why-2",
+          "text": "On a blockchain, the rules are public code. Nobody can override them, and anyone can check every transfer."
+        }
+      ]
+    },
+    {
+      "id": "titleB",
+      "lines": [
+        {
+          "id": "titleB-1",
+          "text": "No middleman holding the money. Just rules that nobody can bend."
+        },
+        {
+          "id": "titleB-2",
           "text": "This is Earmark."
         }
       ]

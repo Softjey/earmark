@@ -7,6 +7,7 @@ Colors and fonts follow [docs/design/](../docs/design/README.md).
 |---|---|---|---|
 | `Intro` | 89 s | `out/intro.mp4` | Antoś story, the twist, fake fundraisers across causes (sourced stats), "Today" vs "With Earmark" money flow, title |
 | `IntroLewandowski` | 93 s | `out/intro-lewandowski.mp4` | Voiced variant that opens with "In 2017, Robert Lewandowski got scammed" (the Lewandowskis gave 100 000 zł to the same fake fundraiser) |
+| `IntroLewandowskiV2` | 110 s | `out/intro-lewandowski-v2.mp4` | Lewandowski opening plus Solana named in the vault scene and a "Why a blockchain?" scene (database vs blockchain) |
 | `IntroVoice` | 89 s | `out/intro-voice.mp4` | Same, with the voice-over from `public/vo/` |
 | `Outro` | 11 s | `out/outro.mp4` | Four takeaways, logo |
 | `RoleOrganizer`, `RoleClinic`, `RoleDonor1`, `RoleDonor2` | 4 s each | `out/role-*.mov` | Lower-third badge on a transparent background (ProRes 4444) to overlay on screen recordings |
@@ -16,6 +17,8 @@ pnpm --dir video studio        # preview and tweak in the browser
 pnpm --dir video render:all    # render everything into video/out/ (git-ignored)
 pnpm --dir video render:intro  # or one at a time
 ```
+
+Every new version gets its own composition and file name (`-v2`, `-v3`, …); never re-render a new cut over an older file.
 
 Scene timings are constants at the top of `src/Intro.tsx` and `src/Outro.tsx`; role texts are in `src/Root.tsx`.
 
