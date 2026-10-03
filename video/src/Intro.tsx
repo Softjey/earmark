@@ -1,7 +1,7 @@
 import { AbsoluteFill, Audio, Easing, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { Caption, Kicker } from "./components/Caption";
 import { Flow } from "./components/Flow";
-import { Building, Check, Clinic, Cross, Eye, Lock, LogoMark, People, Person } from "./components/Icons";
+import { Building, Check, Cross, Eye, Heart, Lock, LogoMark, People, Person } from "./components/Icons";
 import { Node } from "./components/Node";
 import { C, fadeOut, fadeUp, MONO, pop, SANS } from "./theme";
 import { beats, scene, SCENES } from "./timeline";
@@ -23,8 +23,9 @@ function grow(frame: number, start: number, duration: number, to: number) {
 
 function Story() {
   const frame = useCurrentFrame();
-  const [b0, b1, b2] = beats("story");
-  const { frames } = scene("story");
+  const [b0, b2] = beats("story");
+  const { frames, lines } = scene("story");
+  const b1 = b0 + Math.round(lines[0].frames * 0.6);
   const progress = grow(frame, b2, 60, 1);
   return (
     <AbsoluteFill style={{ background: C.ink, color: "#fff", opacity: fadeOut(frame, frames - 10, 10) }}>
@@ -133,51 +134,65 @@ function StatCard({ start, children, source }: { start: number; children: React.
   );
 }
 
-const PL_BARS = [
-  { year: "2019", value: 0.7 },
-  { year: "2020", value: 1.09 },
-  { year: "2021*", value: 2.04 },
-];
+const CAUSES = ["Medical treatment", "Flood relief", "War relief", "Animal shelters", "Clean water"];
 
 function Scale() {
   const frame = useCurrentFrame();
-  const [b0, b1, b2] = beats("scale");
+  const [b0, b1, b2, b3] = beats("scale");
   const { frames } = scene("scale");
   return (
     <AbsoluteFill style={{ background: C.ground, opacity: fadeOut(frame, frames - 10, 10) }}>
-      <Kicker>The stakes</Kicker>
-      <div style={{ position: "absolute", left: 160, top: 210, fontSize: 56, fontWeight: 700, color: C.ink, letterSpacing: -1, ...fadeUp(frame, b0) }}>
-        People give online more every year.
+      <Kicker>It keeps happening</Kicker>
+      <div style={{ position: "absolute", left: 160, top: 190, display: "flex", gap: 16 }}>
+        {CAUSES.map((c, i) => (
+          <span
+            key={c}
+            style={{
+              background: C.surface,
+              border: `2px solid ${C.line}`,
+              borderRadius: 999,
+              padding: "10px 26px",
+              fontSize: 30,
+              fontWeight: 600,
+              color: C.ink,
+              ...fadeUp(frame, b0 + 25 + i * 8, 16),
+            }}
+          >
+            {c}
+          </span>
+        ))}
       </div>
-      <div style={{ position: "absolute", left: 160, top: 330, display: "flex", gap: 80 }}>
-        <StatCard start={b1} source="Source: Forsal.pl, 2021 (* projected)">
-          <div style={{ fontSize: 88, fontWeight: 700, color: C.ink, letterSpacing: -2, lineHeight: 1 }}>≈ 2 bn zł</div>
-          <div style={{ fontSize: 28, color: C.muted, marginTop: 10 }}>a year through online fundraisers in Poland</div>
-          <div style={{ display: "flex", alignItems: "flex-end", gap: 40, height: 230, marginTop: 30 }}>
-            {PL_BARS.map((b, i) => {
-              const h = grow(frame, b1 + 15 + i * 10, 30, (b.value / 2.04) * 160);
-              return (
-                <div key={b.year} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-                  <div style={{ fontSize: 24, fontWeight: 600, color: C.ink, opacity: h > 10 ? 1 : 0 }}>{b.value.toFixed(2).replace(/0$/, "")}</div>
-                  <div style={{ width: 110, height: h, background: i === 2 ? C.accent : "#9FC9BB", borderRadius: "8px 8px 0 0" }} />
-                  <div style={{ fontSize: 22, color: C.muted }}>{b.year}</div>
-                </div>
-              );
-            })}
+      <div style={{ position: "absolute", left: 160, top: 310, display: "flex", gap: 80 }}>
+        <StatCard start={b1} source="Source: Polish police cybercrime bureau (CBZC), 2024">
+          <div style={{ fontSize: 30, fontWeight: 700, color: C.muted, letterSpacing: 2 }}>POLAND, 2024 FLOODS</div>
+          <div style={{ fontSize: 150, fontWeight: 700, color: C.error, letterSpacing: -4, lineHeight: 1, marginTop: 16, fontVariantNumeric: "tabular-nums" }}>
+            {Math.round(grow(frame, b1 + 10, 45, 150))}
           </div>
+          <div style={{ fontSize: 34, color: C.ink, marginTop: 14, fontWeight: 500 }}>fake fundraisers for flood victims found by the police</div>
         </StatCard>
-        <StatCard start={b2} source="Source: American Journal of Public Health, 2022">
-          <div style={{ fontSize: 88, fontWeight: 700, color: C.ink, letterSpacing: -2, lineHeight: 1 }}>
-            ${grow(frame, b2 + 10, 40, 2).toFixed(1)} bn+
+        <StatCard start={b2} source="Sources: Lee et al., Sensors 2022; AP, 2024 · our estimate">
+          <div style={{ fontSize: 30, fontWeight: 700, color: C.muted, letterSpacing: 2 }}>HOW MANY ARE FAKE?</div>
+          <div style={{ fontSize: 100, fontWeight: 700, color: C.ink, letterSpacing: -3, lineHeight: 1, marginTop: 16, whiteSpace: "nowrap" }}>&lt; 0.1%</div>
+          <div style={{ fontSize: 28, color: C.muted, marginTop: 8 }}>of campaigns are fraud, says GoFundMe</div>
+          <div
+            style={{
+              display: "inline-flex",
+              alignSelf: "flex-start",
+              marginTop: 14,
+              background: C.warnSoft,
+              color: C.warn,
+              borderRadius: 999,
+              padding: "6px 18px",
+              fontSize: 24,
+              fontWeight: 700,
+              ...fadeUp(frame, b2 + 75, 10),
+            }}
+          >
+            never independently verified
           </div>
-          <div style={{ fontSize: 28, color: C.muted, marginTop: 10 }}>raised by medical GoFundMe campaigns in the US, 2016–2020</div>
-          <div style={{ marginTop: 50, display: "flex", flexDirection: "column", gap: 18, ...fadeUp(frame, b2 + 40) }}>
-            <div style={{ fontSize: 36, fontWeight: 600, color: C.ink }}>
-              <span style={{ fontVariantNumeric: "tabular-nums" }}>{fmt(437596)}</span> <span style={{ color: C.muted, fontWeight: 500 }}>campaigns</span>
-            </div>
-            <div style={{ fontSize: 36, fontWeight: 600, color: C.ink }}>
-              <span style={{ fontVariantNumeric: "tabular-nums" }}>21.7 M</span> <span style={{ color: C.muted, fontWeight: 500 }}>donations</span>
-            </div>
+          <div style={{ marginTop: 26, display: "flex", alignItems: "baseline", gap: 20, ...fadeUp(frame, b3) }}>
+            <div style={{ fontSize: 72, fontWeight: 700, color: C.error, letterSpacing: -2, lineHeight: 1.1, whiteSpace: "nowrap" }}>≈ $30 M</div>
+            <div style={{ fontSize: 26, color: C.muted }}>even that rate, on $30 bn raised</div>
           </div>
         </StatCard>
       </div>
@@ -263,7 +278,7 @@ function WithEarmark() {
 
       <Node x={360} y={VAULT.y} title="Donors" icon={(c) => <People size={44} color={c} />} start={b0} />
       <Node x={VAULT.x} y={VAULT.y} w={370} title="Vault" sub="nobody holds the key" variant="vault" icon={(c) => <Lock size={44} color={c} />} start={b0 + 12} />
-      <Node x={1560} y={VAULT.y} title="Clinic" sub="verified recipient" variant="verified" icon={(c) => <Clinic size={44} color={c} />} start={b1} />
+      <Node x={1560} y={VAULT.y} title="Recipient" sub="clinic · shelter · charity" variant="verified" icon={(c) => <Heart size={44} color={c} />} start={b1} />
       <Node x={VAULT.x} y={830} h={130} title="Organizer" sub="cannot be paid" variant="disabled" icon={(c) => <Person size={36} color={c} />} start={notOrganizer - 8} />
 
       <div
@@ -301,7 +316,7 @@ function WithEarmark() {
         RecipientNotVerified
       </div>
       <div style={{ position: "absolute", left: 1400, top: 300, display: "flex", alignItems: "center", gap: 8, fontSize: 26, fontWeight: 600, color: C.accent, ...fadeUp(frame, b1 + 20, 10) }}>
-        <Check size={28} color={C.accent} stroke={3} /> confirmed the quote
+        <Check size={28} color={C.accent} stroke={3} /> confirmed the need
       </div>
       <div style={{ position: "absolute", left: 1400, top: 560, display: "flex", alignItems: "center", gap: 8, fontSize: 26, fontWeight: 600, color: C.accent, ...fadeUp(frame, b2 + 25, 10) }}>
         <Check size={28} color={C.accent} stroke={3} /> paid when the target is hit
@@ -310,7 +325,7 @@ function WithEarmark() {
         or back to each donor
       </div>
       <Caption start={b3 + lines[3].frames}>
-        Only to a <span style={{ color: C.accent }}>verified clinic</span>. Or <span style={{ color: C.info }}>back to the donors</span>.
+        Only to a <span style={{ color: C.accent }}>verified recipient</span>. Or <span style={{ color: C.info }}>back to the donors</span>.
       </Caption>
     </AbsoluteFill>
   );
@@ -339,7 +354,7 @@ function Title() {
             <div style={{ fontSize: 150, fontWeight: 700, color: C.ink, letterSpacing: -4 }}>Earmark</div>
           </div>
           <div style={{ fontSize: 44, fontWeight: 500, color: C.muted, marginTop: 28, ...fadeUp(frame, b1 + 14) }}>
-            Medical fundraisers without an intermediary
+            Fundraisers without an intermediary
           </div>
         </>
       )}

@@ -5,55 +5,112 @@
     {
       "id": "story",
       "lines": [
-        { "id": "story-1", "text": "In twenty seventeen, a fundraiser called \"I'm afraid of the dark\" asked Poland to save a little boy." },
-        { "id": "story-2", "text": "Antosh was two and a half, and he had eye cancer." },
-        { "id": "story-3", "text": "More than six and a half thousand people gave. Half a million zloty." }
+        {
+          "id": "story-1",
+          "text": "In twenty seventeen, a fundraiser in Poland asked people to save Antosh, a two-year-old boy with eye cancer."
+        },
+        {
+          "id": "story-2",
+          "text": "More than six and a half thousand people gave. Half a million zloty."
+        }
       ]
     },
     {
       "id": "twist",
       "lines": [
-        { "id": "twist-1", "text": "But Antosh never existed." },
-        { "id": "twist-2", "text": "The organizer made him up, and spent the money on himself." },
-        { "id": "twist-3", "text": "One famous donor got a refund. Six and a half thousand others did not." }
+        {
+          "id": "twist-1",
+          "text": "But Antosh never existed."
+        },
+        {
+          "id": "twist-2",
+          "text": "The organizer made him up, and spent the money on himself."
+        },
+        {
+          "id": "twist-3",
+          "text": "One famous donor got a refund. Thousands of others did not."
+        }
       ]
     },
     {
       "id": "scale",
       "lines": [
-        { "id": "scale-1", "text": "And the stakes keep growing." },
-        { "id": "scale-2", "text": "Poles now give around two billion zloty a year through online fundraisers." },
-        { "id": "scale-3", "text": "In the US, medical fundraisers on GoFundMe raised over two billion dollars in just five years." }
+        {
+          "id": "scale-1",
+          "text": "And it isn't only medical. Floods, wars, animal shelters: any good cause can be faked."
+        },
+        {
+          "id": "scale-2",
+          "text": "After the 2024 floods in Poland, police found a hundred and fifty fake fundraisers for the victims."
+        },
+        {
+          "id": "scale-3",
+          "text": "How many are fake overall? Nobody knows. The biggest platform claims fewer than one in a thousand. Nobody can check."
+        },
+        {
+          "id": "scale-4",
+          "text": "Even that could mean thirty million dollars."
+        }
       ]
     },
     {
       "id": "today",
       "lines": [
-        { "id": "today-1", "text": "On most platforms, that money takes the same path." },
-        { "id": "today-2", "text": "From the donors, through the platform, into the organizer's own account." },
-        { "id": "today-3", "text": "After that, all you have is trust." }
+        {
+          "id": "today-1",
+          "text": "On most platforms, that money takes the same path."
+        },
+        {
+          "id": "today-2",
+          "text": "From the donors, through the platform, into the organizer's own account."
+        },
+        {
+          "id": "today-3",
+          "text": "After that, all you have is trust."
+        }
       ]
     },
     {
       "id": "question",
       "lines": [
-        { "id": "question-1", "text": "So we asked: what if the organizer could never touch the money at all?" }
+        {
+          "id": "question-1",
+          "text": "So we asked: what if the organizer could never touch the money at all?"
+        }
       ]
     },
     {
       "id": "earmark",
       "lines": [
-        { "id": "earmark-1", "text": "With Earmark, donations wait in a vault that nobody holds the key to. Not the organizer. Not us." },
-        { "id": "earmark-2", "text": "The clinic confirms the treatment before anyone can give." },
-        { "id": "earmark-3", "text": "When the target is reached, the money goes straight to the clinic." },
-        { "id": "earmark-4", "text": "If it isn't, every donor takes their own money back." }
+        {
+          "id": "earmark-1",
+          "text": "With Earmark, donations wait in a vault that nobody holds the key to. Not the organizer. Not us."
+        },
+        {
+          "id": "earmark-2",
+          "text": "It can only go to a verified recipient, like a clinic or a shelter, which confirms the need first."
+        },
+        {
+          "id": "earmark-3",
+          "text": "When the target is reached, the money goes straight to the recipient."
+        },
+        {
+          "id": "earmark-4",
+          "text": "If it isn't, every donor takes their own money back."
+        }
       ]
     },
     {
       "id": "title",
       "lines": [
-        { "id": "title-1", "text": "No middleman holding the money. Just rules, written in code, that nobody can bend." },
-        { "id": "title-2", "text": "This is Earmark." }
+        {
+          "id": "title-1",
+          "text": "No middleman holding the money. Just rules in code that nobody can bend."
+        },
+        {
+          "id": "title-2",
+          "text": "This is Earmark."
+        }
       ]
     }
   ]

@@ -8,7 +8,7 @@ export const OUTRO_FRAMES = POINTS_FRAMES + END_FRAMES;
 
 const POINTS = [
   "The organizer never touches the money.",
-  "The clinic is paid the moment the target is hit.",
+  "The verified recipient is paid the moment the target is hit.",
   "Refunds need nobody's permission.",
   "Every transfer is public and auditable.",
 ];
@@ -53,7 +53,7 @@ function End() {
         <div style={{ fontSize: 150, fontWeight: 700, color: C.ink, letterSpacing: -4 }}>Earmark</div>
       </div>
       <div style={{ fontSize: 54, fontWeight: 600, color: C.ink, marginTop: 40, letterSpacing: -0.8, ...fadeUp(frame, 14) }}>
-        Only to the <span style={{ color: C.accent }}>clinic</span>. Or back to the <span style={{ color: C.info }}>donors</span>.
+        Only to the <span style={{ color: C.accent }}>recipient</span>. Or back to the <span style={{ color: C.info }}>donors</span>.
       </div>
       <div style={{ fontSize: 32, fontWeight: 500, color: C.muted, marginTop: 36, ...fadeUp(frame, 34) }}>
         Built on Solana · Superteam Poland · HackYeah 2026

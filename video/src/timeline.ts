@@ -5,7 +5,7 @@ import { FPS } from "./theme";
 // Scene lengths follow the generated voice-over (voiceover/generate.py writes vo-durations.json).
 const LEAD = 10; // frames before a scene's first line
 const GAP = 8; // frames between lines
-const TAIL: Record<string, number> = { story: 18, twist: 30, scale: 36, today: 24, question: 20, earmark: 45, title: 60 };
+const TAIL: Record<string, number> = { story: 18, twist: 30, scale: 40, today: 24, question: 20, earmark: 45, title: 60 };
 
 export type Line = { id: string; from: number; frames: number };
 export type Scene = { id: string; from: number; frames: number; lines: Line[] };
