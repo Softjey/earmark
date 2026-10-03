@@ -15,10 +15,11 @@
     "render:intro-lewandowski-v5": "remotion render src/index.ts IntroLewandowskiV5 out/intro-lewandowski-v5.mp4",
     "render:intro-lewandowski-v5-dynamic": "remotion render src/index.ts IntroLewandowskiV5Dynamic out/intro-lewandowski-v5-dynamic.mp4",
     "render:intro-lewandowski-v6-dynamic": "remotion render src/index.ts IntroLewandowskiV6Dynamic out/intro-lewandowski-v6-dynamic.mp4",
+    "render:intro-lewandowski-v7": "remotion render src/index.ts IntroLewandowskiV7 out/intro-lewandowski-v7.mp4",
     "render:outro": "remotion render src/index.ts Outro out/outro.mp4",
     "render:role": "remotion render src/index.ts --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png",
     "render:roles": "pnpm render:role RoleOrganizer out/role-organizer.mov && pnpm render:role RoleClinic out/role-clinic.mov && pnpm render:role RoleDonor1 out/role-donor-1.mov && pnpm render:role RoleDonor2 out/role-donor-2.mov",
-    "render:all": "pnpm render:intro && pnpm render:intro-voice && pnpm render:intro-lewandowski && pnpm render:intro-lewandowski-v2 && pnpm render:intro-lewandowski-v3 && pnpm render:intro-lewandowski-v3-dynamic && pnpm render:intro-lewandowski-v4 && pnpm render:intro-lewandowski-v4-dynamic && pnpm render:intro-lewandowski-v5 && pnpm render:intro-lewandowski-v5-dynamic && pnpm render:intro-lewandowski-v6-dynamic && pnpm render:outro && pnpm render:roles",
+    "render:all": "pnpm render:intro && pnpm render:intro-voice && pnpm render:intro-lewandowski && pnpm render:intro-lewandowski-v2 && pnpm render:intro-lewandowski-v3 && pnpm render:intro-lewandowski-v3-dynamic && pnpm render:intro-lewandowski-v4 && pnpm render:intro-lewandowski-v4-dynamic && pnpm render:intro-lewandowski-v5 && pnpm render:intro-lewandowski-v5-dynamic && pnpm render:intro-lewandowski-v6-dynamic && pnpm render:intro-lewandowski-v7 && pnpm render:outro && pnpm render:roles",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

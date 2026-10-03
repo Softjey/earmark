@@ -6,19 +6,8 @@ import { Node } from "./components/Node";
 import { C, fadeOut, fadeUp, MONO, pop, SANS } from "./theme";
 import { CutContext, type Cut, Sfx, useBeats, useCut, useScene, useShake } from "./cut";
 import { sequence, type Variant, voFolder } from "./timeline";
-
-// Light tints for text on the dark (ink) scenes.
-const D = { muted: "#9FB3AC", soft: "#B9C3BF", accent: "#7FD4B8", error: "#F2A99F" };
-
-const fmt = (n: number) => n.toLocaleString("en-US").replace(/,/g, " ");
-
-function grow(frame: number, start: number, duration: number, to: number) {
-  return interpolate(frame, [start, start + duration], [0, to], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.out(Easing.cubic),
-  });
-}
+import { D, fmt, grow } from "./util";
+import { EarmarkPullBack, Grain, Hook7, Scale7, Story7, Twist7, Why7 } from "./v7";
 
 function Story({ id = "story", lewandowski = false }: { id?: string; lewandowski?: boolean }) {
   const frame = useCurrentFrame();
@@ -295,7 +284,7 @@ function TrustTag({ x, y, start }: { x: number; y: number; start: number }) {
 
 const ROW = 500;
 
-function Today() {
+export function Today() {
   const frame = useCurrentFrame();
   const [b0, b1, b2] = useBeats("today");
   const { frames, lines } = useScene("today");
@@ -318,7 +307,7 @@ function Today() {
   );
 }
 
-function Question() {
+export function Question() {
   const frame = useCurrentFrame();
   const [b0] = useBeats("question");
   const { frames } = useScene("question");
@@ -333,7 +322,7 @@ function Question() {
 
 const VAULT = { x: 960, y: 460 };
 
-function WithEarmark({
+export function WithEarmark({
   id = "earmark",
   notOrganizerAt = 0.62,
   vaultSub = "nobody holds the key",
@@ -419,7 +408,7 @@ function WithEarmark({
   );
 }
 
-function Title({ id = "title", second = "Just rules, written in code, that nobody can bend." }: { id?: string; second?: string }) {
+export function Title({ id = "title", second = "Just rules, written in code, that nobody can bend." }: { id?: string; second?: string }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const [b0, b1] = useBeats(id);
@@ -523,6 +512,19 @@ const VIEWS: Record<string, () => React.ReactNode> = {
   titleB: () => <Title id="titleB" second="Just rules that nobody can bend." />,
 };
 
+const VIEWS7: Record<string, () => React.ReactNode> = {
+  hook: Hook7,
+  storyL: Story7,
+  twistL: Twist7,
+  scale: Scale7,
+  earmarkB: () => (
+    <EarmarkPullBack>
+      <WithEarmark id="earmarkB" notOrganizerAt={0.78} vaultSub="on Solana · nobody holds the key" onSolana />
+    </EarmarkPullBack>
+  ),
+  why: Why7,
+};
+
 type Mood = "story" | "dark" | "riser" | "hope" | "resolve";
 
 const MOOD: Record<string, Mood> = {
@@ -577,7 +579,11 @@ function Music({ scenes, dynamic }: { scenes: { id: string; from: number; frames
 /** Dynamic cut: every scene punches in (scale + blur) and slowly pushes the camera. */
 function SceneFrame({ frames, children }: { frames: number; children: React.ReactNode }) {
   const frame = useCurrentFrame();
-  const { pacing, fx } = useCut();
+  const { pacing, fx, look } = useCut();
+  if (look === "v7") {
+    const push = interpolate(frame, [0, frames], [1, 1.03]);
+    return <AbsoluteFill style={{ transform: `scale(${push})` }}>{children}</AbsoluteFill>;
+  }
   if (pacing !== "dynamic" || !fx) return <>{children}</>;
   const enter = interpolate(frame, [0, 9], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: Easing.out(Easing.cubic) });
   const push = interpolate(frame, [0, frames], [1, 1.035]);
@@ -601,6 +607,7 @@ export interface IntroProps {
   sounds?: Cut["sounds"];
   fx?: boolean;
   sfxGain?: number;
+  look?: Cut["look"];
 }
 
 /** v5: instead of a hit, a chord swells backwards into "did not exist" and lands on a soft low thud. */
@@ -628,14 +635,15 @@ export function Intro({
   sounds = "v3",
   fx = true,
   sfxGain = 1,
+  look = "classic",
 }: IntroProps) {
   const scenes = sequence(variant, pacing);
   const twist = scenes.find((s) => s.id.startsWith("twist"));
   return (
-    <CutContext.Provider value={{ pacing, sfx, sounds, fx, sfxGain }}>
+    <CutContext.Provider value={{ pacing, sfx, sounds, fx, sfxGain, look }}>
       <AbsoluteFill style={{ fontFamily: SANS, background: C.ink }}>
         {scenes.map((s) => {
-          const View = VIEWS[s.id];
+          const View = (look === "v7" && VIEWS7[s.id]) || VIEWS[s.id];
           return (
             <Sequence key={s.id} from={s.from} durationInFrames={s.frames}>
               <SceneFrame frames={s.frames}>
@@ -650,6 +658,7 @@ export function Intro({
             </Sequence>
           );
         })}
+        {look === "v7" && <Grain />}
         {music && <Music scenes={scenes} dynamic={pacing === "dynamic"} />}
         {score && <Audio src={staticFile(`music/${score}.mp3`)} volume={sounds === "v5" ? 0.17 : pacing === "dynamic" ? 0.17 : 0.14} />}
         {sounds === "v5" && sfx !== "none" && twist && <TwistSwell at={twist.from + twist.lines[0].from} />}

@@ -14,9 +14,11 @@ export type Cut = {
   fx: boolean;
   /** overall level of the effects; v5 plays them at half volume */
   sfxGain: number;
+  /** "v7": the more animated scenes from v7.tsx, a slow camera push on every scene, film grain */
+  look: "classic" | "v7";
 };
 
-export const CutContext = createContext<Cut>({ pacing: "calm", sfx: "none", sounds: "v3", fx: true, sfxGain: 1 });
+export const CutContext = createContext<Cut>({ pacing: "calm", sfx: "none", sounds: "v3", fx: true, sfxGain: 1, look: "classic" });
 
 // v4 swapped the bell-like effects for soft mallets; v5 also replaces the twist impact (see TwistSwell)
 const SOUND_FILES: Record<Cut["sounds"], Partial<Record<SfxName, string | null>>> = {

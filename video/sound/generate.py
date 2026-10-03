@@ -404,7 +404,7 @@ def curve(total: int, points: list[tuple[float, float]]) -> np.ndarray:
     return np.interp(np.arange(total) / SR, xs, ys)[:, None]
 
 
-def score(scenes: list[dict], drive: bool, v5: bool = False) -> np.ndarray:
+def score(scenes: list[dict], drive: bool, v5: bool = False, groove: bool = False) -> np.ndarray:
     """One track for the whole cut. The same A-minor motif runs from the hook through the scam (darker, not cut),
     holds on E for the question, turns to C major for Earmark and resolves on C for the title.
     v5 keeps mid and high frequencies under the dark part too (a quiet arpeggio and an airy upper pad), so the
@@ -512,6 +512,15 @@ def score(scenes: list[dict], drive: bool, v5: bool = False) -> np.ndarray:
         mix += d * 0.7
         place(mix, kick(1.0, 0.8), end, 0.8)
 
+    if groove:  # v7: a light pulse under the story and the answer (soft kick on 1 and 3, closed hats on the offbeats)
+        g = np.zeros((n, 2))
+        for k in range(int(seconds / beat)):
+            at = k * beat
+            if at < dark or bright <= at < end:
+                if k % 2 == 0:
+                    place(g, lowpass(kick(0.6), 900), at)
+                place(g, hat(0.3), at + beat / 2)
+        mix += g * curve(n, [(0, 0), (bar, 1), (dark - 0.3, 1), (dark, 0), (bright, 0), (bright + bar, 1), (end, 1)]) * 0.55
     # the answer has no drone or heartbeat under it, so lift it to the level of the scam section
     mix *= curve(n, [(0, 1), (bright - 0.3, 1), (bright + 0.8, 1.45), (seconds, 1.45)])
     # a short dip right on "did not exist" so the impact effect lands
@@ -554,11 +563,12 @@ os.makedirs("../public/sfx", exist_ok=True)
 if len(sys.argv) > 2 and sys.argv[1] == "score":
     # --v5: airier bed under the dark part, gentler twist dip, and the dynamic cut gets the calm (drum-free) score
     # --brisk: only the v6 dynamic cut (its pacing is "brisk")
-    variant, v5 = sys.argv[2], "--v5" in sys.argv or "--brisk" in sys.argv
+    # --groove: a light rhythmic pulse (v7)
+    variant, v5, groove = sys.argv[2], "--v5" in sys.argv or "--brisk" in sys.argv, "--groove" in sys.argv
     cuts = (("brisk", "-dynamic"),) if "--brisk" in sys.argv else (("calm", ""), ("dynamic", "-dynamic"))
     for pacing, suffix in cuts:
         drive = pacing == "dynamic" and not v5
-        write(f"../public/music/score-{variant}{suffix}.mp3", score(cut_timeline(variant, pacing), drive, v5), lufs=-18)
+        write(f"../public/music/score-{variant}{suffix}.mp3", score(cut_timeline(variant, pacing), drive, v5, groove), lufs=-18)
     for name in ["pay", "confirm", "uhoh"]:  # shared by v4+; written once so earlier cuts stay reproducible
         if not os.path.exists(f"../public/sfx/{name}.mp3"):
             write(f"../public/sfx/{name}.mp3", mallet_sfx(name))
