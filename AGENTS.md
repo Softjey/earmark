@@ -20,7 +20,7 @@ to a verified clinic or back to the donors, never to the organizer. Built for th
 | `tests/` | Program tests (TypeScript) |
 | `app/` | Next.js frontend (wallet connect, UI, metadata JSON API) |
 | `scripts/` | Deploy, mint tPLN, airdrop, seed demo state |
-| `docs/` | Plan, demo script, tickets |
+| `docs/` | Plan, demo script, tickets, design mockups |
 
 ## Hard rules
 

@@ -36,7 +36,7 @@ the demo.
 | `tests/` | Program tests |
 | `app/` | Next.js frontend |
 | `scripts/` | Deploy, mint, seed demo state |
-| `docs/` | Plan, demo script, tickets |
+| `docs/` | Plan, demo script, tickets, design mockups |
 
 ## Getting started
 
@@ -49,7 +49,7 @@ _Filled in by ticket T00._
 | Network | Solana devnet |
 | Program ID | _TBD (T07)_ |
 | tPLN mint | _TBD (T07)_ |
-| Design | _TBD (T09)_ |
+| Design | [docs/design](docs/design/README.md) |
 | Demo video | _TBD (T17)_ |
 
 ## Limitations

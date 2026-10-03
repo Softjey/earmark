@@ -12,7 +12,7 @@ Make the UI design in Claude Design (list, fundraiser page, create, clinic panel
 
 ## Acceptance criteria
 
-- [ ] Design link added to README
+- [x] Design link added to README (mockups + tokens in `docs/design/`)
 - [ ] Wallet connect works on localnet and devnet (cluster from env)
 - [ ] IDL is copied/generated into `app/` by a script, not by hand
 - [ ] Shared components: `ProgressBar`, `StatusBadge`, `VerifiedBadge`, `TxLink` (explorer)

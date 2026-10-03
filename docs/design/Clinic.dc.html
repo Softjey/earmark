@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Clinic panel</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F4}
+a{color:#0B6B55}a:hover{color:#08513F}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #F4F6F4; color: #0E1A17; font-family: 'IBM Plex Sans', sans-serif; font-size: 16px; line-height: 1.5">
+  <header style="background: #FFFFFF; border-bottom: 1px solid #D9DFDC">
+    <div style="max-width: 1160px; margin: 0 auto; padding: 16px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 24px">
+      <a href="List.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #0E1A17">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#0B6B55" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 14 L14 5 L23 14 L14 23 Z"></path><path d="M10 14 L13 17 L18 11"></path></svg>
+        <span style="font-weight: 700; font-size: 20px; letter-spacing: -0.01em">Earmark</span>
+      </a>
+      <span style="padding: 4px 10px; border-radius: 999px; background: #E3F1EC; color: #0B6B55; font-size: 13px; font-weight: 600">Clinic</span>
+      <span style="flex-grow: 1"></span>
+      <button type="button" style="min-height: 44px; padding: 0 16px; border: 1px solid #D9DFDC; border-radius: 10px; background: #FFFFFF; font: 500 14px 'IBM Plex Mono', monospace; color: #0E1A17; cursor: pointer">Eye Clinic Kraków · Ck7e…Yv2B</button>
+    </div>
+  </header>
+
+  <main style="max-width: 1160px; margin: 0 auto; padding: 40px 24px 64px; display: flex; flex-direction: column; gap: 24px">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <h1 style="margin: 0; font-size: 36px; letter-spacing: -0.02em">Fundraisers naming your clinic</h1>
+      <p style="margin: 0; color: #4A5752; max-width: 720px">Confirm only quotes you actually issued. Until you confirm, no one can donate. Funds arrive in this wallet automatically when a target is reached.</p>
+    </div>
+
+    <h2 style="margin: 8px 0 0; font-size: 18px">Awaiting your confirmation</h2>
+    <div style="background: #FFFFFF; border: 1px solid #D9DFDC; border-radius: 16px; padding: 24px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center">
+      <div style="flex: 999 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+        <strong style="font-size: 18px">Retina surgery for Marta</strong>
+        <span style="color: #4A5752; font-size: 14px">Target 1 000 tPLN · deadline 10 Oct 2026 · organizer <span style="font-family: 'IBM Plex Mono', monospace">3hTr…8uLm</span></span>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #4A5752">Quote fingerprint 3f9a…c21e · compare with your file</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px">
+        <button type="button" style="min-height: 48px; padding: 0 20px; border: 1px solid #B9C3BF; border-radius: 12px; background: #FFFFFF; font: 600 15px 'IBM Plex Sans', sans-serif; color: #0E1A17; cursor: pointer">Reject</button>
+        <button type="button" style="min-height: 48px; padding: 0 24px; border: 0; border-radius: 12px; background: #0B6B55; font: 600 15px 'IBM Plex Sans', sans-serif; color: #FFFFFF; cursor: pointer">Confirm quote</button>
+      </div>
+    </div>
+
+    <h2 style="margin: 8px 0 0; font-size: 18px">Active and completed</h2>
+    <div style="background: #FFFFFF; border: 1px solid #D9DFDC; border-radius: 16px; overflow-x: auto">
+      <table style="width: 100%; min-width: 640px; border-collapse: collapse; font-size: 15px">
+        <thead>
+          <tr style="text-align: left; color: #4A5752; font-size: 13px">
+            <th style="padding: 14px 24px; font-weight: 600">Fundraiser</th>
+            <th style="padding: 14px 24px; font-weight: 600">Raised</th>
+            <th style="padding: 14px 24px; font-weight: 600">Status</th>
+            <th style="padding: 14px 24px; font-weight: 600"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-top: 1px solid #E8ECEA">
+            <td style="padding: 14px 24px">Hearing aids for Ola</td>
+            <td style="padding: 14px 24px">300 / 1 000</td>
+            <td style="padding: 14px 24px; color: #8A4200">Ended · refunds open</td>
+            <td style="padding: 14px 24px; text-align: right"></td>
+          </tr>
+          <tr style="border-top: 1px solid #E8ECEA">
+            <td style="padding: 14px 24px">Cataract surgery for Jan</td>
+            <td style="padding: 14px 24px">1 200 / 1 200</td>
+            <td style="padding: 14px 24px; color: #0B6B55; font-weight: 600">Paid to you</td>
+            <td style="padding: 14px 24px; text-align: right"><a href="#" style="font-family: 'IBM Plex Mono', monospace; font-size: 14px">tx 6Nnb…e4 ↗</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
