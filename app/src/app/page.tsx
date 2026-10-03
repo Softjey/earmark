@@ -1,16 +1,18 @@
-import { ProgressBar } from "@/components/ProgressBar";
-import { StatusBadge } from "@/components/StatusBadge";
-import { VerifiedBadge } from "@/components/VerifiedBadge";
+import { FundraiserList } from "@/components/FundraiserList";
 
-// Placeholder until T10 (fundraiser list) replaces it.
 export default function Home() {
   return (
-    <div className="flex max-w-md flex-col gap-4 rounded-card border border-line bg-surface p-6">
-      <h1 className="text-3xl font-bold tracking-tight">Earmark</h1>
-      <p className="text-muted">Scaffold is up. The fundraiser list lands in T10.</p>
-      <StatusBadge status="active" detail="ends 10 Oct 2026" />
-      <VerifiedBadge />
-      <ProgressBar raised={600} target={1000} />
+    <div className="flex flex-col gap-10">
+      <section className="flex flex-col gap-4 pt-6">
+        <h1 className="max-w-[760px] text-5xl font-bold leading-[1.1] tracking-tight">
+          Your donation goes to the clinic. Or back to you. Nowhere else.
+        </h1>
+        <p className="max-w-[680px] text-lg text-muted">
+          Every fundraiser is tied to one verified clinic. The money waits in a vault no person controls, is paid out
+          automatically when the target is reached, and comes back to you if it is not.
+        </p>
+      </section>
+      <FundraiserList />
     </div>
   );
 }

@@ -3,7 +3,7 @@
 - **Priority:** P0
 - **Area:** frontend
 - **Depends on:** T09, T03
-- **Status:** todo
+- **Status:** in progress (code done; wallet transactions not yet smoke-tested in a browser)
 - **Owner:** —
 - **Design (read before coding):** `New.dc.html` (`/new`, incl. the `RecipientNotVerified` error state) in [docs/design/](../design/README.md) · [canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt)
 
@@ -13,9 +13,9 @@
 
 ## Acceptance criteria
 
-- [ ] Fraud demo works: own wallet as recipient → clear `RecipientNotVerified` message
-- [ ] No medical data is sent on-chain
-- [ ] Metadata is keyed by fundraiser pubkey
+- [x] Fraud demo works: own wallet as recipient → clear `RecipientNotVerified` message
+- [x] No medical data is sent on-chain
+- [x] Metadata is keyed by fundraiser pubkey
 
 ## Docs to update when done
 

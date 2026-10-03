@@ -137,7 +137,7 @@ are in [docs/design/](design/README.md). The frontend must follow them.
 | `/verifier` | verifier | verify a clinic wallet (name + registry no.) |
 | `/audit` *(P1)* | everyone | all flows + red flags |
 
-Metadata: `POST /api/metadata` writes `app/data/metadata.json`; `metadata_uri = /api/metadata/<id>`.
+Metadata: `POST /api/metadata` writes `app/data/metadata.json` (write-once, keyed by fundraiser pubkey; sent after the create tx confirms); `metadata_uri = /api/metadata/<fundraiser pubkey>`. `GET /api/metadata` returns all entries for the list page. `/clinic` and `/verifier` links appear in the header only for wallets that hold that role.
 Works when the app runs locally (the demo). On a serverless host the file is read-only → fine for P0.
 
 ## 7. Demo (~3 min) — details in [DEMO.md](DEMO.md)

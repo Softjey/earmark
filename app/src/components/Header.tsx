@@ -3,6 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { CLUSTER } from "@/lib/config";
+import { useRole } from "@/lib/hooks";
 
 // The button renders differently on the server (no wallet), so skip SSR.
 const WalletMultiButton = dynamic(
@@ -17,6 +18,12 @@ const NAV = [
 ];
 
 export function Header() {
+  const { isVerifier, isClinic } = useRole();
+  const nav = [
+    ...NAV,
+    ...(isClinic ? [{ href: "/clinic", label: "Clinic panel" }] : []),
+    ...(isVerifier ? [{ href: "/verifier", label: "Verifier panel" }] : []),
+  ];
   return (
     <header className="border-b border-line bg-surface">
       <div className="mx-auto flex max-w-[1160px] flex-wrap items-center gap-x-6 gap-y-3 px-6 py-4">
@@ -28,7 +35,7 @@ export function Header() {
           <span className="text-xl font-bold tracking-tight">Earmark</span>
         </Link>
         <nav className="flex grow flex-wrap gap-5">
-          {NAV.map((n) => (
+          {nav.map((n) => (
             <Link key={n.href} href={n.href} className="font-medium text-muted no-underline hover:text-ink">
               {n.label}
             </Link>

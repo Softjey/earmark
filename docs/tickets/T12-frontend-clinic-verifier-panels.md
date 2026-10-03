@@ -3,7 +3,7 @@
 - **Priority:** P0
 - **Area:** frontend
 - **Depends on:** T09, T03
-- **Status:** todo
+- **Status:** in progress (code done; wallet transactions not yet smoke-tested in a browser)
 - **Owner:** —
 - **Design (read before coding):** `Clinic.dc.html` (`/clinic`), `Verifier.dc.html` (`/verifier`) in [docs/design/](../design/README.md) · [canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt)
 
@@ -13,8 +13,8 @@
 
 ## Acceptance criteria
 
-- [ ] Panels show only actions the connected wallet is allowed to do
-- [ ] Verifier panel hidden/disabled for non-verifier wallets
+- [x] Panels show only actions the connected wallet is allowed to do
+- [x] Verifier panel hidden/disabled for non-verifier wallets
 
 ## Docs to update when done
 

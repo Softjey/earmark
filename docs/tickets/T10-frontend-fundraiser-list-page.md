@@ -3,7 +3,7 @@
 - **Priority:** P0
 - **Area:** frontend
 - **Depends on:** T09, T04
-- **Status:** todo
+- **Status:** in progress (code done; wallet transactions not yet smoke-tested in a browser)
 - **Owner:** —
 - **Design (read before coding):** `List.dc.html` (`/`), `Main.dc.html` and `Refund.dc.html` (`/fundraisers/[pubkey]`) in [docs/design/](../design/README.md) · [canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt)
 
@@ -13,9 +13,9 @@
 
 ## Acceptance criteria
 
-- [ ] Program errors are shown in plain English (map error codes → messages)
-- [ ] After a donation the page refreshes without reload
-- [ ] Released fundraisers show the payout tx link
+- [x] Program errors are shown in plain English (map error codes → messages)
+- [x] After a donation the page refreshes without reload
+- [x] Released fundraisers show the payout tx link
 
 ## Docs to update when done
 
