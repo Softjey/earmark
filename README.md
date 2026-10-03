@@ -140,6 +140,6 @@ git-ignored, so on a fresh clone the ID in `declare_id!` and `Anchor.toml` is re
   the program; the audit page only flags it.
 - Fundraisers without a single payee (e.g. living costs) are out of scope.
 - ePLN is a devnet test token; production would use a stablecoin and a fiat on-ramp.
-- The *Get test ePLN* faucet (`/api/faucet`) holds the ePLN mint-authority key on the server. That is test money and not part of the trust model; its rate limits are in memory, so they reset on restart.
+- The *Get test ePLN* faucet (`/api/faucet`) holds the ePLN mint-authority key on the server. That is test money and not part of the trust model; it has no per-wallet rate limit, and its cap on newly opened token accounts is in memory, so it resets on restart.
 - Fundraiser titles and stories are stored by `/api/metadata` in a local JSON file (`app/data/`), write-once per fundraiser; only the quote's SHA-256 is on-chain. Production would use content-addressed storage (IPFS/Arweave).
 - The audit page reads the 100 most recent program transactions and recomputes flags in the browser; it is a hint for humans, not a fraud verdict.

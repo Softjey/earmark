@@ -10,10 +10,9 @@ import { RPC_URL, TPLN_DECIMALS, TPLN_MINT } from "./config";
 // Devnet test money only. The faucet key is the ePLN mint authority and fee payer; it is NOT part of
 // the trust model (docs/PLAN.md §6) and must hold only a few cents of SOL.
 
-export const AMOUNT_TPLN = Math.min(Number(process.env.FAUCET_AMOUNT) || 100, 1000);
-const WALLET_WINDOW_MS = 60 * 60 * 1000;
-const WALLET_LIMIT = 1;
-const IP_LIMIT = 3;
+export const DEFAULT_AMOUNT_TPLN = Math.min(Number(process.env.FAUCET_AMOUNT) || 100, 1_000_000);
+/** Largest whole-ePLN amount one request may ask for. */
+export const MAX_AMOUNT_TPLN = 1_000_000;
 /** Total token accounts the faucet will pay rent for (~0.002 SOL each) before it stops creating new ones. */
 const MAX_NEW_ACCOUNTS = Number(process.env.FAUCET_MAX_NEW_ACCOUNTS) || 40;
 /** Rent + fee headroom needed to create one token account and send the tx. */
@@ -28,23 +27,8 @@ export class FaucetError extends Error {
   }
 }
 
-// In-memory limits: fine for a single demo server, reset on restart / not shared across serverless instances.
-const hits = new Map<string, number[]>();
+// In-memory counter: fine for a single demo server, resets on restart / not shared across serverless instances.
 let newAccounts = 0;
-
-function takeSlot(key: string, limit: number, now: number): boolean {
-  const recent = (hits.get(key) ?? []).filter((t) => now - t < WALLET_WINDOW_MS);
-  if (recent.length >= limit) {
-    hits.set(key, recent);
-    return false;
-  }
-  hits.set(key, [...recent, now]);
-  return true;
-}
-
-function releaseSlot(key: string, now: number) {
-  hits.set(key, (hits.get(key) ?? []).filter((t) => t !== now));
-}
 
 function loadFaucetKey(): Keypair {
   const raw = process.env.FAUCET_SECRET_KEY;
@@ -56,9 +40,12 @@ function loadFaucetKey(): Keypair {
   }
 }
 
-export async function claimTpln(walletAddress: string, ip: string): Promise<{ signature: string; amount: number }> {
+export async function claimTpln(walletAddress: string, amount: number): Promise<{ signature: string; amount: number }> {
   if (!TPLN_MINT) throw new FaucetError("The ePLN mint is not configured.", 503);
   if (/mainnet/i.test(RPC_URL)) throw new FaucetError("The faucet works on devnet only.", 403);
+
+  if (!Number.isInteger(amount) || amount < 1 || amount > MAX_AMOUNT_TPLN)
+    throw new FaucetError(`Enter a whole amount between 1 and ${MAX_AMOUNT_TPLN.toLocaleString("en-US")} ePLN.`, 400);
 
   let wallet: PublicKey;
   try {
@@ -76,16 +63,6 @@ export async function claimTpln(walletAddress: string, ip: string): Promise<{ si
   if ((await connection.getBalance(faucet.publicKey)) < MIN_LAMPORTS)
     throw new FaucetError("The faucet is out of devnet SOL. Please tell the organizers.", 503);
 
-  const now = Date.now();
-  const walletKey = `w:${wallet.toBase58()}`;
-  const ipKey = `ip:${ip}`;
-  if (!takeSlot(walletKey, WALLET_LIMIT, now))
-    throw new FaucetError("This wallet already got test ePLN in the last hour. Try again later.", 429);
-  if (!takeSlot(ipKey, IP_LIMIT, now)) {
-    releaseSlot(walletKey, now);
-    throw new FaucetError("Too many requests from your network. Try again later.", 429);
-  }
-
   let createdAccount = false;
   try {
     const ata = getAssociatedTokenAddressSync(TPLN_MINT, wallet);
@@ -99,12 +76,10 @@ export async function claimTpln(walletAddress: string, ip: string): Promise<{ si
     const tx = new Transaction();
     if (needsAccount)
       tx.add(createAssociatedTokenAccountIdempotentInstruction(faucet.publicKey, ata, wallet, TPLN_MINT));
-    tx.add(createMintToInstruction(TPLN_MINT, ata, faucet.publicKey, BigInt(AMOUNT_TPLN) * 10n ** BigInt(TPLN_DECIMALS)));
+    tx.add(createMintToInstruction(TPLN_MINT, ata, faucet.publicKey, BigInt(amount) * 10n ** BigInt(TPLN_DECIMALS)));
     const signature = await sendAndConfirmTransaction(connection, tx, [faucet]);
-    return { signature, amount: AMOUNT_TPLN };
+    return { signature, amount };
   } catch (e) {
-    releaseSlot(walletKey, now);
-    releaseSlot(ipKey, now);
     if (createdAccount) newAccounts--;
     throw e;
   }
