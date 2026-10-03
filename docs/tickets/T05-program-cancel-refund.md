@@ -3,7 +3,7 @@
 - **Priority:** P0
 - **Area:** program
 - **Depends on:** T04
-- **Status:** todo
+- **Status:** done
 - **Owner:** —
 
 ## Description
@@ -12,11 +12,11 @@
 
 ## Acceptance criteria
 
-- [ ] Anyone else calling cancel → `Unauthorized`
-- [ ] Refund on `Released` or before deadline → `NotRefundable`
-- [ ] Second refund → `AlreadyRefunded`
-- [ ] Refund only ever goes to the donor's own token account
-- [ ] Emits `Refunded` event
+- [x] Anyone else calling cancel → `Unauthorized`
+- [x] Refund on `Released` or before deadline → `NotRefundable`
+- [x] Second refund → `AlreadyRefunded`
+- [x] Refund only ever goes to the donor's own token account
+- [x] Emits `Refunded` event
 
 ## Docs to update when done
 

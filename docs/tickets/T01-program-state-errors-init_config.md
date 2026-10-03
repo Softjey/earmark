@@ -3,7 +3,7 @@
 - **Priority:** P0
 - **Area:** program
 - **Depends on:** T00
-- **Status:** todo
+- **Status:** done
 - **Owner:** —
 
 ## Description
@@ -12,9 +12,9 @@ Define all accounts from PLAN §5 (`Config`, `Recipient`, `Fundraiser`, `Donatio
 
 ## Acceptance criteria
 
-- [ ] All account structs and seeds match PLAN §5 exactly
-- [ ] `init_config` can be called only once (PDA init)
-- [ ] Error enum contains every error listed in PLAN §5
+- [x] All account structs and seeds match PLAN §5 exactly
+- [x] `init_config` can be called only once (PDA init)
+- [x] Error enum contains every error listed in PLAN §5
 
 ## Docs to update when done
 

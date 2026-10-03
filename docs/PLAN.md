@@ -96,7 +96,25 @@ anywhere except the recipient's token account or the donor's own token account.
 ### Errors
 
 `RecipientNotVerified`, `QuoteAlreadyUsed`, `InvalidTarget`, `DeadlineInPast`, `NotPending`,
-`NotActive`, `DeadlinePassed`, `NotRefundable`, `AlreadyRefunded`, `Unauthorized`.
+`NotActive`, `DeadlinePassed`, `NotRefundable`, `AlreadyRefunded`, `Unauthorized`, plus
+`FieldTooLong` (name > 64, registry id > 32 or metadata URI > 128 bytes), `InvalidAmount`
+(donation of 0) and `NotCancellable` (cancel on a `Released`/`Cancelled` fundraiser).
+
+### Events
+
+`DonationMade { fundraiser, donor, amount (as accepted after the cap), raised }`,
+`FundraiserReleased { fundraiser, recipient, amount }`, `Refunded { fundraiser, donor, amount }`.
+
+### Implementation notes
+
+- `QuoteLock` and the `Recipient` check in `create_fundraiser` are validated by hand (not with
+  `init` / typed accounts) so that failures surface as `QuoteAlreadyUsed` / `RecipientNotVerified`.
+- `donate` also requires the recipient to still be `active`; a revoked clinic therefore stops
+  receiving donations, and existing donors can refund after the deadline.
+- `verify_recipient` creates the `Recipient` account once; a revoked wallet cannot be re-verified
+  (known limitation, fix would be an `activate` path).
+- `donate` pays out the vault's whole token balance, so stray tokens sent to the vault go to the
+  clinic, never to the organizer.
 
 ### Upgrade authority
 

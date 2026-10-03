@@ -3,7 +3,7 @@
 - **Priority:** P0 (revoke: P1)
 - **Area:** program
 - **Depends on:** T01
-- **Status:** todo
+- **Status:** done
 - **Owner:** —
 
 ## Description
@@ -12,9 +12,9 @@
 
 ## Acceptance criteria
 
-- [ ] Non-verifier signer → `Unauthorized`
-- [ ] Name ≤ 64 bytes, registry_id ≤ 32 bytes enforced
-- [ ] Revoked recipient cannot get new fundraisers or donations
+- [x] Non-verifier signer → `Unauthorized`
+- [x] Name ≤ 64 bytes, registry_id ≤ 32 bytes enforced
+- [x] Revoked recipient cannot get new fundraisers or donations
 
 ## Docs to update when done
 

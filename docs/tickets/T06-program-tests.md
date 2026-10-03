@@ -3,7 +3,7 @@
 - **Priority:** P0
 - **Area:** program
 - **Depends on:** T05
-- **Status:** todo
+- **Status:** done
 - **Owner:** —
 
 ## Description
@@ -12,12 +12,12 @@ TypeScript tests (`tests/earmark.ts`) covering every rule in PLAN §5. Use clock
 
 ## Acceptance criteria
 
-- [ ] Happy path: verify → create → confirm → 2 donations → auto payout
-- [ ] Fraud: unverified recipient rejected
-- [ ] Duplicate quote rejected
-- [ ] Refund after deadline and after cancel; double refund rejected
-- [ ] Cancel by stranger rejected
-- [ ] `anchor test` green
+- [x] Happy path: verify → create → confirm → 2 donations → auto payout
+- [x] Fraud: unverified recipient rejected
+- [x] Duplicate quote rejected
+- [x] Refund after deadline and after cancel; double refund rejected
+- [x] Cancel by stranger rejected
+- [x] `anchor test` green
 
 ## Docs to update when done
 
