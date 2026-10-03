@@ -106,7 +106,7 @@ anchor test --validator legacy                 # runs tests/ against a local sol
 ```
 
 `--validator legacy` is used because Anchor's default Surfpool runner did not start on our machines.
-Scripts (run with `pnpm exec tsx scripts/<name>.ts`): `deploy-devnet.sh`, `sync-idl.ts` (IDL → `app/src/idl`), `create-mint.ts`, `setup-faucet.ts` (devnet faucet key + mint authority handover, run once), `set-token-metadata.ts` (names the ePLN mint and sets its logo, from `assets/epln/`), `airdrop.ts <wallet> <amount>`, `seed-demo.ts [--deadline-in <s>]`, `seed-clinics.ts` (verifies four extra demo clinics for the picker on `/new`). Demo wallets are stored in git-ignored `scripts/.keys/`.
+Scripts (run with `pnpm exec tsx scripts/<name>.ts`): `deploy-devnet.sh`, `sync-idl.ts` (IDL → `app/src/idl`), `create-mint.ts`, `setup-faucet.ts` (devnet faucet key + mint authority handover, run once), `set-token-metadata.ts` (names the ePLN mint and sets its logo, from `assets/epln/`), `airdrop.ts <wallet> <amount>`, `seed-demo.ts [--deadline-in <s>]`, `seed-clinics.ts` (verifies four extra demo clinics for the picker on `/new`), `key-to-phantom.ts <keypair.json>` (prints the base58 key for importing a demo wallet into Phantom). Demo wallets are stored in git-ignored `scripts/.keys/`.
 
 ### Run the web app
 
