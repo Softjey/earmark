@@ -1,14 +1,14 @@
 /**
- * One-time devnet faucet setup (T13): creates a dedicated faucet key, funds it with a little SOL and
+ * One-time devnet faucet setup (T13): creates a dedicated faucet key, funds it with 0.1 SOL and
  * moves the tPLN mint authority from the deployer wallet to it, then writes FAUCET_SECRET_KEY to app/.env.local.
- * The faucet key is test-money only and never the upgrade authority. Spends ~0.2 SOL of devnet SOL.
+ * The faucet key is test-money only and never the upgrade authority. Spends ~0.1 SOL of devnet SOL.
  * Usage: pnpm tsx scripts/setup-faucet.ts
  */
 import { AuthorityType, getMint, setAuthority } from "@solana/spl-token";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { demoKeypair, ensureSol, readEnv, setup, writeEnv } from "./lib";
 
-const FAUCET_SOL = 0.2;
+const FAUCET_SOL = 0.1;
 
 async function main() {
   const { connection, deployer } = setup();
