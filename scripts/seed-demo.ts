@@ -39,7 +39,7 @@ async function main() {
   }
 
   // SOL for fees + rent, tPLN for the donors.
-  for (const w of Object.values(wallets)) await ensureSol(connection, deployer, w.publicKey, 0.1);
+  for (const w of Object.values(wallets)) await ensureSol(connection, deployer, w.publicKey, 0.2);
   for (const d of [wallets.donor1, wallets.donor2]) {
     const ata = await getOrCreateAssociatedTokenAccount(connection, deployer, mint, d.publicKey);
     if (Number(ata.amount) < tpln(2000))
