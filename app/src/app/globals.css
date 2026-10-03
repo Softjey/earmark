@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+/* Design tokens: docs/design/README.md */
+@theme {
+  --color-ground: #f4f6f4;
+  --color-surface: #ffffff;
+  --color-ink: #0e1a17;
+  --color-muted: #4a5752;
+  --color-line: #d9dfdc;
+  --color-field: #b9c3bf;
+  --color-track: #e4e9e6;
+  --color-accent: #0b6b55;
+  --color-accent-soft: #e3f1ec;
+  --color-warn: #8a4200;
+  --color-warn-soft: #fbeedd;
+  --color-error: #a3261b;
+  --color-error-ink: #7e1c13;
+  --color-error-soft: #fbe7e4;
+  --color-info: #24467a;
+  --color-info-soft: #e9eef7;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --radius-input: 10px;
+  --radius-button: 12px;
+  --radius-card: 16px;
+}
+
+body {
+  background: var(--color-ground);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
+a { color: var(--color-accent); }
+
+/* wallet-adapter modal/button: align with the design (44 px touch target) */
+.wallet-adapter-button {
+  min-height: 44px;
+  border-radius: var(--radius-button) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 14px !important;
+}

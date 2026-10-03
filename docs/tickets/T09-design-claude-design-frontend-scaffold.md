@@ -3,7 +3,7 @@
 - **Priority:** P0
 - **Area:** frontend
 - **Depends on:** T00
-- **Status:** todo
+- **Status:** done
 - **Owner:** —
 - **Design (read before coding):** all screens; tokens table in [docs/design/](../design/README.md) · [canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt)
 
@@ -14,9 +14,9 @@ Make the UI design in Claude Design (list, fundraiser page, create, clinic panel
 ## Acceptance criteria
 
 - [x] Design link added to README (mockups + tokens in `docs/design/`)
-- [ ] Wallet connect works on localnet and devnet (cluster from env)
-- [ ] IDL is copied/generated into `app/` by a script, not by hand
-- [ ] Shared components: `ProgressBar`, `StatusBadge`, `VerifiedBadge`, `TxLink` (explorer)
+- [x] Wallet connect works on localnet and devnet (cluster from env: `NEXT_PUBLIC_CLUSTER`, `NEXT_PUBLIC_RPC_URL`); wallets are detected via Wallet Standard (Phantom, Backpack). Builds and type-checks; not yet clicked through with a real wallet extension
+- [x] IDL is copied/generated into `app/src/idl` by `scripts/sync-idl.ts` (runs on `pnpm --dir app dev|build`), not by hand
+- [x] Shared components: `ProgressBar`, `StatusBadge`, `VerifiedBadge`, `TxLink` (explorer) in `app/src/components`
 
 ## Docs to update when done
 

@@ -34,7 +34,7 @@ the demo.
 |---|---|
 | `programs/earmark/` | Anchor program: all money rules |
 | `tests/` | Program tests |
-| `app/` | Next.js frontend |
+| `app/` | Next.js frontend (App Router, Tailwind v4, wallet adapter; `cp app/.env.example app/.env.local`, then `pnpm --dir app dev`) |
 | `scripts/` | Deploy, mint, seed demo state |
 | `docs/` | Plan, demo script, tickets, design mockups |
 
@@ -51,7 +51,7 @@ anchor test --validator legacy                 # runs tests/ against a local sol
 ```
 
 `--validator legacy` is used because Anchor's default Surfpool runner did not start on our machines.
-Scripts (run with `pnpm exec tsx scripts/<name>.ts`): `deploy-devnet.sh`, `create-mint.ts`, `airdrop.ts <wallet> <amount>`, `seed-demo.ts [--deadline-in <s>]`. Demo wallets are stored in git-ignored `scripts/.keys/`.
+Scripts (run with `pnpm exec tsx scripts/<name>.ts`): `deploy-devnet.sh`, `sync-idl.ts` (IDL → `app/src/idl`), `create-mint.ts`, `airdrop.ts <wallet> <amount>`, `seed-demo.ts [--deadline-in <s>]`. Demo wallets are stored in git-ignored `scripts/.keys/`.
 
 `anchor keys sync` regenerates the program ID from `target/deploy/earmark-keypair.json`; the keypair is
 git-ignored, so on a fresh clone the ID in `declare_id!` and `Anchor.toml` is replaced by T07.

@@ -11,7 +11,7 @@
 | [T06](T06-program-tests.md) | Program tests | P0 | program | T05 | done |
 | [T07](T07-devnet-deploy-tpln-mint-upgrade-authority.md) | Devnet deploy, tPLN mint, upgrade authority | P0 | infra | T06 | done |
 | [T08](T08-seed-demo-state.md) | Seed demo state | P0 | infra | T07 | done |
-| [T09](T09-design-claude-design-frontend-scaffold.md) | Design (Claude Design) + frontend scaffold | P0 | frontend | T00 | todo |
+| [T09](T09-design-claude-design-frontend-scaffold.md) | Design (Claude Design) + frontend scaffold | P0 | frontend | T00 | done |
 | [T10](T10-frontend-fundraiser-list-page.md) | Frontend: fundraiser list & page | P0 | frontend | T09, T04 | todo |
 | [T11](T11-frontend-create-fundraiser-metadata-json.md) | Frontend: create fundraiser + metadata JSON | P0 | frontend | T09, T03 | todo |
 | [T12](T12-frontend-clinic-verifier-panels.md) | Frontend: clinic & verifier panels | P0 | frontend | T09, T03 | todo |
