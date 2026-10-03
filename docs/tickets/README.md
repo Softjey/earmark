@@ -9,8 +9,8 @@
 | [T04](T04-program-donate-with-automatic-payout.md) | Program: donate with automatic payout | P0 | program | T03 | done |
 | [T05](T05-program-cancel-refund.md) | Program: cancel / refund | P0 | program | T04 | done |
 | [T06](T06-program-tests.md) | Program tests | P0 | program | T05 | done |
-| [T07](T07-devnet-deploy-tpln-mint-upgrade-authority.md) | Devnet deploy, tPLN mint, upgrade authority | P0 | infra | T06 | in progress |
-| [T08](T08-seed-demo-state.md) | Seed demo state | P0 | infra | T07 | in progress |
+| [T07](T07-devnet-deploy-tpln-mint-upgrade-authority.md) | Devnet deploy, tPLN mint, upgrade authority | P0 | infra | T06 | done |
+| [T08](T08-seed-demo-state.md) | Seed demo state | P0 | infra | T07 | done |
 | [T09](T09-design-claude-design-frontend-scaffold.md) | Design (Claude Design) + frontend scaffold | P0 | frontend | T00 | todo |
 | [T10](T10-frontend-fundraiser-list-page.md) | Frontend: fundraiser list & page | P0 | frontend | T09, T04 | todo |
 | [T11](T11-frontend-create-fundraiser-metadata-json.md) | Frontend: create fundraiser + metadata JSON | P0 | frontend | T09, T03 | todo |

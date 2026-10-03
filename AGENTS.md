@@ -50,6 +50,23 @@ pnpm --dir app dev                # run the frontend
 `--validator legacy` uses `solana-test-validator`; the default Surfpool runner failed to start on the dev machine.
 Toolchain: Rust, Solana CLI, Anchor 1.1.x (via `avm`), Node + pnpm. Use the `solana-dev` skill if available.
 
+## Devnet budget and state (read before touching devnet)
+
+The program is **already deployed** to devnet and `init_config` has been called (IDs in
+[README.md](README.md#deployment)). Devnet SOL is free but the faucet allows only **2 requests per
+8 hours**, so treat it as scarce (~2.7 SOL left after T07/T08).
+
+- **Do not redeploy** `scripts/deploy-devnet.sh` just to test; use the local validator
+  (`anchor test --validator legacy`, or `solana-test-validator` plus `ANCHOR_PROVIDER_URL=http://127.0.0.1:8899`).
+  A deploy or upgrade temporarily locks ~1.8 SOL of rent. An upgrade is only allowed while the new `.so`
+  fits the deployed size (347 KB); a bigger one needs `solana program extend` (more SOL).
+- **Do not re-run `create-mint.ts`**: config can be initialised only once; it is idempotent and just rewrites `app/.env.local`.
+- `seed-demo.ts` is safe to re-run (costs a few cents, creates a new fundraiser B each time).
+- **Never delete `scripts/.keys/`** (git-ignored): `verifier.json` is the on-chain verifier key and cannot be
+  replaced. The deployer wallet `~/.config/solana/id.json` is the upgrade authority and tPLN mint authority.
+- Never run `set-upgrade-authority --final` without the user's explicit go-ahead; it is irreversible.
+- Do not use `anchor deploy` (its IDL step needs npx and fails); the script uses `solana program deploy`.
+
 ## Keeping the docs alive (required)
 
 Docs are part of the definition of done. In the **same commit** as the code change:

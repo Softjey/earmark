@@ -5,7 +5,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 anchor build
-anchor deploy --provider.cluster devnet
+# Plain `solana program deploy`: `anchor deploy` also uploads the IDL via npx, which fails here.
+# Do NOT redeploy casually: a deploy locks ~1.8 SOL of rent and devnet airdrops are limited.
+solana program deploy target/deploy/earmark.so --program-id target/deploy/earmark-keypair.json --url devnet
 
 PROGRAM_ID=$(solana address -k target/deploy/earmark-keypair.json)
 echo

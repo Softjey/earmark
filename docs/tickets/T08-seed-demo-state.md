@@ -3,7 +3,7 @@
 - **Priority:** P0
 - **Area:** infra
 - **Depends on:** T07
-- **Status:** in progress
+- **Status:** done
 - **Owner:** —
 
 ## Description
@@ -21,4 +21,4 @@
 - Update **Status** above and in [README.md](README.md).
 - If behaviour differs from [PLAN.md](../PLAN.md), update PLAN.md in the same commit.
 
-_Verified against a local validator only; re-run on devnet after T07._
+_Run on devnet: creates a fresh fundraiser B each run._
