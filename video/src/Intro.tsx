@@ -4,7 +4,8 @@ import { Flow } from "./components/Flow";
 import { Building, Check, Cross, Eye, Heart, Lock, LogoMark, People, Person } from "./components/Icons";
 import { Node } from "./components/Node";
 import { C, fadeOut, fadeUp, MONO, pop, SANS } from "./theme";
-import { beats, scene, sequence, type Variant } from "./timeline";
+import { CutContext, type Cut, Sfx, useBeats, useCut, useScene, useShake } from "./cut";
+import { sequence, type Variant, voFolder } from "./timeline";
 
 // Light tints for text on the dark (ink) scenes.
 const D = { muted: "#9FB3AC", soft: "#B9C3BF", accent: "#7FD4B8", error: "#F2A99F" };
@@ -21,12 +22,17 @@ function grow(frame: number, start: number, duration: number, to: number) {
 
 function Story({ id = "story", lewandowski = false }: { id?: string; lewandowski?: boolean }) {
   const frame = useCurrentFrame();
-  const [b0, b2] = beats(id);
-  const { frames, lines } = scene(id);
+  const [b0, b2] = useBeats(id);
+  const { frames, lines } = useScene(id);
   const b1 = b0 + Math.round(lines[0].frames * (lewandowski ? 0.75 : 0.6));
   const progress = grow(frame, b2, 60, 1);
   return (
     <AbsoluteFill style={{ background: C.ink, color: "#fff", opacity: fadeOut(frame, frames - 10, 10) }}>
+      <Sfx at={b0 + 12} name="pop" volume={0.35} />
+      {lewandowski && <Sfx at={b0 + 30} name="coin" volume={0.3} />}
+      <Sfx at={b1} name="pop" volume={0.3} />
+      <Sfx at={b2} name="counter" volume={0.3} />
+      <Sfx at={b2 + 25} name="counter" volume={0.3} />
       <div style={{ position: "absolute", left: 160, top: 150, fontSize: 32, fontWeight: 700, letterSpacing: 4, color: D.muted, ...fadeUp(frame, b0) }}>
         POLAND, 2017
       </div>
@@ -76,7 +82,7 @@ function Story({ id = "story", lewandowski = false }: { id?: string; lewandowski
           <div style={{ fontSize: 26, color: C.muted, marginTop: 2 }}>“I'm afraid of the dark”</div>
           <div style={{ display: "flex", gap: 12, marginTop: 22, ...fadeUp(frame, b1, 12) }}>
             <span style={{ background: C.ground, border: `2px solid ${C.line}`, borderRadius: 999, padding: "6px 18px", fontSize: 24, fontWeight: 600 }}>
-              Antoś, 2½ years old
+              Antoś, 2 years old
             </span>
             <span style={{ background: C.warnSoft, color: C.warn, borderRadius: 999, padding: "6px 18px", fontSize: 24, fontWeight: 600 }}>
               eye cancer
@@ -108,12 +114,16 @@ function Story({ id = "story", lewandowski = false }: { id?: string; lewandowski
 
 function Hook() {
   const frame = useCurrentFrame();
-  const { frames } = scene("hook");
-  const [b0] = beats("hook");
+  const { frames } = useScene("hook");
+  const [b0] = useBeats("hook");
   const { fps } = useVideoConfig();
   const stamp = pop(frame, fps, b0 + 40);
+  const shake = useShake(b0 + 40);
   return (
-    <AbsoluteFill style={{ background: C.ink, color: "#fff", padding: "0 160px", justifyContent: "center", opacity: fadeOut(frame, frames - 10, 10) }}>
+    <AbsoluteFill
+      style={{ background: C.ink, color: "#fff", padding: "0 160px", justifyContent: "center", opacity: fadeOut(frame, frames - 10, 10), transform: shake }}
+    >
+      <Sfx at={b0 + 38} name="stamp" volume={0.8} beat />
       <div style={{ fontSize: 34, fontWeight: 700, letterSpacing: 4, color: D.muted, ...fadeUp(frame, 0) }}>2017</div>
       <div style={{ fontSize: 140, fontWeight: 700, letterSpacing: -4, lineHeight: 1.05, marginTop: 20, ...fadeUp(frame, b0) }}>Robert Lewandowski</div>
       <div
@@ -136,10 +146,16 @@ function Hook() {
 
 function Twist({ id = "twist", refunded = "famous donor got a refund" }: { id?: string; refunded?: string }) {
   const frame = useCurrentFrame();
-  const [b0, b1, b2] = beats(id);
-  const { frames } = scene(id);
+  const [b0, b1, b2] = useBeats(id);
+  const { frames } = useScene(id);
+  const shake = useShake(b0, 18);
   return (
-    <AbsoluteFill style={{ background: C.ink, color: "#fff", padding: "0 160px", justifyContent: "center", opacity: fadeOut(frame, frames - 10, 10) }}>
+    <AbsoluteFill
+      style={{ background: C.ink, color: "#fff", padding: "0 160px", justifyContent: "center", opacity: fadeOut(frame, frames - 10, 10), transform: shake }}
+    >
+      <Sfx at={b0 - 2} name="impact" volume={0.9} beat />
+      <Sfx at={b2} name="pop" volume={0.3} />
+      <Sfx at={b2 + 40} name="doubt" volume={0.3} />
       <div style={{ fontSize: 120, fontWeight: 700, letterSpacing: -3, ...fadeUp(frame, b0, 0) }}>Antoś did not exist.</div>
       <div style={{ fontSize: 46, fontWeight: 500, color: D.soft, marginTop: 28, maxWidth: 1400, ...fadeUp(frame, b1) }}>
         The organizer invented him and spent the money on himself.
@@ -187,11 +203,17 @@ const CAUSES = ["Medical treatment", "Flood relief", "War relief", "Animal shelt
 
 function Scale() {
   const frame = useCurrentFrame();
-  const [b0, b1, b2, b3] = beats("scale");
-  const { frames } = scene("scale");
+  const [b0, b1, b2, b3] = useBeats("scale");
+  const { frames } = useScene("scale");
   return (
     <AbsoluteFill style={{ background: C.ground, opacity: fadeOut(frame, frames - 10, 10) }}>
       <Kicker>It keeps happening</Kicker>
+      {CAUSES.map((c, i) => (
+        <Sfx key={c} at={b0 + 25 + i * 8} name="pop" volume={0.2} />
+      ))}
+      <Sfx at={b1 + 10} name="counter" volume={0.3} />
+      <Sfx at={b2 + 10} name="counter" volume={0.3} />
+      <Sfx at={b3} name="doubt" volume={0.3} />
       <div style={{ position: "absolute", left: 160, top: 190, display: "flex", gap: 16 }}>
         {CAUSES.map((c, i) => (
           <span
@@ -275,12 +297,15 @@ const ROW = 500;
 
 function Today() {
   const frame = useCurrentFrame();
-  const [b0, b1, b2] = beats("today");
-  const { frames, lines } = scene("today");
+  const [b0, b1, b2] = useBeats("today");
+  const { frames, lines } = useScene("today");
   const half = b1 + Math.round(lines[1].frames * 0.45);
   return (
     <AbsoluteFill style={{ background: C.ground, opacity: fadeOut(frame, frames - 10, 10) }}>
       <Kicker>Today</Kicker>
+      <Sfx at={b1} name="whoosh" volume={0.25} />
+      <Sfx at={half} name="whoosh" volume={0.25} />
+      <Sfx at={b2} name="doubt" volume={0.35} />
       <Flow from={{ x: 575, y: ROW }} to={{ x: 785, y: ROW }} start={b1} color={C.muted} />
       <Flow from={{ x: 1135, y: ROW }} to={{ x: 1345, y: ROW }} start={half} color={C.muted} />
       <Node x={400} y={ROW} title="Donors" icon={(c) => <People size={44} color={c} />} start={b0} />
@@ -295,8 +320,8 @@ function Today() {
 
 function Question() {
   const frame = useCurrentFrame();
-  const [b0] = beats("question");
-  const { frames } = scene("question");
+  const [b0] = useBeats("question");
+  const { frames } = useScene("question");
   return (
     <AbsoluteFill style={{ background: C.ink, alignItems: "center", justifyContent: "center", opacity: fadeOut(frame, frames - 10, 10) }}>
       <div style={{ fontSize: 100, fontWeight: 700, color: "#fff", letterSpacing: -2.5, textAlign: "center", lineHeight: 1.15, maxWidth: 1500, ...fadeUp(frame, b0) }}>
@@ -321,13 +346,19 @@ function WithEarmark({
 }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const [b0, b1, b2, b3] = beats(id);
-  const { frames, lines } = scene(id);
+  const [b0, b1, b2, b3] = useBeats(id);
+  const { frames, lines } = useScene(id);
   const notOrganizer = b0 + Math.round(lines[0].frames * notOrganizerAt);
   const blocked = pop(frame, fps, notOrganizer + 22);
+  const shake = useShake(notOrganizer + 22, 8);
   return (
-    <AbsoluteFill style={{ background: C.ground, opacity: fadeOut(frame, frames - 10, 10) }}>
+    <AbsoluteFill style={{ background: C.ground, opacity: fadeOut(frame, frames - 10, 10), transform: shake }}>
       <Kicker color={C.accent}>{onSolana ? "With Earmark · on Solana" : "With Earmark"}</Kicker>
+      <Sfx at={b0 + 30} name="whoosh" volume={0.25} />
+      <Sfx at={notOrganizer + 20} name="error" volume={0.4} beat />
+      <Sfx at={b1 + 20} name="chime" volume={0.3} />
+      <Sfx at={b2 + 22} name="coin" volume={0.45} beat />
+      <Sfx at={b3} name="refund" volume={0.35} />
       <Flow from={{ x: 535, y: VAULT.y }} to={{ x: 775, y: VAULT.y }} start={b0 + 30} color={C.accent} />
       <Flow from={{ x: 1145, y: VAULT.y }} to={{ x: 1385, y: VAULT.y }} start={b2} color={C.accent} />
       <Flow from={{ x: VAULT.x, y: VAULT.y + 85 }} to={{ x: VAULT.x, y: 735 }} start={notOrganizer} duration={22} stopAt={0.55} color={C.error} coins={false} />
@@ -391,11 +422,12 @@ function WithEarmark({
 function Title({ id = "title", second = "Just rules, written in code, that nobody can bend." }: { id?: string; second?: string }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const [b0, b1] = beats(id);
+  const [b0, b1] = useBeats(id);
   const s = pop(frame, fps, b1);
   const linesOut = fadeOut(frame, b1 - 8, 8);
   return (
     <AbsoluteFill style={{ background: C.ground, alignItems: "center", justifyContent: "center" }}>
+      <Sfx at={b1 - 4} name="whoosh" volume={0.3} />
       {frame < b1 && (
         <div style={{ textAlign: "center", opacity: linesOut }}>
           <div style={{ fontSize: 76, fontWeight: 700, color: C.ink, letterSpacing: -1.5, ...fadeUp(frame, b0) }}>No middleman holding the money.</div>
@@ -422,8 +454,8 @@ const CHAIN = ["No owner of the money", "Rules are public code", "Anyone can che
 
 function Why() {
   const frame = useCurrentFrame();
-  const [b0, b1] = beats("why");
-  const { frames, lines } = scene("why");
+  const [b0, b1] = useBeats("why");
+  const { frames, lines } = useScene("why");
   const column = (title: string, items: string[], start: number, good: boolean) => (
     <div
       style={{
@@ -463,6 +495,10 @@ function Why() {
   return (
     <AbsoluteFill style={{ background: C.ground, opacity: fadeOut(frame, frames - 10, 10) }}>
       <Kicker>Why a blockchain?</Kicker>
+      {DATABASE.map((item, i) => (
+        <Sfx key={item} at={b0 + Math.round(lines[0].frames * 0.3) + 18 + i * 14} name="pop" volume={0.2} />
+      ))}
+      <Sfx at={b1 + 18} name="chime" volume={0.25} />
       <div style={{ position: "absolute", left: 160, top: 330, display: "flex", gap: 80 }}>
         {column("A normal database", DATABASE, b0 + Math.round(lines[0].frames * 0.3), false)}
         {column("Solana blockchain", CHAIN, b1, true)}
@@ -487,23 +523,103 @@ const VIEWS: Record<string, () => React.ReactNode> = {
   titleB: () => <Title id="titleB" second="Just rules that nobody can bend." />,
 };
 
-export function Intro({ voice = false, variant = "default" }: { voice?: boolean; variant?: Variant }) {
+type Mood = "story" | "dark" | "riser" | "hope" | "resolve";
+
+const MOOD: Record<string, Mood> = {
+  hook: "story",
+  story: "story",
+  storyL: "story",
+  twist: "dark",
+  twistL: "dark",
+  scale: "dark",
+  today: "dark",
+  question: "riser",
+  earmark: "hope",
+  earmarkB: "hope",
+  why: "hope",
+  title: "resolve",
+  titleB: "resolve",
+};
+
+/** One music stem per run of scenes that share a mood, faded in and out at the edges. */
+function Music({ scenes, dynamic }: { scenes: { id: string; from: number; frames: number }[]; dynamic: boolean }) {
+  const runs: { mood: Mood; from: number; frames: number }[] = [];
+  for (const s of scenes) {
+    const mood = MOOD[s.id];
+    const last = runs[runs.length - 1];
+    if (last && last.mood === mood) last.frames += s.frames;
+    else runs.push({ mood, from: s.from, frames: s.frames });
+  }
+  const level = dynamic ? 0.3 : 0.24;
   return (
-    <AbsoluteFill style={{ fontFamily: SANS, background: C.ink }}>
-      {sequence(variant).map((s) => {
-        const View = VIEWS[s.id];
+    <>
+      {runs.map((r) => {
+        // the riser has to land exactly on the next scene, so it is aligned to its end
+        const offset = r.mood === "riser" ? Math.max(0, 12 * 30 - r.frames) : 0;
+        const gain = r.mood === "riser" ? level * 0.6 : level;
         return (
-          <Sequence key={s.id} from={s.from} durationInFrames={s.frames}>
-            <View />
-            {voice &&
-              s.lines.map((l) => (
-                <Sequence key={l.id} from={l.from}>
-                  <Audio src={staticFile(`vo/${l.id}.mp3`)} />
-                </Sequence>
-              ))}
+          <Sequence key={`${r.mood}-${r.from}`} from={r.from} durationInFrames={r.frames} layout="none">
+            <Audio
+              src={staticFile(`music/${r.mood}${dynamic ? "-drive" : ""}.mp3`)}
+              trimBefore={offset}
+              volume={(f) =>
+                gain *
+                interpolate(f, [0, 12, r.frames - 15, r.frames], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })
+              }
+            />
           </Sequence>
         );
       })}
+    </>
+  );
+}
+
+/** Dynamic cut: every scene punches in (scale + blur) and slowly pushes the camera. */
+function SceneFrame({ frames, children }: { frames: number; children: React.ReactNode }) {
+  const frame = useCurrentFrame();
+  const { pacing } = useCut();
+  if (pacing !== "dynamic") return <>{children}</>;
+  const enter = interpolate(frame, [0, 9], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: Easing.out(Easing.cubic) });
+  const push = interpolate(frame, [0, frames], [1, 1.035]);
+  return (
+    <AbsoluteFill style={{ transform: `scale(${(1.08 - 0.08 * enter) * push})`, filter: `blur(${(1 - enter) * 10}px)` }}>
+      <Sfx at={0} name="whoosh" volume={0.22} />
+      {children}
     </AbsoluteFill>
+  );
+}
+
+export interface IntroProps {
+  voice?: boolean;
+  variant?: Variant;
+  pacing?: Cut["pacing"];
+  sfx?: Cut["sfx"];
+  music?: boolean;
+}
+
+export function Intro({ voice = false, variant = "default", pacing = "calm", sfx = "none", music = false }: IntroProps) {
+  const scenes = sequence(variant, pacing);
+  return (
+    <CutContext.Provider value={{ pacing, sfx }}>
+      <AbsoluteFill style={{ fontFamily: SANS, background: C.ink }}>
+        {scenes.map((s) => {
+          const View = VIEWS[s.id];
+          return (
+            <Sequence key={s.id} from={s.from} durationInFrames={s.frames}>
+              <SceneFrame frames={s.frames}>
+                <View />
+              </SceneFrame>
+              {voice &&
+                s.lines.map((l) => (
+                  <Sequence key={l.id} from={l.from} layout="none">
+                    <Audio src={staticFile(`${voFolder(pacing)}/${l.id}.mp3`)} />
+                  </Sequence>
+                ))}
+            </Sequence>
+          );
+        })}
+        {music && <Music scenes={scenes} dynamic={pacing === "dynamic"} />}
+      </AbsoluteFill>
+    </CutContext.Provider>
   );
 }
