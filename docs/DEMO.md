@@ -7,6 +7,7 @@
 - [ ] Clinic is already verified (`scripts/seed-demo.ts`); optionally add four more with `scripts/seed-clinics.ts` so the picker on `/new` looks populated
 - [ ] Fundraiser **B** created by the seed script: target 1 000, 300 donated by Donor 1, deadline ≈ 2 min after the demo starts
 - [ ] Explorer tabs open: program account (upgrade authority = none), clinic token account
+- [ ] Run the production build, not `dev` (dev compiles every page on first visit): `pnpm --dir app build && pnpm --dir app start`
 - [ ] Backup video recorded (T17)
 - [ ] Reliable devnet RPC (Helius / QuickNode free tier): set `NEXT_PUBLIC_RPC_URL` in `app/.env.local`. The public endpoint
       rate-limits (429); the app caches transaction logs and retries, but the first load can still take 30 s+ on it.

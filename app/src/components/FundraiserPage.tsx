@@ -69,25 +69,34 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
       if (!key) return null;
       const fundraiser = await program.account.fundraiser.fetchNullable(key);
       if (!fundraiser) return null;
-      const [recipient, config, meta, activity, donation] = await Promise.all([
+      const [recipient, config, meta, donation] = await Promise.all([
         program.account.recipient.fetchNullable(recipientPda(program.programId, fundraiser.recipient)),
         program.account.config.fetch(configPda(program.programId)),
         fetchAllMetadata().then((all) => all[key.toBase58()]),
-        fetchActivity(program, key),
         me ? program.account.donation.fetchNullable(donationPda(program.programId, key, me)) : null,
       ]);
-      return { fundraiser, recipient, config, meta, activity, donation };
+      return { fundraiser, recipient, config, meta, donation };
     },
+    [program, key?.toBase58(), me?.toBase58()],
+    15_000,
+    key ? `fundraiser:${key.toBase58()}:${me?.toBase58() ?? ""}` : undefined,
+  );
+  // The history needs many RPC calls; it loads on its own so the page does not wait for it.
+  const { data: activityData, reload: reloadActivity } = useLoad(
+    async () => (key ? fetchActivity(program, key) : []),
     [program, key?.toBase58()],
     15_000,
+    key ? `activity:${key.toBase58()}` : undefined,
   );
+  const activityReady = activityData !== undefined;
+  const activity = activityData ?? [];
 
   if (!key) return <Notice>This is not a valid fundraiser address.</Notice>;
   if (error && !data) return <ErrorAlert error={error} />;
   if (loading) return <Notice>Loading fundraiser…</Notice>;
   if (!data) return <Notice>Fundraiser not found on this network.</Notice>;
 
-  const { fundraiser: f, recipient, config, meta, activity, donation } = data;
+  const { fundraiser: f, recipient, config, meta, donation } = data;
   const status = statusOf(f, now);
   const deadline = f.deadline.toNumber();
   const target = BigInt(f.target.toString());
@@ -115,7 +124,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
         .accountsPartial({ donor: wallet.publicKey, fundraiser: key, donorToken, recipientWallet: f.recipient, mint: config.mint })
         .rpc();
       setJustDonated(sig);
-      await reload();
+      await Promise.all([reload(), reloadActivity()]);
     });
 
   const onRefund = () =>
@@ -123,7 +132,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
       if (!wallet) return;
       const donorToken = getAssociatedTokenAddressSync(config.mint, wallet.publicKey);
       await program.methods.refund().accountsPartial({ donor: wallet.publicKey, fundraiser: key, donorToken }).rpc();
-      await reload();
+      await Promise.all([reload(), reloadActivity()]);
     });
 
   return (
@@ -208,12 +217,12 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
           {status === "deadlinePassed" && (
             <div className="flex flex-wrap gap-x-4 gap-y-2 border-b border-[#e8ecea] py-3">
               <span className="min-w-60 flex-1">
-                Deadline passed · vault holds <strong>{formatTpln((raised - refundedTotal).toString())} ePLN</strong>
+                Deadline passed · vault holds <strong>{activityReady ? `${formatTpln((raised - refundedTotal).toString())} ePLN` : "…"}</strong>
               </span>
               <span className="text-sm text-muted">{timeAgo(deadline, now)}</span>
             </div>
           )}
-          {sorted.length ? sorted.map((a, i) => <ActivityRow key={`${a.signature}-${a.kind}-${i}`} item={a} now={now} />) : <span className="text-muted">No activity yet.</span>}
+          {sorted.length ? sorted.map((a, i) => <ActivityRow key={`${a.signature}-${a.kind}-${i}`} item={a} now={now} />) : <span className="text-muted">{activityReady ? "No activity yet." : "Loading activity…"}</span>}
         </div>
       </section>
 
@@ -226,7 +235,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
           <ProgressBar raised={f.raised.toNumber()} target={f.target.toNumber()} thick muted={refundable} />
           <div className="flex justify-between text-sm text-muted">
             <span>
-              {donors} donor{donors === 1 ? "" : "s"}
+              {activityReady ? `${donors} donor${donors === 1 ? "" : "s"}` : "…"}
             </span>
             <span>{status === "active" || status === "pendingConfirmation" ? timeLeft(deadline, now) : "ended"}</span>
           </div>

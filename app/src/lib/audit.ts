@@ -45,9 +45,6 @@ export type Movement = {
 export type AuditData = {
   fundraisers: FundraiserView[];
   recipients: RecipientView[];
-  movements: Movement[];
-  /** Set when the transaction history could not be read; accounts, totals and flags still work. */
-  movementsError?: unknown;
   /** Token base units still held in each fundraiser's vault, keyed by fundraiser pubkey. */
   vaultBalances: Map<string, bigint>;
   totals: { held: bigint; paid: bigint; refunded: bigint };
@@ -72,7 +69,7 @@ async function fetchVaultBalances(program: Program<Earmark>, fundraisers: Fundra
 }
 
 /** Most recent program transactions, decoded into donations, payouts and refunds. */
-async function fetchMovements(program: Program<Earmark>, limit: number): Promise<{ movements: Movement[]; failed: boolean }> {
+export async function fetchMovements(program: Program<Earmark>, limit = 100): Promise<{ movements: Movement[]; failed: boolean }> {
   const connection = program.provider.connection;
   const sigs = (await connection.getSignaturesForAddress(program.programId, { limit }, "confirmed")).filter(
     (s) => !s.err,
@@ -97,29 +94,17 @@ async function fetchMovements(program: Program<Earmark>, limit: number): Promise
   return { movements: out.sort((a, b) => (b.blockTime ?? 0) - (a.blockTime ?? 0) || rank[a.kind] - rank[b.kind]), failed };
 }
 
-export async function fetchAudit(program: Program<Earmark>, movementLimit = 100): Promise<AuditData> {
-  let movementsError: unknown;
+export async function fetchAudit(program: Program<Earmark>): Promise<AuditData> {
   const [fundraisers, recipients, donations] = await Promise.all([
     fetchFundraisers(program),
     fetchRecipients(program),
     program.account.donation.all(),
   ]);
   const vaultBalances = await fetchVaultBalances(program, fundraisers);
-  // History last: it is the heaviest call and the one public RPCs rate-limit first.
-  let movements: Movement[] = [];
-  try {
-    const res = await fetchMovements(program, movementLimit);
-    movements = res.movements;
-    if (res.failed) movementsError = new Error("Part of the transaction history could not be read.");
-  } catch (e) {
-    movementsError = e;
-  }
   const sum = (xs: Iterable<bigint>) => [...xs].reduce((a, b) => a + b, 0n);
   return {
     fundraisers,
     recipients,
-    movements,
-    movementsError,
     vaultBalances,
     totals: {
       held: sum(vaultBalances.values()),

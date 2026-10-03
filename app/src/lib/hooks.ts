@@ -14,23 +14,40 @@ export function useProgram() {
   return { program, wallet, connection };
 }
 
-/** Loads async data; `reload()` refetches without clearing what is on screen. */
-export function useLoad<T>(load: () => Promise<T>, deps: unknown[], pollMs?: number) {
-  const [data, setData] = useState<T>();
+// Last successful result per cacheKey, kept for the session so revisiting a page shows data instantly
+// (stale-while-revalidate) instead of a loading screen. Memory only: values hold BN / PublicKey instances.
+const loadCache = new Map<string, unknown>();
+
+/** Loads async data; `reload()` refetches without clearing what is on screen. With `cacheKey`, the last result is shown immediately while a fresh one loads. */
+export function useLoad<T>(load: () => Promise<T>, deps: unknown[], pollMs?: number, cacheKey?: string) {
+  const [data, setData] = useState<T | undefined>(() => (cacheKey ? (loadCache.get(cacheKey) as T | undefined) : undefined));
   const [error, setError] = useState<unknown>();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !(cacheKey && loadCache.has(cacheKey)));
   const loadRef = useRef(load);
   loadRef.current = load;
+  const keyRef = useRef(cacheKey);
+  keyRef.current = cacheKey;
   const run = useCallback(async () => {
+    const key = keyRef.current;
     try {
-      setData(await loadRef.current());
-      setError(undefined);
+      const result = await loadRef.current();
+      if (key) loadCache.set(key, result);
+      if (key === keyRef.current) {
+        setData(result);
+        setError(undefined);
+      }
     } catch (e) {
-      setError(e);
+      if (key === keyRef.current) setError(e);
     } finally {
-      setLoading(false);
+      if (key === keyRef.current) setLoading(false);
     }
   }, []);
+  // Switching to another cached key (e.g. another fundraiser) shows its cached data right away.
+  useEffect(() => {
+    if (!cacheKey) return;
+    setData(loadCache.get(cacheKey) as T | undefined);
+    setLoading(!loadCache.has(cacheKey));
+  }, [cacheKey]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => void run(), deps);
   useEffect(() => {

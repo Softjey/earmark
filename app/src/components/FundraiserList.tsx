@@ -20,6 +20,7 @@ export function FundraiserList() {
     },
     [program],
     20_000,
+    "fundraisers",
   );
 
   if (error && !data) return <ErrorAlert error={error} />;

@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { fundraiserTitle } from "./FundraiserCard";
 import { TxLink } from "./TxLink";
 import { ErrorAlert, Notice, PageTitle } from "./ui";
-import { computeFlags, fetchAudit, type Flag, type FlagKind, type Movement } from "@/lib/audit";
+import { computeFlags, fetchAudit, fetchMovements, type Flag, type FlagKind, type Movement } from "@/lib/audit";
 import { explorerUrl } from "@/lib/config";
 import { formatTpln, shortKey, timeAgo } from "@/lib/format";
 import { useLoad, useNow, useProgram } from "@/lib/hooks";
@@ -89,7 +89,11 @@ export function AuditPage() {
     },
     [program],
     30_000,
+    "audit",
   );
+  // The transaction history is the slow part; it loads on its own so totals and flags show up first.
+  const { data: history, loading: historyLoading } = useLoad(() => fetchMovements(program), [program], 30_000, "audit:movements");
+  const movements = history?.movements ?? [];
 
   const titleOf = (key: string) => fundraiserTitle(data?.metadata[key], key);
   const flags = useMemo(
@@ -130,7 +134,7 @@ export function AuditPage() {
 
           <section className="flex flex-col gap-3">
             <h2 className="text-xl font-semibold">All money movements</h2>
-            {!!data.audit.movementsError && (
+            {!!history?.failed && (
               <Notice>Part of the transaction history could not be loaded (the RPC may be rate-limiting). Totals and flags above are still read from accounts; the rest fills in on the next refresh.</Notice>
             )}
             <div className="overflow-x-auto rounded-[14px] border border-line bg-surface">
@@ -145,12 +149,13 @@ export function AuditPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.audit.movements.map((m) => (
+                  {movements.map((m) => (
                     <MovementRow key={`${m.signature}-${m.kind}`} m={m} titleOf={titleOf} now={now} />
                   ))}
                 </tbody>
               </table>
-              {!data.audit.movements.length && !data.audit.movementsError && <p className="px-5 pb-5 text-muted">No money has moved yet.</p>}
+              {historyLoading && !movements.length && <p className="px-5 pb-5 text-muted">Reading the transaction history…</p>}
+              {!historyLoading && !movements.length && !history?.failed && <p className="px-5 pb-5 text-muted">No money has moved yet.</p>}
             </div>
           </section>
         </>
