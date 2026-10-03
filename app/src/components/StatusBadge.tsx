@@ -6,9 +6,9 @@ export type FundraiserStatus =
   | "deadlinePassed";
 
 const STYLE: Record<FundraiserStatus, { label: string; cls: string }> = {
-  pendingConfirmation: { label: "Waiting for clinic", cls: "bg-info-soft text-info" },
+  pendingConfirmation: { label: "Waiting for recipient", cls: "bg-info-soft text-info" },
   active: { label: "Active", cls: "bg-accent-soft text-accent" },
-  released: { label: "Paid to clinic", cls: "bg-accent text-white" },
+  released: { label: "Paid to recipient", cls: "bg-accent text-white" },
   cancelled: { label: "Cancelled · refunds open", cls: "bg-error-soft text-error-ink" },
   deadlinePassed: { label: "Deadline passed · refunds open", cls: "bg-warn-soft text-warn" },
 };

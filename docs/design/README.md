@@ -11,7 +11,7 @@ reference mockups, not production code: re-implement them as React components in
 | `Main.dc.html` | Fundraiser page (donor) | `/fundraisers/[pubkey]` |
 | `Refund.dc.html` | Deadline passed, refund | `/fundraisers/[pubkey]` (refundable state) |
 | `New.dc.html` | Start a fundraiser, incl. `RecipientNotVerified` error | `/new` |
-| `Clinic.dc.html` | Clinic panel | `/clinic` |
+| `Clinic.dc.html` | Recipient panel (mockup predates the rename from *clinic*; the app uses "recipient" copy and `/recipient`) | `/recipient` |
 | `Verifier.dc.html` | Verifier panel | `/verifier` |
 | `Audit.dc.html` | Public audit | `/audit` |
 

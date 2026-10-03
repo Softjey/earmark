@@ -240,23 +240,26 @@ export type Earmark = {
           }
         },
         {
-          "name": "quoteLock",
+          "name": "documentLock",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  113,
-                  117,
+                  100,
                   111,
-                  116,
-                  101
+                  99,
+                  117,
+                  109,
+                  101,
+                  110,
+                  116
                 ]
               },
               {
                 "kind": "arg",
-                "path": "quoteHash"
+                "path": "documentHash"
               }
             ]
           }
@@ -287,7 +290,7 @@ export type Earmark = {
           "type": "i64"
         },
         {
-          "name": "quoteHash",
+          "name": "documentHash",
           "type": {
             "array": [
               "u8",
@@ -992,12 +995,12 @@ export type Earmark = {
     {
       "code": 6000,
       "name": "recipientNotVerified",
-      "msg": "Recipient is not a verified, active clinic"
+      "msg": "Recipient is not a verified, active organisation"
     },
     {
       "code": 6001,
-      "name": "quoteAlreadyUsed",
-      "msg": "This quote has already been used for another fundraiser"
+      "name": "documentAlreadyUsed",
+      "msg": "This supporting document has already been used for another fundraiser"
     },
     {
       "code": 6002,
@@ -1139,7 +1142,7 @@ export type Earmark = {
           {
             "name": "recipient",
             "docs": [
-              "Wallet of the verified recipient (clinic)."
+              "Wallet of the verified recipient (clinic, charity, relief organisation, ...)."
             ],
             "type": "pubkey"
           },
@@ -1160,7 +1163,7 @@ export type Earmark = {
             "type": "i64"
           },
           {
-            "name": "quoteHash",
+            "name": "documentHash",
             "type": {
               "array": [
                 "u8",

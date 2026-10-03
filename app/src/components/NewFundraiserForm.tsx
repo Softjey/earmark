@@ -9,7 +9,7 @@ import { ErrorAlert, Field, Notice, PageTitle, btnPrimary, inputCls } from "./ui
 import { configPda, fetchRecipients, fundraiserPda } from "@/lib/chain";
 import { useAction, useLoad, useProgram } from "@/lib/hooks";
 import { formatDate, parseTpln } from "@/lib/format";
-import { STORY_MAX, TITLE_MAX, saveMetadata } from "@/lib/metadata";
+import { CATEGORIES, STORY_MAX, TITLE_MAX, saveMetadata, type CategoryId } from "@/lib/metadata";
 
 /** SHA-256 of the file, computed in the browser. The file itself never leaves the device. */
 async function sha256(file: File): Promise<Uint8Array> {
@@ -32,6 +32,7 @@ export function NewFundraiserForm() {
   const create = useAction();
   const [title, setTitle] = useState("");
   const [story, setStory] = useState("");
+  const [category, setCategory] = useState<CategoryId>("other");
   const [recipient, setRecipient] = useState("");
   const [custom, setCustom] = useState(false);
   const [target, setTarget] = useState("");
@@ -42,7 +43,7 @@ export function NewFundraiserForm() {
   const [warning, setWarning] = useState<string>();
 
   const { data: recipients } = useLoad(() => fetchRecipients(program), [program]);
-  const clinics = recipients?.filter((r) => r.account.active) ?? [];
+  const verifiedList = recipients?.filter((r) => r.account.active) ?? [];
 
   const onFile = async (f?: File) => {
     setFile(f);
@@ -55,7 +56,7 @@ export function NewFundraiserForm() {
     setWarning(undefined);
     if (!wallet) return setProblem({ title: "Connect your wallet", message: "Use the button in the top right corner first." });
 
-    if (!recipient.trim()) return setProblem({ title: "Choose a clinic", message: "Pick the verified clinic that will be paid." });
+    if (!recipient.trim()) return setProblem({ title: "Choose a recipient", message: "Pick the verified recipient that will be paid." });
     let recipientWallet: PublicKey;
     try {
       recipientWallet = new PublicKey(recipient.trim());
@@ -67,7 +68,7 @@ export function NewFundraiserForm() {
     const deadlineSec = Math.floor(new Date(deadline).getTime() / 1000);
     if (!Number.isFinite(deadlineSec) || deadlineSec <= Date.now() / 1000)
       return setProblem({ title: "Invalid deadline", message: "Choose a deadline that is still in the future." });
-    if (!fingerprint) return setProblem({ title: "Quote missing", message: "Attach the clinic's quote as a PDF." });
+    if (!fingerprint) return setProblem({ title: "Document missing", message: "Attach the supporting document (invoice, quote or budget)." });
 
     await create.run(async () => {
       const config = await program.account.config.fetch(configPda(program.programId));
@@ -79,7 +80,7 @@ export function NewFundraiserForm() {
         .accountsPartial({ organizer: wallet.publicKey, recipientWallet, mint: config.mint })
         .rpc();
       try {
-        await saveMetadata(fundraiser.toBase58(), { title, story });
+        await saveMetadata(fundraiser.toBase58(), { title, story, category });
       } catch (err) {
         // The fundraiser exists and works without its text; don't lose the user on a metadata hiccup.
         setWarning(`The fundraiser was created, but its title and story could not be saved (${(err as Error).message}).`);
@@ -92,24 +93,33 @@ export function NewFundraiserForm() {
   return (
     <div className="flex max-w-[720px] flex-col gap-8">
       <PageTitle title="Start a fundraiser">
-        Choose the verified clinic that will be paid. You never receive the money yourself, and the clinic must confirm the quote before anyone can donate.
+        Choose the verified recipient that will be paid. You never receive the money yourself, and the recipient must confirm the fundraiser before anyone can donate.
       </PageTitle>
       <form onSubmit={onSubmit} className="flex flex-col gap-6">
         <Field label="Title" htmlFor="title">
           <input id="title" required maxLength={TITLE_MAX} value={title} onChange={(e) => setTitle(e.target.value)} className={inputCls} />
         </Field>
-        <Field label="Story" htmlFor="story" hint="Shown to donors and stored off-chain. Don't include medical details or other personal data.">
+        <Field label="Category" htmlFor="category" hint="Only helps donors browse. It has no effect on where the money can go.">
+          <select id="category" value={category} onChange={(e) => setCategory(e.target.value as CategoryId)} className={inputCls}>
+            {CATEGORIES.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Story" htmlFor="story" hint="Shown to donors and stored off-chain. Don't include medical details or other personal data about people.">
           <textarea id="story" required rows={4} maxLength={STORY_MAX} value={story} onChange={(e) => setStory(e.target.value)} className={`${inputCls} py-3`} />
         </Field>
         <fieldset className="flex flex-col gap-1.5">
-          <legend className="mb-1.5 text-sm font-semibold">Clinic to be paid</legend>
+          <legend className="mb-1.5 text-sm font-semibold">Recipient to be paid</legend>
           {!recipients ? (
-            <Notice>Loading verified clinics…</Notice>
-          ) : clinics.length === 0 ? (
-            <Notice>No verified clinics yet. A verifier has to approve a clinic first.</Notice>
+            <Notice>Loading verified recipients…</Notice>
+          ) : verifiedList.length === 0 ? (
+            <Notice>No verified recipients yet. A verifier has to approve a recipient first.</Notice>
           ) : (
             <div role="radiogroup" className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {clinics.map((c) => {
+              {verifiedList.map((c) => {
                 const wallet58 = c.account.wallet.toBase58();
                 const selected = !custom && recipient === wallet58;
                 return (
@@ -121,7 +131,7 @@ export function NewFundraiserForm() {
                   >
                     <input
                       type="radio"
-                      name="clinic"
+                      name="recipient"
                       className="sr-only"
                       checked={selected}
                       onChange={() => {
@@ -140,7 +150,7 @@ export function NewFundraiserForm() {
               })}
             </div>
           )}
-          <span className="text-[13px] text-muted">Only clinics verified on-chain can be chosen. The program rejects any other wallet.</span>
+          <span className="text-[13px] text-muted">Only recipients verified on-chain can be chosen. The program rejects any other wallet.</span>
           <button
             type="button"
             className="self-start text-[13px] font-medium text-accent underline"
@@ -149,7 +159,7 @@ export function NewFundraiserForm() {
               setRecipient("");
             }}
           >
-            {custom ? "Back to verified clinics" : "Use a different wallet address"}
+            {custom ? "Back to verified recipients" : "Use a different wallet address"}
           </button>
           {custom && (
             <input
@@ -169,8 +179,8 @@ export function NewFundraiserForm() {
             <input id="deadline" type="datetime-local" required value={deadline} onChange={(e) => setDeadline(e.target.value)} className={inputCls} />
           </Field>
         </div>
-        <Field label="Clinic's quote (PDF)" htmlFor="quote" hint="The file stays on your device. Only its fingerprint (SHA-256) is stored on-chain.">
-          <input id="quote" type="file" accept="application/pdf" required onChange={(e) => onFile(e.target.files?.[0])} className={`${inputCls} py-2.5`} />
+        <Field label="Supporting document" htmlFor="document" hint="An invoice, quote or budget from the recipient (PDF or image). The file stays on your device. Only its fingerprint (SHA-256) is stored on-chain.">
+          <input id="document" type="file" accept="application/pdf,image/*" required onChange={(e) => onFile(e.target.files?.[0])} className={`${inputCls} py-2.5`} />
           {file && fingerprint && (
             <div className="flex flex-wrap gap-x-4 gap-y-1 rounded-input bg-ground px-4 py-3 text-sm">
               <span>{file.name}</span>

@@ -234,23 +234,26 @@
           }
         },
         {
-          "name": "quote_lock",
+          "name": "document_lock",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  113,
-                  117,
+                  100,
                   111,
-                  116,
-                  101
+                  99,
+                  117,
+                  109,
+                  101,
+                  110,
+                  116
                 ]
               },
               {
                 "kind": "arg",
-                "path": "quote_hash"
+                "path": "document_hash"
               }
             ]
           }
@@ -281,7 +284,7 @@
           "type": "i64"
         },
         {
-          "name": "quote_hash",
+          "name": "document_hash",
           "type": {
             "array": [
               "u8",
@@ -986,12 +989,12 @@
     {
       "code": 6000,
       "name": "RecipientNotVerified",
-      "msg": "Recipient is not a verified, active clinic"
+      "msg": "Recipient is not a verified, active organisation"
     },
     {
       "code": 6001,
-      "name": "QuoteAlreadyUsed",
-      "msg": "This quote has already been used for another fundraiser"
+      "name": "DocumentAlreadyUsed",
+      "msg": "This supporting document has already been used for another fundraiser"
     },
     {
       "code": 6002,
@@ -1133,7 +1136,7 @@
           {
             "name": "recipient",
             "docs": [
-              "Wallet of the verified recipient (clinic)."
+              "Wallet of the verified recipient (clinic, charity, relief organisation, ...)."
             ],
             "type": "pubkey"
           },
@@ -1154,7 +1157,7 @@
             "type": "i64"
           },
           {
-            "name": "quote_hash",
+            "name": "document_hash",
             "type": {
               "array": [
                 "u8",

@@ -17,7 +17,7 @@ const plexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: "Earmark",
-  description: "Medical fundraisers where donations can only go to a verified clinic or back to the donors.",
+  description: "Fundraisers for any cause where donations can only go to a verified recipient or back to the donors.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -27,7 +27,8 @@ async function main() {
 
   const wallets = {
     verifier: demoKeypair("verifier"),
-    clinic: demoKeypair("clinic"),
+    // Key file keeps its original name so the already-verified devnet recipient stays the same.
+    recipient: demoKeypair("clinic"),
     organizer: demoKeypair("organizer"),
     donor1: demoKeypair("donor1"),
     donor2: demoKeypair("donor2"),
@@ -46,26 +47,26 @@ async function main() {
       await mintTo(connection, deployer, mint, ata.address, mintAuthority(deployer), tpln(2000) - Number(ata.amount));
   }
 
-  // Verify the clinic (once).
+  // Verify the recipient (once).
   const recipientPda = PublicKey.findProgramAddressSync(
-    [Buffer.from("recipient"), wallets.clinic.publicKey.toBuffer()],
+    [Buffer.from("recipient"), wallets.recipient.publicKey.toBuffer()],
     program.programId
   )[0];
   if (!(await program.account.recipient.fetchNullable(recipientPda))) {
     await program.methods
       .verifyRecipient("Kraków Eye Clinic", "RPWDL-0001")
-      .accounts({ verifier: wallets.verifier.publicKey, wallet: wallets.clinic.publicKey })
+      .accounts({ verifier: wallets.verifier.publicKey, wallet: wallets.recipient.publicKey })
       .signers([wallets.verifier])
       .rpc();
   }
 
   // Fundraiser B: created, confirmed, 300 ePLN from Donor 1.
   const id = Date.now();
-  const quoteHash = Array.from(createHash("sha256").update(randomBytes(32)).digest());
+  const documentHash = Array.from(createHash("sha256").update(randomBytes(32)).digest());
   const deadline = Math.floor(Date.now() / 1000) + deadlineIn;
   await program.methods
-    .createFundraiser(new BN(id), new BN(tpln(1000)), new BN(deadline), quoteHash, `/api/metadata/seed-${id}`)
-    .accounts({ organizer: wallets.organizer.publicKey, recipientWallet: wallets.clinic.publicKey, mint })
+    .createFundraiser(new BN(id), new BN(tpln(1000)), new BN(deadline), documentHash, `/api/metadata/seed-${id}`)
+    .accounts({ organizer: wallets.organizer.publicKey, recipientWallet: wallets.recipient.publicKey, mint })
     .signers([wallets.organizer])
     .rpc();
   const fundraiser = PublicKey.findProgramAddressSync(
@@ -74,8 +75,8 @@ async function main() {
   )[0];
   await program.methods
     .confirmFundraiser()
-    .accounts({ recipientWallet: wallets.clinic.publicKey, fundraiser })
-    .signers([wallets.clinic])
+    .accounts({ recipientWallet: wallets.recipient.publicKey, fundraiser })
+    .signers([wallets.recipient])
     .rpc();
   const donor1Ata = await getOrCreateAssociatedTokenAccount(connection, deployer, mint, wallets.donor1.publicKey);
   await program.methods
@@ -84,7 +85,7 @@ async function main() {
       donor: wallets.donor1.publicKey,
       fundraiser,
       donorToken: donor1Ata.address,
-      recipientWallet: wallets.clinic.publicKey,
+      recipientWallet: wallets.recipient.publicKey,
       mint,
     })
     .signers([wallets.donor1])

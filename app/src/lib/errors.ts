@@ -4,13 +4,13 @@ export type ErrorInfo = { title: string; message: string; code?: string };
 
 const PROGRAM_ERRORS: Record<string, { title: string; message: string }> = {
   RecipientNotVerified: {
-    title: "This wallet is not a verified clinic",
+    title: "This wallet is not a verified recipient",
     message:
-      "The program rejected the transaction: money can only be earmarked for a verified healthcare provider. You can't name yourself as the recipient.",
+      "The program rejected the transaction: money can only be earmarked for an organisation that a verifier has checked. You can't name yourself as the recipient.",
   },
-  QuoteAlreadyUsed: {
-    title: "This quote was already used",
-    message: "Each clinic quote can back only one fundraiser. Ask the clinic for a new quote.",
+  DocumentAlreadyUsed: {
+    title: "This document was already used",
+    message: "Each supporting document (invoice, quote, budget) can back only one fundraiser. Ask the recipient for a new one.",
   },
   InvalidTarget: { title: "Invalid target", message: "The target must be greater than zero." },
   DeadlineInPast: { title: "Deadline is in the past", message: "Choose a deadline that is still in the future." },
@@ -20,7 +20,7 @@ const PROGRAM_ERRORS: Record<string, { title: string; message: string }> = {
   },
   NotActive: {
     title: "Fundraiser is not active",
-    message: "Donations are open only after the clinic confirms, and only until the target is reached or the fundraiser is cancelled.",
+    message: "Donations are open only after the recipient confirms, and only until the target is reached or the fundraiser is cancelled.",
   },
   DeadlinePassed: { title: "Deadline passed", message: "This fundraiser no longer accepts donations." },
   NotRefundable: {

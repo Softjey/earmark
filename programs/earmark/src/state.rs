@@ -5,7 +5,7 @@ pub const RECIPIENT_SEED: &[u8] = b"recipient";
 pub const FUNDRAISER_SEED: &[u8] = b"fundraiser";
 pub const VAULT_SEED: &[u8] = b"vault";
 pub const DONATION_SEED: &[u8] = b"donation";
-pub const QUOTE_SEED: &[u8] = b"quote";
+pub const DOCUMENT_SEED: &[u8] = b"document";
 
 pub const MAX_NAME_LEN: usize = 64;
 pub const MAX_REGISTRY_ID_LEN: usize = 32;
@@ -44,13 +44,13 @@ pub enum FundraiserStatus {
 #[derive(InitSpace)]
 pub struct Fundraiser {
     pub organizer: Pubkey,
-    /// Wallet of the verified recipient (clinic).
+    /// Wallet of the verified recipient (clinic, charity, relief organisation, ...).
     pub recipient: Pubkey,
     pub id: u64,
     pub target: u64,
     pub raised: u64,
     pub deadline: i64,
-    pub quote_hash: [u8; 32],
+    pub document_hash: [u8; 32],
     #[max_len(128)]
     pub metadata_uri: String,
     pub status: FundraiserStatus,
@@ -68,9 +68,9 @@ pub struct Donation {
     pub bump: u8,
 }
 
-/// Exists only to make each quote hash usable once.
+/// Exists only to make each document hash usable once.
 #[account]
 #[derive(InitSpace)]
-pub struct QuoteLock {
+pub struct DocumentLock {
     pub fundraiser: Pubkey,
 }

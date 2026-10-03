@@ -65,46 +65,46 @@ export function VerifierPanel() {
   return (
     <div className="flex flex-col gap-10">
       <section className="flex max-w-[640px] flex-col gap-4">
-        <PageTitle title="Verify a clinic">
-          Check the provider in the public healthcare registry first. Verifying only marks a wallet as a real clinic; this role can never move funds.
+        <PageTitle title="Verify a recipient">
+          Check the organisation in an official public registry first (healthcare provider, charity, NGO, shelter, relief agency…). Verifying only marks a wallet as a real recipient; this role can never move funds.
         </PageTitle>
         {!isVerifier && (
           <Notice>
             {me
               ? "This wallet is not the verifier, so verifying and revoking are disabled."
-              : "Connect the verifier wallet to verify clinics."}{" "}
+              : "Connect the verifier wallet to verify recipients."}{" "}
             The verifier is <span className="font-mono">{shortKey(data.config.verifier.toBase58())}</span>.
           </Notice>
         )}
         <form onSubmit={onVerify} className="flex flex-col gap-5">
-          <Field label="Clinic wallet" htmlFor="wallet">
+          <Field label="Recipient wallet" htmlFor="wallet">
             <input id="wallet" required disabled={!isVerifier} value={walletInput} onChange={(e) => setWalletInput(e.target.value)} className={`${inputCls} font-mono text-sm`} />
           </Field>
           <Field label="Name" htmlFor="name">
             <input id="name" required disabled={!isVerifier} value={name} onChange={(e) => setName(e.target.value)} className={inputCls} />
           </Field>
-          <Field label="Registry number" htmlFor="reg" hint="Number in the public healthcare registry (RPWDL in Poland).">
+          <Field label="Registry number" htmlFor="reg" hint="Number in the official registry you checked, e.g. KRS for a Polish NGO or RPWDL for a healthcare provider.">
             <input id="reg" required disabled={!isVerifier} value={registry} onChange={(e) => setRegistry(e.target.value)} className={inputCls} />
           </Field>
           {problem && <ErrorAlert error={problem} />}
           <ErrorAlert error={verify.error} />
           <button type="submit" className={`${btnPrimary} self-start`} disabled={!isVerifier || verify.busy}>
-            {verify.busy ? "Waiting for wallet…" : "Verify clinic"}
+            {verify.busy ? "Waiting for wallet…" : "Verify recipient"}
           </button>
         </form>
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-2xl font-semibold">Verified clinics</h2>
+        <h2 className="text-2xl font-semibold">Verified recipients</h2>
         <ErrorAlert error={revoke.error} />
         {data.recipients.length === 0 ? (
-          <Notice>No clinics verified yet.</Notice>
+          <Notice>No recipients verified yet.</Notice>
         ) : (
           <div className="overflow-x-auto rounded-card border border-line bg-surface">
             <table className="w-full text-left text-[15px]">
               <thead className="border-b border-line text-sm text-muted">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Clinic</th>
+                  <th className="px-5 py-3 font-medium">Recipient</th>
                   <th className="px-5 py-3 font-medium">Wallet</th>
                   <th className="px-5 py-3 font-medium">Verified</th>
                   <th className="px-5 py-3" />

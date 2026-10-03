@@ -28,7 +28,7 @@ describe("earmark", () => {
   const payer = (provider.wallet as anchor.Wallet).payer;
 
   const verifier = Keypair.generate();
-  const clinic = Keypair.generate();
+  const payee = Keypair.generate();
   const organizer = Keypair.generate();
   const donor1 = Keypair.generate();
   const donor2 = Keypair.generate();
@@ -38,7 +38,7 @@ describe("earmark", () => {
   let mint: PublicKey;
   const ata: Record<string, PublicKey> = {};
   let nextId = 1;
-  let nextQuote = 1;
+  let nextDocument = 1;
 
   const pda = (seeds: (Buffer | Uint8Array)[]) =>
     PublicKey.findProgramAddressSync(seeds, program.programId)[0];
@@ -52,8 +52,8 @@ describe("earmark", () => {
       new BN(id).toArrayLike(Buffer, "le", 8),
     ]);
   const vaultPda = (f: PublicKey) => pda([Buffer.from("vault"), f.toBuffer()]);
-  const quote = () =>
-    Array.from(createHash("sha256").update(`quote-${nextQuote++}`).digest());
+  const documentHash = () =>
+    Array.from(createHash("sha256").update(`document-${nextDocument++}`).digest());
   const bal = async (k: PublicKey) => Number((await getAccount(conn, k)).amount);
   const now = async () => {
     const slot = await conn.getSlot();
@@ -81,13 +81,13 @@ describe("earmark", () => {
   } = {}) {
     const org = opts.org ?? organizer;
     const id = nextId++;
-    const recipient = opts.recipient ?? clinic;
+    const recipient = opts.recipient ?? payee;
     await program.methods
       .createFundraiser(
         new BN(id),
         new BN(opts.target ?? 1000),
         new BN((await now()) + (opts.deadlineIn ?? 3600)),
-        opts.hash ?? quote(),
+        opts.hash ?? documentHash(),
         "/api/metadata/" + id
       )
       .accounts({
@@ -104,8 +104,8 @@ describe("earmark", () => {
     const f = await create(opts);
     await program.methods
       .confirmFundraiser()
-      .accounts({ recipientWallet: clinic.publicKey, fundraiser: f })
-      .signers([clinic])
+      .accounts({ recipientWallet: payee.publicKey, fundraiser: f })
+      .signers([payee])
       .rpc();
     return f;
   }
@@ -117,7 +117,7 @@ describe("earmark", () => {
         donor: donor.publicKey,
         fundraiser: f,
         donorToken: ata[donor.publicKey.toBase58()],
-        recipientWallet: clinic.publicKey,
+        recipientWallet: payee.publicKey,
         mint,
       })
       .signers([donor])
@@ -156,7 +156,7 @@ describe("earmark", () => {
       .rpc();
 
   before(async () => {
-    const wallets = [verifier, clinic, organizer, donor1, donor2, stranger, fraudster];
+    const wallets = [verifier, payee, organizer, donor1, donor2, stranger, fraudster];
     const tx = new Transaction();
     for (const w of wallets)
       tx.add(
@@ -179,9 +179,9 @@ describe("earmark", () => {
       ata[d.publicKey.toBase58()] = a;
       await mintTo(conn, payer, mint, a, payer, 10_000);
     }
-    ata[clinic.publicKey.toBase58()] = getAssociatedTokenAddressSync(
+    ata[payee.publicKey.toBase58()] = getAssociatedTokenAddressSync(
       mint,
-      clinic.publicKey
+      payee.publicKey
     );
   });
 
@@ -206,15 +206,15 @@ describe("earmark", () => {
   });
 
   describe("verify_recipient / revoke_recipient", () => {
-    it("verifier verifies the clinic", async () => {
+    it("verifier verifies the payee", async () => {
       await program.methods
-        .verifyRecipient("Eye Clinic", "RPWDL-123")
-        .accounts({ verifier: verifier.publicKey, wallet: clinic.publicKey })
+        .verifyRecipient("Relief Foundation", "REG-123")
+        .accounts({ verifier: verifier.publicKey, wallet: payee.publicKey })
         .signers([verifier])
         .rpc();
-      const r = await program.account.recipient.fetch(recipientPda(clinic.publicKey));
+      const r = await program.account.recipient.fetch(recipientPda(payee.publicKey));
       expect(r.active).to.eq(true);
-      expect(r.name).to.eq("Eye Clinic");
+      expect(r.name).to.eq("Relief Foundation");
     });
 
     it("non-verifier is rejected (Unauthorized)", async () => {
@@ -253,7 +253,7 @@ describe("earmark", () => {
         await conn.requestAirdrop(other.publicKey, LAMPORTS_PER_SOL)
       );
       await program.methods
-        .verifyRecipient("Other Clinic", "RPWDL-999")
+        .verifyRecipient("Other Charity", "REG-999")
         .accounts({ verifier: verifier.publicKey, wallet: other.publicKey })
         .signers([verifier])
         .rpc();
@@ -265,7 +265,7 @@ describe("earmark", () => {
           new BN(id),
           new BN(500),
           new BN((await now()) + 3600),
-          quote(),
+          documentHash(),
           "uri"
         )
         .accounts({
@@ -302,7 +302,7 @@ describe("earmark", () => {
             new BN(nextId++),
             new BN(500),
             new BN((await now()) + 3600),
-            quote(),
+            documentHash(),
             "uri"
           )
           .accounts({
@@ -343,10 +343,10 @@ describe("earmark", () => {
       await expectErr(create({ deadlineIn: -10 }), "DeadlineInPast");
     });
 
-    it("rejects a duplicate quote hash (QuoteAlreadyUsed)", async () => {
-      const hash = quote();
+    it("rejects a duplicate document hash (DocumentAlreadyUsed)", async () => {
+      const hash = documentHash();
       await create({ hash });
-      await expectErr(create({ hash }), "QuoteAlreadyUsed");
+      await expectErr(create({ hash }), "DocumentAlreadyUsed");
     });
 
     it("creates a pending fundraiser with a vault owned by the fundraiser PDA", async () => {
@@ -371,16 +371,16 @@ describe("earmark", () => {
       );
       await program.methods
         .confirmFundraiser()
-        .accounts({ recipientWallet: clinic.publicKey, fundraiser: f })
-        .signers([clinic])
+        .accounts({ recipientWallet: payee.publicKey, fundraiser: f })
+        .signers([payee])
         .rpc();
       const fr = await program.account.fundraiser.fetch(f);
       expect(fr.status).to.have.property("active");
       await expectErr(
         program.methods
           .confirmFundraiser()
-          .accounts({ recipientWallet: clinic.publicKey, fundraiser: f })
-          .signers([clinic])
+          .accounts({ recipientWallet: payee.publicKey, fundraiser: f })
+          .signers([payee])
           .rpc(),
         "NotPending"
       );
@@ -390,8 +390,8 @@ describe("earmark", () => {
   describe("donate", () => {
     it("happy path: two donations, automatic payout in the same tx", async () => {
       const f = await createActive({ target: 1000 });
-      const clinicAta = ata[clinic.publicKey.toBase58()];
-      const before = await conn.getAccountInfo(clinicAta).then((a) => (a ? bal(clinicAta) : 0));
+      const payeeAta = ata[payee.publicKey.toBase58()];
+      const before = await conn.getAccountInfo(payeeAta).then((a) => (a ? bal(payeeAta) : 0));
 
       await donate(f, donor1, 600);
       expect(await bal(vaultPda(f))).to.eq(600);
@@ -403,7 +403,7 @@ describe("earmark", () => {
       expect(fr.status).to.have.property("released");
       expect(fr.raised.toNumber()).to.eq(1000);
       expect(await bal(vaultPda(f))).to.eq(0);
-      expect((await bal(clinicAta)) - before).to.eq(1000);
+      expect((await bal(payeeAta)) - before).to.eq(1000);
     });
 
     it("caps over-donation instead of rejecting it", async () => {
@@ -445,9 +445,9 @@ describe("earmark", () => {
       expect((await program.account.fundraiser.fetch(p)).status).to.have.property("cancelled");
 
       const a = await createActive();
-      await cancel(a, clinic);
+      await cancel(a, payee);
       expect((await program.account.fundraiser.fetch(a)).status).to.have.property("cancelled");
-      await expectErr(cancel(a, clinic), "NotCancellable");
+      await expectErr(cancel(a, payee), "NotCancellable");
     });
 
     it("donor refunds after cancel; double refund rejected", async () => {

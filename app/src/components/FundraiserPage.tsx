@@ -1,5 +1,6 @@
 "use client";
 
+import { categoryLabel } from "@/lib/metadata";
 import { BN } from "@anchor-lang/core";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
@@ -38,9 +39,9 @@ function ActivityRow({ item, now, me }: { item: ActivityItem; now: number; me?: 
   ) : null;
   const text = {
     created: <>Fundraiser created</>,
-    confirmed: <>Clinic confirmed the fundraiser</>,
+    confirmed: <>Recipient confirmed the fundraiser</>,
     donation: <>Donation · {amount} from {who}</>,
-    released: <>Target reached · {amount} paid to the clinic</>,
+    released: <>Target reached · {amount} paid to the recipient</>,
     cancelled: <>Fundraiser cancelled</>,
     refund: <>Refund · {amount} to {who}</>,
   }[item.kind];
@@ -127,7 +128,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
   const payout = activity.find((a) => a.kind === "released");
   const myRefund = me && activity.find((a) => a.kind === "refund" && a.wallet?.equals(me));
   const refundedTotal = activity.filter((a) => a.kind === "refund").reduce((s, a) => s + BigInt(a.amount!.toString()), 0n);
-  const clinicName = recipient?.name ?? "Unverified clinic";
+  const recipientName = recipient?.name ?? "Unverified recipient";
 
   const units = parseTpln(amount);
   const accepted = units === null ? null : units > remaining ? remaining : units;
@@ -164,11 +165,11 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
           <p className="text-muted">
             {refundable ? (
               <>
-                For <strong>{clinicName}</strong> · {status === "cancelled" ? "cancelled" : `ended ${formatDateTime(deadline)}`}
+                {categoryLabel(meta?.category) && <>{categoryLabel(meta?.category)} · </>}For <strong>{recipientName}</strong> · {status === "cancelled" ? "cancelled" : `ended ${formatDateTime(deadline)}`}
               </>
             ) : (
               <>
-                For <strong>{clinicName}</strong> · ends {formatDate(deadline)}
+                {categoryLabel(meta?.category) && <>{categoryLabel(meta?.category)} · </>}For <strong>{recipientName}</strong> · ends {formatDate(deadline)}
               </>
             )}
           </p>
@@ -179,8 +180,8 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
             <h2 className="text-xl font-semibold">What happens now</h2>
             <p className="text-[#2b3733]">
               {status === "cancelled"
-                ? "This fundraiser was cancelled, so the clinic will not be paid. "
-                : `The fundraiser collected ${formatTpln(f.raised)} of ${formatTpln(f.target)} ePLN before its deadline, so the clinic will not be paid. `}
+                ? "This fundraiser was cancelled, so the recipient will not be paid. "
+                : `The fundraiser collected ${formatTpln(f.raised)} of ${formatTpln(f.target)} ePLN before its deadline, so the recipient will not be paid. `}
               Every donor can take their own donation back from the vault. Nobody has to approve it, and nobody can stop it.
             </p>
           </div>
@@ -205,10 +206,10 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
               </svg>
             </div>
             <div className="flex min-w-60 flex-1 flex-col gap-0.5">
-              <span className="text-lg font-semibold">{clinicName}</span>
+              <span className="text-lg font-semibold">{recipientName}</span>
               <span className="text-sm text-muted">
                 {recipient
-                  ? `Healthcare registry no. ${recipient.registryId} · verified ${formatDate(recipient.verifiedAt.toNumber())}`
+                  ? `Registry no. ${recipient.registryId} · verified ${formatDate(recipient.verifiedAt.toNumber())}`
                   : "No verification record"}
               </span>
             </div>
@@ -219,13 +220,13 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
             )}
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-2 rounded-input bg-ground px-4 py-3 text-sm text-[#2b3733]">
-            <span>Treatment quote · {status === "pendingConfirmation" ? "waiting for the clinic to confirm" : "confirmed by the clinic on-chain"}</span>
+            <span>Supporting document · {status === "pendingConfirmation" ? "waiting for the recipient to confirm" : "confirmed by the recipient on-chain"}</span>
             <span className="font-mono text-muted">
-              SHA-256 {Buffer.from(f.quoteHash).toString("hex").slice(0, 4)}…{Buffer.from(f.quoteHash).toString("hex").slice(-4)}
+              SHA-256 {Buffer.from(f.documentHash).toString("hex").slice(0, 4)}…{Buffer.from(f.documentHash).toString("hex").slice(-4)}
             </span>
           </div>
           <p className="text-xs text-muted">
-            On-chain details: clinic wallet{" "}
+            On-chain details: recipient wallet{" "}
             <a href={`https://explorer.solana.com/address/${f.recipient.toBase58()}`} target="_blank" rel="noreferrer" className="font-mono">
               {shortKey(f.recipient.toBase58())} ↗
             </a>{" "}
@@ -280,7 +281,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
                 {accepted === null
                   ? "Enter an amount greater than zero."
                   : units! >= remaining
-                    ? `${formatTpln(remaining.toString())} ePLN completes the target${units! > remaining ? " (the program caps your donation there)" : ""}. The clinic is paid in the same transaction.`
+                    ? `${formatTpln(remaining.toString())} ePLN completes the target${units! > remaining ? " (the program caps your donation there)" : ""}. The recipient is paid in the same transaction.`
                     : `${formatTpln((remaining - units!).toString())} ePLN would still be missing after your donation.`}
               </p>
               <button type="button" className={btnPrimary} disabled={!wallet || accepted === null || donate.busy} onClick={onDonate}>
@@ -297,13 +298,13 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
 
           {status === "pendingConfirmation" && (
             <p className="rounded-input bg-info-soft p-3 text-sm text-info">
-              Waiting for {clinicName} to confirm the quote. Donations open after the clinic confirms.
+              Waiting for {recipientName} to confirm the fundraiser. Donations open after the recipient confirms.
             </p>
           )}
 
           {status === "released" && (
             <p className="rounded-input bg-accent-soft p-3 text-sm text-accent">
-              Target reached. {formatTpln(f.target)} ePLN was paid to {clinicName} automatically.
+              Target reached. {formatTpln(f.target)} ePLN was paid to {recipientName} automatically.
               {payout && (
                 <>
                   {" "}
@@ -356,7 +357,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
           <div className="flex flex-col gap-3.5 rounded-card bg-accent-soft p-6">
             <h2 className="text-[17px] font-semibold">Where your money can go</h2>
             <Rule icon="check">
-              To <strong>{clinicName}</strong>, automatically, when the target is reached.
+              To <strong>{recipientName}</strong>, automatically, when the target is reached.
             </Rule>
             <Rule icon="back">
               <strong>Back to you</strong> if the fundraiser is cancelled or misses its deadline. You claim it yourself, no one can refuse.

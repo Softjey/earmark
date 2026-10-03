@@ -4,8 +4,10 @@ Instructions for AI coding agents (Claude Code, Codex, Cursor, …) working in t
 
 ## What this is
 
-**Earmark** is a Solana program plus a web app for medical fundraisers in which donations can only go
-to a verified clinic or back to the donors, never to the organizer. Built for the Superteam Poland
+**Earmark** is a Solana program plus a web app for fundraisers of any cause (medical,
+humanitarian, disaster relief, animals, education, …) in which donations can only go to a verified recipient
+organisation or back to the donors, never to the organizer. Keep the program and UI copy cause-neutral: say
+"recipient", not "clinic". Medical fundraising is only the demo example. Built for the Superteam Poland
 "Finance Without Intermediaries" challenge (HackYeah 2026).
 
 - Spec and architecture: [docs/PLAN.md](docs/PLAN.md). **This is the source of truth.**
@@ -31,7 +33,7 @@ to a verified clinic or back to the donors, never to the organizer. Built for th
 1. **Never move money logic off-chain.** Any rule about who can receive, donate, cancel or refund
    must be enforced in `programs/earmark`. The frontend and `app/api` may only read chain data and
    store non-financial metadata. If a backend enforced the terms, the intermediary would just be us.
-2. **No medical or personal data on-chain.** Store only hashes (e.g. SHA-256 of the quote PDF).
+2. **No medical or personal data on-chain.** Store only hashes (e.g. SHA-256 of the supporting document).
 3. **Every token transfer out of a vault goes to the recipient's ATA or the donor's own token
    account.** Do not add any other exit.
 4. All code, comments, docs, commit messages and UI copy are in **English**.

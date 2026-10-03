@@ -1,9 +1,10 @@
 # Earmark
 
-**Medical fundraisers where the money can only go to a verified clinic, or back to the donors.**
+**Fundraisers for any cause where the money can only go to a verified recipient, or back to the donors.**
+Medical care, humanitarian aid, disaster relief, children's charities, animal shelters: whoever the payee is, the organizer never touches the money.
 Built on Solana for the Superteam Poland challenge *Finance Without Intermediaries* (HackYeah 2026).
 
-> In 2017, ~6 500 people donated ~500 000 zł on a Polish crowdfunding platform to save the sight of a
+> The case that started this project: in 2017, ~6 500 people donated ~500 000 zł on a Polish crowdfunding platform to save the sight of a
 > boy named Antoś. Antoś did not exist. The platform paid the money to the organizer, who spent it on
 > himself. With Earmark he could still invent the story, but he could never receive the money.
 
@@ -14,11 +15,11 @@ progress. See [tickets](docs/tickets/README.md).
 
 | | |
 |---|---|
-| **Relationship redesigned** | Donor → fundraiser organizer → payee (clinic) |
-| **Target user** | Donors and organizers of medical fundraisers in Europe, piloting in Poland |
+| **Relationship redesigned** | Donor → fundraiser organizer → payee (clinic, NGO, shelter, relief agency, …) |
+| **Target user** | Donors and organizers of fundraisers for any cause with one identifiable payee, in Europe, piloting in Poland |
 | **Intermediaries today** | The crowdfunding platform, which holds the money, verifies stories by hand, decides payouts and refunds, and takes a fee; and the organizer, who receives the money and is trusted to spend it as promised |
-| **What changes** | Money is held by a program-owned vault. It can be paid out **only** to the verified clinic named in the fundraiser, **automatically** when the target is reached, or returned to **each donor on their own** if the fundraiser is cancelled or misses its deadline. A fundraiser cannot start without the clinic's on-chain confirmation of its quote. |
-| **Remaining trust** | A verifier confirms once that a wallet belongs to a real clinic (public healthcare registry). The verifier cannot move money. |
+| **What changes** | Money is held by a program-owned vault. It can be paid out **only** to the verified recipient named in the fundraiser, **automatically** when the target is reached, or returned to **each donor on their own** if the fundraiser is cancelled or misses its deadline. A fundraiser cannot start without the recipient's on-chain confirmation of its supporting document (invoice, quote or budget). |
+| **Remaining trust** | A verifier confirms once that a wallet belongs to a real organisation (an official public registry, e.g. KRS or RPWDL in Poland). The verifier cannot move money. |
 
 Full spec: [docs/PLAN.md](docs/PLAN.md) · Demo & Q&A: [docs/DEMO.md](docs/DEMO.md)
 
@@ -36,7 +37,7 @@ Only two code paths move tokens out of a fundraiser vault:
 The vault's authority is the fundraiser PDA, so no private key exists for it, and no other
 instruction (`cancel`, `confirm_fundraiser`, `verify_recipient`, …) touches token balances. The
 organizer is never a possible destination. A fundraiser can only name a recipient that the verifier
-has marked as a clinic, and donations start only after that clinic confirms the quote hash on-chain.
+has marked as verified, and donations start only after that recipient confirms the document hash on-chain.
 
 The program's upgrade authority is still the deployer wallet while we fix bugs, and will be set to
 final (no one can change the program) before the demo.
@@ -45,19 +46,19 @@ final (no one can change the program) before the demo.
 
 | Role | Can | Cannot |
 |---|---|---|
-| Verifier | mark a wallet as a verified clinic, revoke it | move any money, create or cancel fundraisers |
-| Organizer | create a fundraiser for a verified clinic, cancel it before payout | receive any money, change the target, recipient or deadline |
-| Clinic | confirm or cancel a fundraiser that names it | withdraw before the target is reached |
+| Verifier | mark a wallet as a verified recipient, revoke it | move any money, create or cancel fundraisers |
+| Organizer | create a fundraiser for a verified recipient, cancel it before payout | receive any money, change the target, recipient or deadline |
+| Recipient | confirm or cancel a fundraiser that names it | withdraw before the target is reached |
 | Donor | donate; get a refund after a cancel or a missed deadline (sent automatically by the keeper, or on their own click) | receive anyone else's refund |
 | Us (the deployer) | nothing once the upgrade authority is final | edit balances, pay out, block refunds |
 
 ## What if a party disappears mid-way?
 
 - **Organizer disappears:** nothing changes. They never controlled the funds; the fundraiser either
-  hits its target and pays the clinic, or expires and donors refund.
-- **Clinic never confirms:** the fundraiser stays *awaiting clinic* and cannot accept donations; the
+  hits its target and pays the recipient, or expires and donors refund.
+- **Recipient never confirms:** the fundraiser stays *waiting for recipient* and cannot accept donations; the
   organizer can cancel it.
-- **Clinic disappears after confirming** (or the verifier revokes it): new donations are blocked, the
+- **Recipient disappears after confirming** (or the verifier revokes it): new donations are blocked, the
   deadline passes, and every donor is refunded automatically by the keeper (or on their own click), without asking anyone.
 - **We disappear:** the program and the money stay on Solana. Anyone can call it with any client;
   the web app only reads chain data and stores the non-financial story text.
@@ -65,19 +66,19 @@ final (no one can change the program) before the demo.
 ## Why a blockchain and not a database?
 
 A database is controlled by its operator, who can edit balances, pay out to anyone or refund
-selectively, which is what happened in 2017. Here the rule "only to the clinic or back to the donors"
+selectively, which is what happened in 2017. Here the rule "only to the recipient or back to the donors"
 is code that even its authors cannot bypass, and every donor can check it and every transfer on a
 public explorer or on the app's `/audit` page without asking anyone.
 
 ## What it can't catch, and next steps
 
-It does not stop a fake clinic that passed verification, or a clinic colluding with an organizer
-(see [Limitations](#limitations)). Mitigations: the verifier checks a public healthcare registry
-(RPWDL / KRS in Poland, national registries elsewhere), and the audit page flags new recipients and
+It does not stop a fake organisation that passed verification, or a recipient colluding with an organizer
+(see [Limitations](#limitations)). Mitigations: the verifier checks an official public registry
+(KRS / RPWDL in Poland, national registries elsewhere), and the audit page flags new recipients and
 unusual volume.
 
 Next: on-chain attestations (Solana Attestation Service) or a multi-sig verifier council instead of a
-single verifier key; healthcare registry integrations; Polish UI; milestone payouts for long
+single verifier key; registry integrations; Polish UI; milestone payouts for long
 treatments; municipality co-funding ("residents raise X **and** the city adds Y, otherwise refund");
 stablecoins (EURC/USDC) with a fiat on-ramp (cards, BLIK, SEPA).
 
@@ -107,7 +108,7 @@ anchor test --validator legacy                 # runs tests/ against a local sol
 ```
 
 `--validator legacy` is used because Anchor's default Surfpool runner did not start on our machines.
-Scripts (run with `pnpm exec tsx scripts/<name>.ts`): `deploy-devnet.sh`, `sync-idl.ts` (IDL → `app/src/idl`), `create-mint.ts`, `setup-faucet.ts` (devnet faucet key + mint authority handover, run once), `set-token-metadata.ts` (names the ePLN mint and sets its logo, from `assets/epln/`), `airdrop.ts <wallet> <amount>`, `seed-demo.ts [--deadline-in <s>]`, `keeper.ts [--once] [--interval <ms>]` (sends permissionless refunds for cancelled / expired fundraisers; run it during the demo), `seed-clinics.ts` (verifies four extra demo clinics for the picker on `/new`), `key-to-phantom.ts <keypair.json>` (prints the base58 key for importing a demo wallet into Phantom). Demo wallets are stored in git-ignored `scripts/.keys/`.
+Scripts (run with `pnpm exec tsx scripts/<name>.ts`): `deploy-devnet.sh`, `sync-idl.ts` (IDL → `app/src/idl`), `create-mint.ts`, `setup-faucet.ts` (devnet faucet key + mint authority handover, run once), `set-token-metadata.ts` (names the ePLN mint and sets its logo, from `assets/epln/`), `airdrop.ts <wallet> <amount>`, `seed-demo.ts [--deadline-in <s>]`, `keeper.ts [--once] [--interval <ms>]` (sends permissionless refunds for cancelled / expired fundraisers; run it during the demo), `seed-recipients.ts` (verifies four extra demo recipients for the picker on `/new`), `key-to-phantom.ts <keypair.json>` (prints the base58 key for importing a demo wallet into Phantom). Demo wallets are stored in git-ignored `scripts/.keys/`.
 
 ### Run the web app
 
@@ -117,8 +118,8 @@ pnpm --dir app dev                   # http://localhost:3000
 ```
 
 Connect a devnet wallet (Phantom, Solflare), press *Get test ePLN* (needs `FAUCET_SECRET_KEY`, see
-`app/.env.example`), then: `/` lists fundraisers, `/new` creates one, `/clinic` and `/verifier` are
-the clinic and verifier panels, `/audit` shows every money movement with red flags.
+`app/.env.example`), then: `/` lists fundraisers, `/new` creates one, `/recipient` and `/verifier` are
+the recipient and verifier panels, `/audit` shows every money movement with red flags.
 
 `anchor keys sync` regenerates the program ID from `target/deploy/earmark-keypair.json`; the keypair is
 git-ignored, so on a fresh clone the ID in `declare_id!` and `Anchor.toml` is replaced by T07.
@@ -137,10 +138,12 @@ git-ignored, so on a fresh clone the ID in `declare_id!` and `Anchor.toml` is re
 
 ## Limitations
 
-- A fake clinic that passes verification, or a clinic colluding with an organizer, is not stopped by
+- A fake organisation that passes verification, or a recipient colluding with an organizer, is not stopped by
   the program; the audit page only flags it.
-- Fundraisers without a single payee (e.g. living costs) are out of scope.
+- Fundraisers without a single payee (e.g. living costs, or aid split across many individuals) are out of scope.
+- The fundraiser category (medical, humanitarian, …) is a browsing label in the off-chain metadata; the program neither knows nor enforces it.
+- The devnet program must be upgraded before the document-hash rename (formerly *quote hash*) is live; until then new fundraisers cannot be created from the current app.
 - ePLN is a devnet test token; production would use a stablecoin and a fiat on-ramp.
 - The *Get test ePLN* faucet (`/api/faucet`) holds the ePLN mint-authority key on the server. That is test money and not part of the trust model; it has no per-wallet rate limit, and its cap on newly opened token accounts is in memory, so it resets on restart.
-- Fundraiser titles and stories are stored by `/api/metadata` in a local JSON file (`app/data/`), write-once per fundraiser; only the quote's SHA-256 is on-chain. Production would use content-addressed storage (IPFS/Arweave).
+- Fundraiser titles and stories are stored by `/api/metadata` in a local JSON file (`app/data/`), write-once per fundraiser; only the supporting document's SHA-256 is on-chain. Production would use content-addressed storage (IPFS/Arweave).
 - The audit page reads the 100 most recent program transactions and recomputes flags in the browser; it is a hint for humans, not a fraud verdict.

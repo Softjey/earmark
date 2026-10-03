@@ -60,7 +60,7 @@ function FlagRow({ flag }: { flag: Flag }) {
 
 function MovementRow({ m, titleOf, now }: { m: Movement; titleOf: (k: string) => string; now: number }) {
   const { label, cls } = MOVEMENT_STYLE[m.kind];
-  const route = { donation: "donor → vault", payout: "vault → clinic", refund: "vault → donor" }[m.kind];
+  const route = { donation: "donor → vault", payout: "vault → recipient", refund: "vault → donor" }[m.kind];
   return (
     <tr className="border-t border-[#e8ecea]">
       <td className="px-5 py-3.5 text-muted">{timeAgo(m.blockTime, now)}</td>
@@ -95,9 +95,9 @@ export function AuditPage() {
   const { data: history, loading: historyLoading } = useLoad(() => fetchMovements(program), [program], 30_000, "audit:movements");
   const movements = history?.movements ?? [];
 
-  const clinicOf = (wallet: string) => data?.audit.recipients.find((r) => r.account.wallet.toBase58() === wallet)?.account.name;
+  const recipientOf = (wallet: string) => data?.audit.recipients.find((r) => r.account.wallet.toBase58() === wallet)?.account.name;
   const titleFor = (f?: { pubkey: PublicKey; account: { recipient: PublicKey } }) =>
-    f ? fundraiserTitle(data?.metadata[f.pubkey.toBase58()], clinicOf(f.account.recipient.toBase58())) : "Fundraiser";
+    f ? fundraiserTitle(data?.metadata[f.pubkey.toBase58()], recipientOf(f.account.recipient.toBase58())) : "Fundraiser";
   const titleOf = (key: string) => titleFor(data?.audit.fundraisers.find((f) => f.pubkey.toBase58() === key));
   const flags = useMemo(
     () =>
@@ -121,7 +121,7 @@ export function AuditPage() {
         <>
           <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
             <Stat label="Held in vaults" value={`${formatTpln(data.audit.totals.held)} ePLN`} />
-            <Stat label="Paid to clinics" value={`${formatTpln(data.audit.totals.paid)} ePLN`} />
+            <Stat label="Paid to recipients" value={`${formatTpln(data.audit.totals.paid)} ePLN`} />
             <Stat label="Refunded to donors" value={`${formatTpln(data.audit.totals.refunded)} ePLN`} />
             <Stat label="Paid to organizers" value="0 ePLN · always" accent />
           </div>

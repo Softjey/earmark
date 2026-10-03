@@ -2,10 +2,10 @@ use anchor_lang::prelude::*;
 
 #[error_code]
 pub enum EarmarkError {
-    #[msg("Recipient is not a verified, active clinic")]
+    #[msg("Recipient is not a verified, active organisation")]
     RecipientNotVerified,
-    #[msg("This quote has already been used for another fundraiser")]
-    QuoteAlreadyUsed,
+    #[msg("This supporting document has already been used for another fundraiser")]
+    DocumentAlreadyUsed,
     #[msg("Target must be greater than zero")]
     InvalidTarget,
     #[msg("Deadline must be in the future")]

@@ -34,10 +34,10 @@ pub mod earmark {
         id: u64,
         target: u64,
         deadline: i64,
-        quote_hash: [u8; 32],
+        document_hash: [u8; 32],
         metadata_uri: String,
     ) -> Result<()> {
-        create_fundraiser::handler(ctx, id, target, deadline, quote_hash, metadata_uri)
+        create_fundraiser::handler(ctx, id, target, deadline, document_hash, metadata_uri)
     }
 
     pub fn confirm_fundraiser(ctx: Context<ConfirmFundraiser>) -> Result<()> {

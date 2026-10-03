@@ -19,10 +19,10 @@ const NAV = [
 ];
 
 export function Header() {
-  const { isVerifier, isClinic } = useRole();
+  const { isVerifier, isRecipient } = useRole();
   const nav = [
     ...NAV,
-    ...(isClinic ? [{ href: "/clinic", label: "Clinic panel" }] : []),
+    ...(isRecipient ? [{ href: "/recipient", label: "Recipient panel" }] : []),
     ...(isVerifier ? [{ href: "/verifier", label: "Verifier panel" }] : []),
   ];
   return (

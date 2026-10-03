@@ -3,11 +3,11 @@ import { StatusBadge } from "./StatusBadge";
 import { ProgressBar } from "./ProgressBar";
 import { statusOf, type FundraiserView, type RecipientAccount } from "@/lib/chain";
 import { formatTpln, timeLeft } from "@/lib/format";
-import type { Metadata } from "@/lib/metadata";
+import { categoryLabel, type Metadata } from "@/lib/metadata";
 
-/** Fundraisers without a saved title are named after the clinic they pay, never after a wallet address. */
-export function fundraiserTitle(meta: Metadata | undefined, clinicName?: string): string {
-  return meta?.title || (clinicName ? `Fundraiser for ${clinicName}` : "Medical fundraiser");
+/** Fundraisers without a saved title are named after the recipient they pay, never after a wallet address. */
+export function fundraiserTitle(meta: Metadata | undefined, recipientName?: string): string {
+  return meta?.title || (recipientName ? `Fundraiser for ${recipientName}` : "Fundraiser");
 }
 
 export function FundraiserCard({
@@ -29,14 +29,17 @@ export function FundraiserCard({
     status === "active" || status === "pendingConfirmation"
       ? ` · ${timeLeft(deadline, now)}`
       : status === "released"
-        ? " · paid to clinic"
+        ? " · paid to recipient"
         : " · ended";
   return (
     <Link
       href={`/fundraisers/${key}`}
       className="flex flex-col gap-2.5 rounded-card border border-line bg-surface p-5 text-ink no-underline hover:border-field"
     >
-      <StatusBadge status={status} />
+      <div className="flex flex-wrap items-center gap-2">
+        <StatusBadge status={status} />
+        {categoryLabel(meta?.category) && <span className="text-sm text-muted">{categoryLabel(meta?.category)}</span>}
+      </div>
       <h2 className="text-xl font-semibold">{fundraiserTitle(meta, recipient?.name)}</h2>
       {recipient?.active ? (
         <span className="flex items-center gap-1.5 text-sm text-[#2b3733]">

@@ -1,12 +1,14 @@
 # Earmark — build plan
 
-> **Earmark** — donations earmarked for one verified payee. Medical fundraisers where the money goes
-> **directly** to a verified clinic, never to the organizer. The rules live in a Solana program nobody
+> **Earmark** — donations earmarked for one verified payee. Fundraisers for any cause (medical care,
+> humanitarian aid, disaster relief, schools, animal shelters, …) where the money goes **directly** to a
+> verified recipient organisation, never to the organizer. The rules live in a Solana program nobody
 > can override.
 
 ## 1. Problem
 
-In 2017 the "Boję się ciemności" fundraiser on Zrzutka.pl collected ~500 000 zł from ~6 500 people
+The problem is the same for every cause: the donor pays an organizer they cannot check. The case that
+motivated this project is a medical one, but nothing in the design is medical. In 2017 the "Boję się ciemności" fundraiser on Zrzutka.pl collected ~500 000 zł from ~6 500 people
 for the eye therapy of a boy named Antoś. Antoś did not exist. The platform paid the money to the
 organizer, who spent it on himself. Only the Lewandowskis (100 000 zł) got their money back.
 
@@ -21,19 +23,19 @@ Today a donor has to trust two parties:
 
 | Before | With Earmark |
 |---|---|
-| Money is paid to the organizer | Money sits in a program-owned vault and can only go to the **verified recipient** (clinic) or **back to donors** |
-| Platform staff check stories by hand | A fundraiser **cannot exist** without the clinic's on-chain signature on the quote |
+| Money is paid to the organizer | Money sits in a program-owned vault and can only go to the **verified recipient** (clinic, charity, relief agency, shelter, school, …) or **back to donors** |
+| Platform staff check stories by hand | A fundraiser **cannot exist** without the recipient's on-chain confirmation of the supporting document (invoice, quote or budget) |
 | Organizer decides about refunds | Refund is a rule: cancelled or deadline missed → every donor can take their money back alone |
 | Surplus stays with organizer | Hard target: donations are capped and the payout happens automatically when the target is hit |
-| Same need posted on many platforms | The quote hash can be registered only once |
+| Same need posted on many platforms | The document hash can be registered only once |
 
-**Remaining trust (said openly):** someone has to confirm that a wallet belongs to a real clinic
-(checked once against a public healthcare registry; in Poland RPWDL/KRS). The verifier can only mark wallets
+**Remaining trust (said openly):** someone has to confirm that a wallet belongs to a real organisation
+(checked once against an official public registry: in Poland e.g. KRS for NGOs, RPWDL for healthcare providers). The verifier can only mark wallets
 as verified. **It cannot move any money.**
 
 ## 3. Target user
 
-*Donors and organizers of medical fundraisers in Europe, piloting in Poland.* The UI is in English
+*Donors and organizers of fundraisers for any cause with a single identifiable payee (a hospital paid for a treatment, an NGO buying aid, a shelter, a school, a flood-relief association), in Europe, piloting in Poland.* The UI is in English
 (Polish translation is P1), uses plain language ("Donate", "Get my money back"), and the only crypto
 concept the user sees is the wallet.
 
@@ -42,7 +44,7 @@ concept the user sees is the wallet.
 ```
 ┌───────────────────────────────────────────────┐
 │ Frontend — Next.js + Wallet Adapter (app/)    │
-│ list · fundraiser page · create · clinic ·    │
+│ list · fundraiser page · create · recipient ·    │
 │ verifier · public audit page                  │
 └───────┬─────────────────────────────┬─────────┘
         │ txs + reads via RPC         │ title, story, photos
@@ -51,7 +53,7 @@ concept the user sees is the wallet.
 │ Anchor program           │  │ Metadata JSON            │
 │ programs/earmark          │  │ app/data/metadata.json   │
 │ ALL money rules          │  │ (no money logic, no      │
-│                          │  │  medical data on-chain)  │
+│                          │  │  personal data on-chain)  │
 └───────┬──────────────────┘  └──────────────────────────┘
         ▼
 ┌──────────────────────────┐
@@ -60,7 +62,7 @@ concept the user sees is the wallet.
 ```
 
 **Rule:** no server decides anything about money. If the metadata server is off, the funds and
-rules keep working. Medical data never goes on-chain (RODO); only the SHA-256 of the quote PDF does.
+rules keep working. Personal and medical data never go on-chain (RODO/GDPR); only the SHA-256 of the supporting document does.
 
 ## 5. On-chain spec
 
@@ -69,11 +71,11 @@ rules keep working. Medical data never goes on-chain (RODO); only the SHA-256 of
 | Account | Seeds | Fields |
 |---|---|---|
 | `Config` | `["config"]` | `verifier: Pubkey`, `mint: Pubkey`, `bump` |
-| `Recipient` | `["recipient", wallet]` | `wallet`, `name: String(64)`, `registry_id: String(32)` (healthcare registry no., e.g. RPWDL), `verified_at: i64`, `active: bool`, `bump` |
-| `Fundraiser` | `["fundraiser", organizer, id: u64]` | `organizer`, `recipient` (wallet), `id`, `target: u64`, `raised: u64`, `deadline: i64`, `quote_hash: [u8;32]`, `metadata_uri: String(128)`, `status`, `created_at`, `bump`, `vault_bump` |
+| `Recipient` | `["recipient", wallet]` | `wallet`, `name: String(64)`, `registry_id: String(32)` (number in the official registry the verifier checked, e.g. KRS or RPWDL), `verified_at: i64`, `active: bool`, `bump` |
+| `Fundraiser` | `["fundraiser", organizer, id: u64]` | `organizer`, `recipient` (wallet), `id`, `target: u64`, `raised: u64`, `deadline: i64`, `document_hash: [u8;32]`, `metadata_uri: String(128)`, `status`, `created_at`, `bump`, `vault_bump` |
 | `Vault` | `["vault", fundraiser]` | SPL token account, authority = `Fundraiser` PDA |
 | `Donation` | `["donation", fundraiser, donor]` | `donor`, `amount: u64`, `refunded: bool`, `bump` |
-| `QuoteLock` | `["quote", quote_hash]` | `fundraiser: Pubkey` (exists only to make each quote usable once) |
+| `DocumentLock` | `["document", document_hash]` | `fundraiser: Pubkey` (exists only to make each supporting document usable once) |
 
 `status`: `PendingConfirmation → Active → Released` or `→ Cancelled`.
 
@@ -84,7 +86,7 @@ rules keep working. Medical data never goes on-chain (RODO); only the SHA-256 of
 | `init_config(verifier, mint)` | deployer | once only |
 | `verify_recipient(name, registry_id)` | `config.verifier` | creates `Recipient` for a wallet |
 | `revoke_recipient()` *(P1)* | `config.verifier` | `active = false`; blocks new fundraisers/donations |
-| `create_fundraiser(id, target, deadline, quote_hash, metadata_uri)` | organizer | recipient must exist **and** be active → else `RecipientNotVerified`; `target > 0`; `deadline > now`; `QuoteLock` init fails if quote reused → `QuoteAlreadyUsed` |
+| `create_fundraiser(id, target, deadline, document_hash, metadata_uri)` | organizer | recipient must exist **and** be active → else `RecipientNotVerified`; `target > 0`; `deadline > now`; `DocumentLock` init fails if the document was reused → `DocumentAlreadyUsed` |
 | `confirm_fundraiser()` | recipient wallet | status must be `PendingConfirmation` → `Active` |
 | `donate(amount)` | donor | status `Active`; `now < deadline`; amount capped to `target - raised`; transfer donor → vault; **if `raised == target` → vault → recipient ATA, status `Released`** (same tx) |
 | `cancel()` | recipient wallet **or** organizer | status `PendingConfirmation` or `Active` → `Cancelled` |
@@ -99,7 +101,7 @@ anywhere except the recipient's token account or the donor's own token account.
 
 ### Errors
 
-`RecipientNotVerified`, `QuoteAlreadyUsed`, `InvalidTarget`, `DeadlineInPast`, `NotPending`,
+`RecipientNotVerified`, `DocumentAlreadyUsed`, `InvalidTarget`, `DeadlineInPast`, `NotPending`,
 `NotActive`, `DeadlinePassed`, `NotRefundable`, `AlreadyRefunded`, `Unauthorized`, plus
 `FieldTooLong` (name > 64, registry id > 32 or metadata URI > 128 bytes), `InvalidAmount`
 (donation of 0) and `NotCancellable` (cancel on a `Released`/`Cancelled` fundraiser).
@@ -111,14 +113,14 @@ anywhere except the recipient's token account or the donor's own token account.
 
 ### Implementation notes
 
-- `QuoteLock` and the `Recipient` check in `create_fundraiser` are validated by hand (not with
-  `init` / typed accounts) so that failures surface as `QuoteAlreadyUsed` / `RecipientNotVerified`.
-- `donate` also requires the recipient to still be `active`; a revoked clinic therefore stops
+- `DocumentLock` and the `Recipient` check in `create_fundraiser` are validated by hand (not with
+  `init` / typed accounts) so that failures surface as `DocumentAlreadyUsed` / `RecipientNotVerified`.
+- `donate` also requires the recipient to still be `active`; a revoked recipient therefore stops
   receiving donations, and existing donors can refund after the deadline.
 - `verify_recipient` creates the `Recipient` account once; a revoked wallet cannot be re-verified
   (known limitation, fix would be an `activate` path).
 - `donate` pays out the vault's whole token balance, so stray tokens sent to the vault go to the
-  clinic, never to the organizer.
+  recipient, never to the organizer.
 
 ### Upgrade authority
 
@@ -134,14 +136,14 @@ are in [docs/design/](design/README.md). The frontend must follow them.
 
 | Route | Who | What |
 |---|---|---|
-| `/` | everyone | list of fundraisers with progress, status, verified badge |
+| `/` | everyone | list of fundraisers with progress, status, verified badge, category filter |
 | `/fundraisers/[pubkey]` | donor | story, progress, `Donate`, `Get my money back`, explorer links |
-| `/new` | organizer | create fundraiser (recipient picker, target, deadline, quote PDF → hash) |
-| `/clinic` | recipient | pending fundraisers to confirm / cancel |
-| `/verifier` | verifier | verify a clinic wallet (name + registry no.) |
+| `/new` | organizer | create fundraiser (category, recipient picker, target, deadline, supporting document → hash) |
+| `/recipient` | recipient | pending fundraisers to confirm / cancel |
+| `/verifier` | verifier | verify a recipient wallet (name + registry no.) |
 | `/audit` *(P1)* | everyone | vault/payout/refund totals, recent money movements, red flags |
 
-Metadata: `POST /api/metadata` writes `app/data/metadata.json` (write-once, keyed by fundraiser pubkey; sent after the create tx confirms); `metadata_uri = /api/metadata/<fundraiser pubkey>`. `GET /api/metadata` returns all entries for the list page. `/clinic` and `/verifier` links appear in the header only for wallets that hold that role.
+Metadata: `POST /api/metadata` writes `app/data/metadata.json` (write-once, keyed by fundraiser pubkey; holds `title`, `story` and an optional descriptive `category` (medical, humanitarian, disaster, children, animals, community, other) used only for browsing and filtering, never by the program; sent after the create tx confirms); `metadata_uri = /api/metadata/<fundraiser pubkey>`. `GET /api/metadata` returns all entries for the list page. `/recipient` and `/verifier` links appear in the header only for wallets that hold that role.
 `/audit` reads accounts and the last 100 program transactions client-side. Red flags (all computed in the browser, thresholds in `app/src/lib/audit.ts`): recipient verified < 7 days ago and already in a fundraiser; recipient in > 3 fundraisers created within 7 days; target > 10× the median target; deadline passed or cancelled with ePLN still in the vault; organizer with ≥ 3 cancelled fundraisers. Each flag links to the fundraisers/accounts that triggered it.
 
 **ePLN faucet (devnet only, not part of the trust model):** `POST /api/faucet {wallet}` mints `amount` whole ePLN (default 100 = `FAUCET_AMOUNT`, max 1 000 000 per request) to the wallet's ATA. The mint authority is a dedicated faucet key (`FAUCET_SECRET_KEY`, set up by `scripts/setup-faucet.ts`, funded with 0.1 SOL), never the deployer. Limits: no per-wallet or per-IP rate limit (devnet test money); at most 40 token accounts opened on the faucet's rent (in-memory counter; resets on restart). The header shows *Get test ePLN* for connected wallets; it opens a small panel to enter the amount.
@@ -149,9 +151,9 @@ Works when the app runs locally (the demo). On a serverless host the file is rea
 
 ## 7. Demo (~3 min) — details in [DEMO.md](DEMO.md)
 
-1. Hook: Antoś story (15 s)
+1. Hook: Antoś story, then "the same problem exists for every cause" (15 s)
 2. Fraud attempt: organizer sets **own wallet** as recipient → `RecipientNotVerified` (30 s)
-3. Honest fundraiser: create → clinic confirms (30 s)
+3. Honest fundraiser: create → recipient confirms (30 s)
 4. Two donors → target hit → **automatic payout in the same tx** → explorer (45 s)
 5. Pre-made fundraiser past deadline → donor refunds alone (30 s)
 6. Audit page (20 s, if done)

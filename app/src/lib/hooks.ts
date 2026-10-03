@@ -92,14 +92,14 @@ export function useRole() {
   const me = wallet?.publicKey;
   const { data } = useLoad(
     async () => {
-      if (!me) return { isVerifier: false, isClinic: false };
+      if (!me) return { isVerifier: false, isRecipient: false };
       const [config, recipient] = await Promise.all([
         program.account.config.fetchNullable(configPda(program.programId)),
         program.account.recipient.fetchNullable(recipientPda(program.programId, me)),
       ]);
-      return { isVerifier: !!config?.verifier.equals(me), isClinic: !!recipient?.active };
+      return { isVerifier: !!config?.verifier.equals(me), isRecipient: !!recipient?.active };
     },
     [program, me?.toBase58()],
   );
-  return data ?? { isVerifier: false, isClinic: false };
+  return data ?? { isVerifier: false, isRecipient: false };
 }

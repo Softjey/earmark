@@ -1,17 +1,17 @@
 /**
- * Verifies a few extra demo clinics so the clinic picker on /new has something to choose from.
- * Safe to re-run: clinics that are already verified are skipped. Each new clinic costs ~0.002 SOL of rent,
- * paid by the verifier. The clinic wallets are throwaway keys stored in scripts/.keys/clinic-<n>.json.
- * Usage: pnpm exec tsx scripts/seed-clinics.ts
+ * Verifies a few extra demo recipients so the recipient picker on /new has something to choose from.
+ * Safe to re-run: recipients that are already verified are skipped. Each new recipient costs ~0.002 SOL of rent,
+ * paid by the verifier. The recipient wallets are throwaway keys stored in scripts/.keys/recipient-<n>.json.
+ * Usage: pnpm exec tsx scripts/seed-recipients.ts
  */
 import { PublicKey } from "@solana/web3.js";
 import { configPda, demoKeypair, ensureSol, setup } from "./lib";
 
-const CLINICS = [
-  { key: "clinic-2", name: "Warsaw Children's Hospital", registry: "RPWDL-0002" },
-  { key: "clinic-3", name: "Gdańsk Cardiology Center", registry: "RPWDL-0003" },
-  { key: "clinic-4", name: "Wrocław Oncology Institute", registry: "RPWDL-0004" },
-  { key: "clinic-5", name: "Poznań Rehabilitation Clinic", registry: "RPWDL-0005" },
+const RECIPIENTS = [
+  { key: "recipient-2", name: "Warsaw Children's Hospital", registry: "RPWDL-0002" },
+  { key: "recipient-3", name: "Ukraine Relief Fund", registry: "KRS-0000003" },
+  { key: "recipient-4", name: "Happy Paws Animal Shelter", registry: "KRS-0000004" },
+  { key: "recipient-5", name: "Flood Recovery Association", registry: "KRS-0000005" },
 ];
 
 async function main() {
@@ -22,7 +22,7 @@ async function main() {
     throw new Error(`scripts/.keys/verifier.json is not the configured verifier (${config.verifier.toBase58()})`);
   await ensureSol(connection, deployer, verifier.publicKey, 0.05);
 
-  for (const c of CLINICS) {
+  for (const c of RECIPIENTS) {
     const wallet = demoKeypair(c.key).publicKey;
     const pda = PublicKey.findProgramAddressSync([Buffer.from("recipient"), wallet.toBuffer()], program.programId)[0];
     if (await program.account.recipient.fetchNullable(pda)) {

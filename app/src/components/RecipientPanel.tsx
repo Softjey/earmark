@@ -10,7 +10,7 @@ import { formatDate, formatTpln, shortKey } from "@/lib/format";
 import { useAction, useLoad, useNow, useProgram } from "@/lib/hooks";
 import { fetchAllMetadata } from "@/lib/metadata";
 
-export function ClinicPanel() {
+export function RecipientPanel() {
   const { program, wallet } = useProgram();
   const now = useNow();
   const action = useAction();
@@ -48,12 +48,12 @@ export function ClinicPanel() {
     });
 
   const header = (
-    <PageTitle title="Fundraisers naming your clinic">
-      Confirm only quotes you actually issued. Until you confirm, no one can donate. Funds arrive in this wallet automatically when a target is reached.
+    <PageTitle title="Fundraisers naming your recipient">
+      Confirm only fundraisers that you really asked for, and check the document fingerprint against your file. Until you confirm, no one can donate. Funds arrive in this wallet automatically when a target is reached.
     </PageTitle>
   );
 
-  if (!me) return <div className="flex flex-col gap-8">{header}<Notice>Connect your clinic wallet to see fundraisers that name it.</Notice></div>;
+  if (!me) return <div className="flex flex-col gap-8">{header}<Notice>Connect your recipient wallet to see fundraisers that name it.</Notice></div>;
   if (error && !data) return <ErrorAlert error={error} />;
   if (loading || !data) return <Notice>Loading…</Notice>;
 
@@ -61,14 +61,14 @@ export function ClinicPanel() {
   const pending = fundraisers.filter((v) => "pendingConfirmation" in v.account.status);
   const others = fundraisers.filter((v) => !("pendingConfirmation" in v.account.status));
   const title = (v: FundraiserView) => fundraiserTitle(metadata[v.pubkey.toBase58()], recipient?.name);
-  const hash = (v: FundraiserView) => Buffer.from(v.account.quoteHash).toString("hex");
+  const hash = (v: FundraiserView) => Buffer.from(v.account.documentHash).toString("hex");
 
   return (
     <div className="flex flex-col gap-8">
       {header}
       {!recipient?.active && (
         <Notice>
-          This wallet is not a verified clinic, so no fundraiser can name it. Ask the verifier to verify it first.
+          This wallet is not a verified recipient, so no fundraiser can name it. Ask the verifier to verify it first.
         </Notice>
       )}
       <ErrorAlert error={action.error} />
@@ -86,14 +86,14 @@ export function ClinicPanel() {
                 Target {formatTpln(v.account.target)} ePLN · deadline {formatDate(v.account.deadline.toNumber())}
               </span>
               <span className="text-sm text-muted">
-                Quote fingerprint <span className="font-mono">{hash(v).slice(0, 4)}…{hash(v).slice(-4)}</span> · compare with your file
+                Document fingerprint <span className="font-mono">{hash(v).slice(0, 4)}…{hash(v).slice(-4)}</span> · compare with your file
                 {" · "}organizer wallet <span className="font-mono">{shortKey(v.account.organizer.toBase58())}</span>
               </span>
             </div>
             <div className="flex gap-3">
               <ArmedButton label="Reject" confirmLabel="Yes, reject" disabled={action.busy} onConfirm={() => send("cancel", v)} />
               <button type="button" className={btnDark} disabled={action.busy} onClick={() => send("confirm", v)}>
-                Confirm quote
+                Confirm fundraiser
               </button>
             </div>
           </div>

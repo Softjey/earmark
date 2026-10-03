@@ -6,7 +6,7 @@ use crate::errors::EarmarkError;
 use crate::state::*;
 
 #[derive(Accounts)]
-#[instruction(id: u64, target: u64, deadline: i64, quote_hash: [u8; 32])]
+#[instruction(id: u64, target: u64, deadline: i64, document_hash: [u8; 32])]
 pub struct CreateFundraiser<'info> {
     #[account(mut)]
     pub organizer: Signer<'info>,
@@ -35,9 +35,9 @@ pub struct CreateFundraiser<'info> {
         token::authority = fundraiser
     )]
     pub vault: Box<Account<'info, TokenAccount>>,
-    /// CHECK: PDA created by hand in the handler so that reuse fails with `QuoteAlreadyUsed`.
-    #[account(mut, seeds = [QUOTE_SEED, quote_hash.as_ref()], bump)]
-    pub quote_lock: UncheckedAccount<'info>,
+    /// CHECK: PDA created by hand in the handler so that reuse fails with `DocumentAlreadyUsed`.
+    #[account(mut, seeds = [DOCUMENT_SEED, document_hash.as_ref()], bump)]
+    pub document_lock: UncheckedAccount<'info>,
     #[account(address = config.mint)]
     pub mint: Box<Account<'info, Mint>>,
     pub token_program: Program<'info, Token>,
@@ -49,7 +49,7 @@ pub fn handler(
     id: u64,
     target: u64,
     deadline: i64,
-    quote_hash: [u8; 32],
+    document_hash: [u8; 32],
     metadata_uri: String,
 ) -> Result<()> {
     let now = Clock::get()?.unix_timestamp;
@@ -72,22 +72,22 @@ pub fn handler(
         EarmarkError::FieldTooLong
     );
 
-    // Quote lock: created once per quote hash.
-    let quote_info = ctx.accounts.quote_lock.to_account_info();
+    // Document lock: created once per document hash.
+    let document_info = ctx.accounts.document_lock.to_account_info();
     require!(
-        quote_info.owner != program_id,
-        EarmarkError::QuoteAlreadyUsed
+        document_info.owner != program_id,
+        EarmarkError::DocumentAlreadyUsed
     );
-    let space = 8 + QuoteLock::INIT_SPACE;
-    let bump = ctx.bumps.quote_lock;
+    let space = 8 + DocumentLock::INIT_SPACE;
+    let bump = ctx.bumps.document_lock;
     system_program::create_account(
         CpiContext::new_with_signer(
             ctx.accounts.system_program.key(),
             system_program::CreateAccount {
                 from: ctx.accounts.organizer.to_account_info(),
-                to: quote_info.clone(),
+                to: document_info.clone(),
             },
-            &[&[QUOTE_SEED, quote_hash.as_ref(), &[bump]]],
+            &[&[DOCUMENT_SEED, document_hash.as_ref(), &[bump]]],
         ),
         Rent::get()?.minimum_balance(space),
         space as u64,
@@ -95,9 +95,9 @@ pub fn handler(
     )?;
     let fundraiser_key = ctx.accounts.fundraiser.key();
     {
-        let mut data = quote_info.try_borrow_mut_data()?;
-        data[..8].copy_from_slice(QuoteLock::DISCRIMINATOR);
-        QuoteLock {
+        let mut data = document_info.try_borrow_mut_data()?;
+        data[..8].copy_from_slice(DocumentLock::DISCRIMINATOR);
+        DocumentLock {
             fundraiser: fundraiser_key,
         }
         .serialize(&mut &mut data[8..])?;
@@ -110,7 +110,7 @@ pub fn handler(
     fundraiser.target = target;
     fundraiser.raised = 0;
     fundraiser.deadline = deadline;
-    fundraiser.quote_hash = quote_hash;
+    fundraiser.document_hash = document_hash;
     fundraiser.metadata_uri = metadata_uri;
     fundraiser.status = FundraiserStatus::PendingConfirmation;
     fundraiser.created_at = now;
