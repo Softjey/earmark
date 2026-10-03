@@ -3,7 +3,7 @@
 - **Priority:** P1
 - **Area:** frontend
 - **Depends on:** T10
-- **Status:** todo
+- **Status:** done
 - **Owner:** —
 - **Design (read before coding):** `Audit.dc.html` (`/audit`) in [docs/design/](../design/README.md) · [canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt)
 
@@ -13,8 +13,8 @@
 
 ## Acceptance criteria
 
-- [ ] Rules: recipient verified < 7 days ago; recipient with > 3 fundraisers in 7 days; target above 10× the median; past-deadline fundraisers with unrefunded funds; organizer with many cancelled fundraisers
-- [ ] Each flag links to the accounts/txs that triggered it
+- [x] Rules: recipient verified < 7 days ago; recipient with > 3 fundraisers in 7 days; target above 10× the median; past-deadline fundraisers with unrefunded funds; organizer with many cancelled fundraisers
+- [x] Each flag links to the accounts/txs that triggered it
 
 ## Docs to update when done
 
