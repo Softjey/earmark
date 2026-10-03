@@ -15,7 +15,7 @@
 | # | Time | Screen | Say |
 |---|---|---|---|
 | 0 | 15 s | Slide | "6 500 people, 500 000 zł, and Antoś never existed. The platform paid the money to the organizer; everything else was trust." |
-| 1 | 30 s | `/new` as Organizer | Create "Therapy for Antoś" with **own wallet** as recipient → error `RecipientNotVerified`. "He can invent a story. He cannot send the money to himself." |
+| 1 | 30 s | `/new` as Organizer | Create "Therapy for Antoś": the clinic picker only offers verified clinics, so open *Use a different wallet address* and paste the **own wallet** as recipient → error `RecipientNotVerified`. "He can invent a story. He cannot send the money to himself." |
 | 2 | 30 s | `/new` → `/clinic` | Create an honest fundraiser, 1 000 ePLN, for Eye Clinic, attach quote PDF. Status *awaiting clinic*. Switch to the clinic profile → **Confirm** → Active. |
 | 3 | 45 s | `/fundraisers/[id]` | Donor 1 pays 600 (60 %). Donor 2 pays 400 → target hit → **payout in the same transaction**. Explorer: vault 0, clinic +1 000. "The organizer never touched the money. Nobody held it in between." |
 | 4 | 30 s | Fundraiser B | Deadline passed, target missed. Donor 1 → **Get my money back** → +300. "The Lewandowskis got their money back. 6 500 others did not. Here the refund is the same for everyone and needs nobody's permission." |

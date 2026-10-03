@@ -4,10 +4,11 @@ import { BN } from "@anchor-lang/core";
 import { PublicKey } from "@solana/web3.js";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { VerifiedBadge } from "./VerifiedBadge";
 import { ErrorAlert, Field, Notice, PageTitle, btnPrimary, inputCls } from "./ui";
 import { configPda, fetchRecipients, fundraiserPda } from "@/lib/chain";
 import { useAction, useLoad, useProgram } from "@/lib/hooks";
-import { parseTpln, shortKey } from "@/lib/format";
+import { formatDate, parseTpln, shortKey } from "@/lib/format";
 import { STORY_MAX, TITLE_MAX, saveMetadata } from "@/lib/metadata";
 
 /** SHA-256 of the file, computed in the browser. The file itself never leaves the device. */
@@ -32,6 +33,7 @@ export function NewFundraiserForm() {
   const [title, setTitle] = useState("");
   const [story, setStory] = useState("");
   const [recipient, setRecipient] = useState("");
+  const [custom, setCustom] = useState(false);
   const [target, setTarget] = useState("");
   const [deadline, setDeadline] = useState(() => localInput(new Date(Date.now() + 7 * 86400_000)));
   const [file, setFile] = useState<File>();
@@ -53,6 +55,7 @@ export function NewFundraiserForm() {
     setWarning(undefined);
     if (!wallet) return setProblem({ title: "Connect your wallet", message: "Use the button in the top right corner first." });
 
+    if (!recipient.trim()) return setProblem({ title: "Choose a clinic", message: "Pick the verified clinic that will be paid." });
     let recipientWallet: PublicKey;
     try {
       recipientWallet = new PublicKey(recipient.trim());
@@ -89,7 +92,7 @@ export function NewFundraiserForm() {
   return (
     <div className="flex max-w-[720px] flex-col gap-8">
       <PageTitle title="Start a fundraiser">
-        Choose the clinic that will be paid. You never receive the money yourself, and the clinic must confirm the quote before anyone can donate.
+        Choose the verified clinic that will be paid. You never receive the money yourself, and the clinic must confirm the quote before anyone can donate.
       </PageTitle>
       <form onSubmit={onSubmit} className="flex flex-col gap-6">
         <Field label="Title" htmlFor="title">
@@ -98,22 +101,66 @@ export function NewFundraiserForm() {
         <Field label="Story" htmlFor="story" hint="Shown to donors and stored off-chain. Don't include medical details or other personal data.">
           <textarea id="story" required rows={4} maxLength={STORY_MAX} value={story} onChange={(e) => setStory(e.target.value)} className={`${inputCls} py-3`} />
         </Field>
-        <Field label="Recipient wallet" htmlFor="recipient" hint="Pick a verified clinic below or paste a wallet address.">
-          <input id="recipient" required value={recipient} onChange={(e) => setRecipient(e.target.value)} className={`${inputCls} font-mono text-sm`} />
-          <div className="flex flex-wrap gap-2">
-            {clinics.map((c) => (
-              <button
-                type="button"
-                key={c.pubkey.toBase58()}
-                onClick={() => setRecipient(c.account.wallet.toBase58())}
-                className="min-h-11 rounded-full border border-field bg-surface px-4 text-sm font-medium hover:bg-ground"
-                title={shortKey(c.account.wallet.toBase58())}
-              >
-                {c.account.name}
-              </button>
-            ))}
-          </div>
-        </Field>
+        <fieldset className="flex flex-col gap-1.5">
+          <legend className="mb-1.5 text-sm font-semibold">Clinic to be paid</legend>
+          {!recipients ? (
+            <Notice>Loading verified clinics…</Notice>
+          ) : clinics.length === 0 ? (
+            <Notice>No verified clinics yet. A verifier has to approve a clinic first.</Notice>
+          ) : (
+            <div role="radiogroup" className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {clinics.map((c) => {
+                const wallet58 = c.account.wallet.toBase58();
+                const selected = !custom && recipient === wallet58;
+                return (
+                  <label
+                    key={c.pubkey.toBase58()}
+                    className={`flex min-h-11 cursor-pointer flex-col gap-2 rounded-card border bg-surface p-4 hover:bg-ground ${
+                      selected ? "border-accent ring-2 ring-accent-soft" : "border-field"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="clinic"
+                      className="sr-only"
+                      checked={selected}
+                      onChange={() => {
+                        setCustom(false);
+                        setRecipient(wallet58);
+                      }}
+                    />
+                    <span className="flex items-start justify-between gap-2">
+                      <strong className="text-base">{c.account.name}</strong>
+                      {selected && <VerifiedBadge label="Selected" />}
+                    </span>
+                    <span className="font-mono text-[13px] text-muted">{shortKey(wallet58)}</span>
+                    <span className="text-[13px] text-muted">Verified {formatDate(c.account.verifiedAt.toNumber())}</span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
+          <span className="text-[13px] text-muted">Only clinics verified on-chain can be chosen. The program rejects any other wallet.</span>
+          <button
+            type="button"
+            className="self-start text-[13px] font-medium text-accent underline"
+            onClick={() => {
+              setCustom((v) => !v);
+              setRecipient("");
+            }}
+          >
+            {custom ? "Back to verified clinics" : "Use a different wallet address"}
+          </button>
+          {custom && (
+            <input
+              aria-label="Recipient wallet address"
+              placeholder="Wallet address"
+              value={recipient}
+              onChange={(e) => setRecipient(e.target.value)}
+              className={`${inputCls} font-mono text-sm`}
+            />
+          )}
+        </fieldset>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <Field label="Target (ePLN)" htmlFor="target">
             <input id="target" required inputMode="decimal" placeholder="1000" value={target} onChange={(e) => setTarget(e.target.value)} className={inputCls} />
