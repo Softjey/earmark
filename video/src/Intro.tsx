@@ -594,13 +594,17 @@ export interface IntroProps {
   variant?: Variant;
   pacing?: Cut["pacing"];
   sfx?: Cut["sfx"];
+  /** v3: one music stem per mood, switched at scene boundaries */
   music?: boolean;
+  /** v4+: one continuous track scored to this cut (public/music/<score>.mp3, from sound/generate.py score) */
+  score?: string;
+  sounds?: Cut["sounds"];
 }
 
-export function Intro({ voice = false, variant = "default", pacing = "calm", sfx = "none", music = false }: IntroProps) {
+export function Intro({ voice = false, variant = "default", pacing = "calm", sfx = "none", music = false, score, sounds = "v3" }: IntroProps) {
   const scenes = sequence(variant, pacing);
   return (
-    <CutContext.Provider value={{ pacing, sfx }}>
+    <CutContext.Provider value={{ pacing, sfx, sounds }}>
       <AbsoluteFill style={{ fontFamily: SANS, background: C.ink }}>
         {scenes.map((s) => {
           const View = VIEWS[s.id];
@@ -619,6 +623,7 @@ export function Intro({ voice = false, variant = "default", pacing = "calm", sfx
           );
         })}
         {music && <Music scenes={scenes} dynamic={pacing === "dynamic"} />}
+        {score && <Audio src={staticFile(`music/${score}.mp3`)} volume={pacing === "dynamic" ? 0.17 : 0.14} />}
       </AbsoluteFill>
     </CutContext.Provider>
   );

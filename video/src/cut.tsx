@@ -6,9 +6,12 @@ import { type Pacing, scene, type Scene } from "./timeline";
  * How an intro is cut: its pacing and how much sound design it carries.
  * sfx: "none" (voice only), "key" (only the story beats: stamp, twist, blocked transfer, payout, logo), "full" (every element).
  */
-export type Cut = { pacing: Pacing; sfx: "none" | "key" | "full" };
+export type Cut = { pacing: Pacing; sfx: "none" | "key" | "full"; sounds: "v3" | "v4" };
 
-export const CutContext = createContext<Cut>({ pacing: "calm", sfx: "none" });
+export const CutContext = createContext<Cut>({ pacing: "calm", sfx: "none", sounds: "v3" });
+
+// v4 swapped the bell-like effects for soft mallets
+const V4_SOUNDS: Partial<Record<SfxName, string>> = { chime: "confirm", coin: "pay", doubt: "uhoh" };
 
 export const useCut = () => useContext(CutContext);
 export const useDynamic = () => useCut().pacing === "dynamic";
@@ -26,13 +29,13 @@ export type SfxName = "whoosh" | "impact" | "stamp" | "counter" | "pop" | "coin"
 
 /** A sound effect at frame `at` of the current scene. `beat` effects play in both cuts, the rest only in "full". */
 export function Sfx({ at, name, volume = 0.5, beat = false }: { at: number; name: SfxName; volume?: number; beat?: boolean }) {
-  const { sfx, pacing } = useCut();
+  const { sfx, pacing, sounds } = useCut();
   if (sfx === "none" || (sfx === "key" && !beat)) return null;
   // the dynamic cut stacks drums and more effects, so each effect sits a little lower to avoid clipping
   const gain = pacing === "dynamic" ? 0.8 : 1;
   return (
     <Sequence from={Math.max(0, Math.round(at))} layout="none">
-      <Audio src={staticFile(`sfx/${name}.mp3`)} volume={volume * gain} />
+      <Audio src={staticFile(`sfx/${(sounds === "v4" && V4_SOUNDS[name]) || name}.mp3`)} volume={volume * gain} />
     </Sequence>
   );
 }

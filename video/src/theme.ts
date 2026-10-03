@@ -30,7 +30,7 @@ export const MONO = loadMono("normal", {
   subsets: ["latin"],
 }).fontFamily;
 
-export const FPS = 30;
+export { FPS } from "./timeline";
 
 /** Fade in and slide up, starting at `start`. */
 export function fadeUp(frame: number, start: number, distance = 24) {

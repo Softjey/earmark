@@ -3,12 +3,18 @@
 # Run from video/sound/ with the voice-over venv (it has numpy; add scipy once):
 #   uv pip install --python ../voiceover/.venv/bin/python scipy
 #   ../voiceover/.venv/bin/python generate.py
-# Writes ../public/music/<mood>[-drive].mp3 and ../public/sfx/<name>.mp3.
+# Writes ../public/music/<mood>[-drive].mp3 and ../public/sfx/<name>.mp3 (the v3 cuts).
+#
+#   ../voiceover/.venv/bin/python generate.py score <variant>
+# scores one continuous track to a cut's picture (timings from export-timeline.ts) and writes
+# ../public/music/score-<variant>.mp3 and score-<variant>-dynamic.mp3 (the v4+ cuts).
 #
 # All music is in A minor / C major so the moods can follow each other without clashing.
 # Calm stems run at 84 BPM, the "-drive" stems (dynamic cut) at 108 BPM with drums.
+import json
 import os
 import subprocess
+import sys
 
 import numpy as np
 import soundfile as sf
@@ -151,6 +157,7 @@ CHORDS = {
     "Dm": ["D3", "A3", "D4", "F4", "A4"],
     "Fmaj7": ["F2", "C3", "A3", "E4", "A4"],
     "Am(add9)": ["A2", "E3", "B3", "C4", "E4"],
+    "E": ["E2", "B2", "E3", "G#3", "B3"],
 }
 ARP = {k: [hz(n) for n in v[2:]] + [hz(v[2]) * 2] for k, v in CHORDS.items()}
 
@@ -365,10 +372,163 @@ def write(path: str, x: np.ndarray, lufs: float | None = None) -> None:
     print(path, f"{len(x) / SR:.1f} s")
 
 
+# ---------- v4+: soft mallet effects (no bells) and one continuous score ----------
+
+
+def marimba(f: float, seconds: float = 1.0) -> np.ndarray:
+    tt = t(seconds)
+    x = np.sin(2 * np.pi * f * tt) * np.exp(-tt * 6)
+    x += 0.25 * np.sin(2 * np.pi * f * 4 * tt) * np.exp(-tt * 22)
+    x += 0.08 * np.sin(2 * np.pi * f * 10 * tt) * np.exp(-tt * 45)
+    return x * env(len(tt), 0.002, 0.05) * 0.6
+
+
+def mallet_sfx(name: str) -> np.ndarray:
+    notes = {
+        "pay": [("E5", 0.0), ("A5", 0.09)],  # money lands where it should
+        "confirm": [("C5", 0.0), ("E5", 0.06), ("G5", 0.12)],  # verified / confirmed
+        "uhoh": [("F4", 0.0), ("B3", 0.16)],  # "trust?"
+    }[name]
+    x = np.zeros(int(1.4 * SR))
+    for n, at in notes:
+        m = marimba(hz(n), 1.0)
+        i = int(at * SR)
+        x[i : i + len(m)] += m
+    x = reverb(x, 1.0, 0.2)
+    return x / (np.max(np.abs(x)) + 1e-9) * 0.9
+
+
+def curve(total: int, points: list[tuple[float, float]]) -> np.ndarray:
+    """Gain automation: linear between (seconds, gain) points, held at the ends."""
+    xs, ys = zip(*sorted(points))
+    return np.interp(np.arange(total) / SR, xs, ys)[:, None]
+
+
+def score(scenes: list[dict], drive: bool) -> np.ndarray:
+    """One track for the whole cut. The same A-minor motif runs from the hook through the scam (darker, not cut),
+    holds on E for the question, turns to C major for Earmark and resolves on C for the title."""
+    start = {s["id"].rstrip("LB"): s["start"] for s in scenes}
+    seconds = scenes[-1]["start"] + scenes[-1]["length"]
+    n = int(seconds * SR)
+    dark, question, bright, end = start["twist"], start["question"], start["earmark"], start["title"]
+    bpm = 108 if drive else 84
+    beat = 60 / bpm
+    bar = 4 * beat
+    fade = 1.2
+
+    # chord plan: (time, chord, length)
+    plan = []
+    at, i = 0.0, 0
+    minor = ["Am", "F", "C", "G"]
+    while at < question - 0.01:
+        length = min(bar, question - at)
+        plan.append((at, minor[i % 4], length))
+        at += length
+        i += 1
+    plan.append((question, "E", bright - question))
+    at, i = bright, 0
+    major = ["C", "G", "Am", "F"]
+    while at < end - 0.01:
+        length = min(bar, end - at)
+        plan.append((at, major[i % 4], length))
+        at += length
+        i += 1
+    plan.append((end, "Fmaj7", bar))
+    plan.append((end + bar, "C", max(0.5, seconds - end - bar)))
+
+    pads_open = np.zeros((n, 2))
+    pads_shut = np.zeros((n, 2))
+    subs = np.zeros((n, 2))
+    arp = np.zeros((n, 2))
+    for at, chord, length in plan:
+        freqs = [hz(x) for x in CHORDS[chord]]
+        place(pads_open, pad(freqs, length + 1.0, 1900, attack=0.6), at, 0.5)
+        place(pads_shut, pad(freqs, length + 1.0, 520, attack=0.6), at, 0.6)
+        place(subs, sub(freqs[0] / 2, length + 0.5), at, 0.25)
+        if chord in ("E", "Fmaj7") or at >= end + bar:
+            continue
+        step = beat / 2 if (at >= bright or drive) else beat
+        notes = ARP[chord]
+        for k in range(int(round(length / step))):
+            place(arp, marimba(notes[k % len(notes)] * 2, 0.9), at + k * step, 0.3)
+
+    # automation: the open pad and the arpeggio make way for the shut pad while the scam is told
+    g_open = curve(n, [(0, 1), (dark, 1), (dark + fade, 0), (bright - fade, 0), (bright, 1)])
+    g_shut = 1 - g_open
+    g_arp = curve(n, [(0, 1), (dark, 1), (dark + 0.8, 0), (bright, 0), (bright + 0.6, 1), (end, 1), (end + bar, 0)])
+    mix = pads_open * g_open + pads_shut * g_shut + subs + arp * g_arp
+
+    tt = np.arange(n) / SR
+    drone = np.sin(2 * np.pi * hz("A1") * tt) * (0.6 + 0.4 * np.sin(2 * np.pi * 0.15 * tt)) * 0.3
+    mix += np.stack([drone, drone], axis=1) * curve(n, [(dark, 0), (dark + 1.5, 1), (bright - 0.8, 1), (bright, 0)])
+
+    heart = np.zeros((n, 2))
+    b = dark + bar / 2
+    while b < question:
+        place(heart, lowpass(kick(0.9), 300), b)
+        place(heart, lowpass(kick(0.6), 300), b + beat * 0.42)
+        b += bar
+    mix += heart * 0.8
+
+    # riser into the answer
+    rlen = bright - question
+    rt = t(rlen)
+    noise = rng.standard_normal(len(rt))
+    swept = np.zeros_like(rt)
+    hop = int(0.05 * SR)
+    for k in range(0, len(rt) - hop, hop):
+        c = 300 + (k / len(rt)) ** 2 * 5000
+        swept[k : k + hop] = bandpass(noise[k : k + hop + 2000], c * 0.8, c * 1.25)[:hop]
+    place(mix, swept * 0.18 * (rt / rlen) ** 1.6, question)
+
+    if drive:
+        d = np.zeros((n, 2))
+        beats_total = int(seconds / beat)
+        for k in range(beats_total):
+            at = k * beat
+            if at < dark:  # light pulse under the story
+                if k % 2 == 0:
+                    place(d, kick(0.5), at)
+                place(d, hat(0.35), at + beat / 2)
+            elif at < question:  # driving bass under the scam
+                place(d, bass(hz("A1") if (k // 4) % 4 != 1 else hz("F1"), beat * 0.45), at, 0.5)
+                place(d, bass(hz("A1") if (k // 4) % 4 != 1 else hz("F1"), beat * 0.45), at + beat / 2, 0.5)
+                place(d, hat(0.35), at + beat / 2)
+            elif bright <= at < end:  # full groove for the answer
+                place(d, kick(0.8), at)
+                place(d, hat(0.4), at + beat / 2)
+                if k % 2 == 1:
+                    place(d, clap(0.8), at)
+        mix += d * 0.7
+        place(mix, kick(1.0, 0.8), end, 0.8)
+
+    # the answer has no drone or heartbeat under it, so lift it to the level of the scam section
+    mix *= curve(n, [(0, 1), (bright - 0.3, 1), (bright + 0.8, 1.45), (seconds, 1.45)])
+    # a short dip right on "did not exist" so the impact effect lands
+    mix *= curve(n, [(0, 1), (dark - 0.05, 1), (dark + 0.25, 0.35), (dark + 1.8, 1), (seconds, 1)])
+    mix = reverb(mix, 2.4, 0.3)[:n]
+    mix *= curve(n, [(0, 0), (0.4, 1), (seconds - 2.5, 1), (seconds, 0)])
+    return mix / (np.max(np.abs(mix)) + 1e-9) * 0.9
+
+
+def cut_timeline(variant: str, pacing: str) -> list[dict]:
+    out = subprocess.run(
+        ["../../node_modules/.bin/tsx", "export-timeline.ts", variant, pacing], capture_output=True, text=True, check=True, cwd="."
+    ).stdout
+    return json.loads(out)
+
+
 os.makedirs("../public/music", exist_ok=True)
 os.makedirs("../public/sfx", exist_ok=True)
-for mood in ["story", "dark", "riser", "hope", "resolve"]:
-    write(f"../public/music/{mood}.mp3", music(mood, drive=False), lufs=-18)
-    write(f"../public/music/{mood}-drive.mp3", music(mood, drive=True), lufs=-18)
-for name in ["whoosh", "impact", "stamp", "counter", "pop", "coin", "chime", "error", "doubt", "refund"]:
-    write(f"../public/sfx/{name}.mp3", sfx(name))
+if len(sys.argv) > 2 and sys.argv[1] == "score":
+    variant = sys.argv[2]
+    for pacing, suffix in (("calm", ""), ("dynamic", "-dynamic")):
+        write(f"../public/music/score-{variant}{suffix}.mp3", score(cut_timeline(variant, pacing), pacing == "dynamic"), lufs=-18)
+    for name in ["pay", "confirm", "uhoh"]:
+        write(f"../public/sfx/{name}.mp3", mallet_sfx(name))
+else:
+    for mood in ["story", "dark", "riser", "hope", "resolve"]:
+        write(f"../public/music/{mood}.mp3", music(mood, drive=False), lufs=-18)
+        write(f"../public/music/{mood}-drive.mp3", music(mood, drive=True), lufs=-18)
+    for name in ["whoosh", "impact", "stamp", "counter", "pop", "coin", "chime", "error", "doubt", "refund"]:
+        write(f"../public/sfx/{name}.mp3", sfx(name))

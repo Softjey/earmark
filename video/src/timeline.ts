@@ -1,7 +1,8 @@
 import script from "../voiceover/script.json";
 import durations from "./vo-durations.json";
 import durationsFast from "./vo-durations-fast.json";
-import { FPS } from "./theme";
+
+export const FPS = 30;
 
 // Scene lengths follow the generated voice-over (voiceover/generate.py writes vo-durations*.json).
 const TAIL: Record<string, number> = {
