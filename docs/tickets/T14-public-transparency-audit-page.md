@@ -5,6 +5,7 @@
 - **Depends on:** T10
 - **Status:** todo
 - **Owner:** —
+- **Design (read before coding):** `Audit.dc.html` (`/audit`) in [docs/design/](../design/README.md) · [canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt)
 
 ## Description
 

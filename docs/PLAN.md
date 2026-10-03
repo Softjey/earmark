@@ -107,7 +107,8 @@ the rules. Show this in the explorer during Q&A.
 ## 6. Frontend
 
 Next.js (App Router) + `@solana/wallet-adapter-react` + `@coral-xyz/anchor` client generated from IDL.
-English copy. Design is done in Claude Design (see ticket T09).
+English copy. **Design:** [Claude Design canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt); mockups per screen and design tokens
+are in [docs/design/](design/README.md). The frontend must follow them.
 
 | Route | Who | What |
 |---|---|---|

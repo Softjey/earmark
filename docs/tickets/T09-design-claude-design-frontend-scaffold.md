@@ -5,6 +5,7 @@
 - **Depends on:** T00
 - **Status:** todo
 - **Owner:** —
+- **Design (read before coding):** all screens; tokens table in [docs/design/](../design/README.md) · [canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt)
 
 ## Description
 

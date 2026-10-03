@@ -5,6 +5,7 @@
 - **Depends on:** T09, T03
 - **Status:** todo
 - **Owner:** —
+- **Design (read before coding):** `New.dc.html` (`/new`, incl. the `RecipientNotVerified` error state) in [docs/design/](../design/README.md) · [canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt)
 
 ## Description
 

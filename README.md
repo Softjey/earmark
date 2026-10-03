@@ -61,7 +61,7 @@ git-ignored, so on a fresh clone the ID in `declare_id!` and `Anchor.toml` is re
 | Network | Solana devnet |
 | Program ID | _TBD (T07)_ |
 | tPLN mint | _TBD (T07)_ |
-| Design | [docs/design](docs/design/README.md) |
+| Design | [Claude Design canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt) · mockups & tokens in [docs/design](docs/design/README.md) |
 | Demo video | _TBD (T17)_ |
 
 ## Limitations

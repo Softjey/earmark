@@ -5,6 +5,7 @@
 - **Depends on:** T09, T03
 - **Status:** todo
 - **Owner:** —
+- **Design (read before coding):** `Clinic.dc.html` (`/clinic`), `Verifier.dc.html` (`/verifier`) in [docs/design/](../design/README.md) · [canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt)
 
 ## Description
 

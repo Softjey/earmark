@@ -5,6 +5,7 @@
 - **Depends on:** T07, T09
 - **Status:** todo
 - **Owner:** —
+- **Design (read before coding):** header wallet button area in any mockup (match button style from `docs/design/README.md` tokens) in [docs/design/](../design/README.md) · [canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt)
 
 ## Description
 

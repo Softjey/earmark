@@ -11,6 +11,9 @@ to a verified clinic or back to the donors, never to the organizer. Built for th
 - Spec and architecture: [docs/PLAN.md](docs/PLAN.md). **This is the source of truth.**
 - Demo script and judge Q&A: [docs/DEMO.md](docs/DEMO.md)
 - Work items: [docs/tickets/](docs/tickets/README.md)
+- **UI design: [docs/design/](docs/design/README.md)** (mockups per screen + design tokens; source canvas:
+  https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt ). **Any frontend work must follow these mockups and tokens.** Read
+  `docs/design/README.md` and the mockup named in your ticket before writing UI code.
 
 ## Repo map
 
