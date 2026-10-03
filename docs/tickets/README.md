@@ -1,0 +1,25 @@
+# Tickets
+
+| ID | Title | Priority | Area | Depends on | Status |
+|---|---|---|---|---|---|
+| [T00](T00-toolchain-workspace-setup.md) | Toolchain & workspace setup | P0 | infra | — | todo |
+| [T01](T01-program-state-errors-init_config.md) | Program: state, errors, init_config | P0 | program | T00 | todo |
+| [T02](T02-program-verify_recipient-revoke_recipient.md) | Program: verify_recipient / revoke_recipient | P0 (revoke: P1) | program | T01 | todo |
+| [T03](T03-program-create_fundraiser-confirm_fundraiser.md) | Program: create_fundraiser / confirm_fundraiser | P0 | program | T02 | todo |
+| [T04](T04-program-donate-with-automatic-payout.md) | Program: donate with automatic payout | P0 | program | T03 | todo |
+| [T05](T05-program-cancel-refund.md) | Program: cancel / refund | P0 | program | T04 | todo |
+| [T06](T06-program-tests.md) | Program tests | P0 | program | T05 | todo |
+| [T07](T07-devnet-deploy-tpln-mint-upgrade-authority.md) | Devnet deploy, tPLN mint, upgrade authority | P0 | infra | T06 | todo |
+| [T08](T08-seed-demo-state.md) | Seed demo state | P0 | infra | T07 | todo |
+| [T09](T09-design-claude-design-frontend-scaffold.md) | Design (Claude Design) + frontend scaffold | P0 | frontend | T00 | todo |
+| [T10](T10-frontend-fundraiser-list-page.md) | Frontend: fundraiser list & page | P0 | frontend | T09, T04 | todo |
+| [T11](T11-frontend-create-fundraiser-metadata-json.md) | Frontend: create fundraiser + metadata JSON | P0 | frontend | T09, T03 | todo |
+| [T12](T12-frontend-clinic-verifier-panels.md) | Frontend: clinic & verifier panels | P0 | frontend | T09, T03 | todo |
+| [T13](T13-frontend-tpln-faucet-button.md) | Frontend: tPLN faucet button | P1 | frontend | T07, T09 | todo |
+| [T14](T14-public-transparency-audit-page.md) | Public transparency & audit page | P1 | frontend | T10 | todo |
+| [T15](T15-readme-design-rationale.md) | README & design rationale | P0 | docs | — | todo |
+| [T16](T16-pitch-deck-10-slides-pdf.md) | Pitch deck (≤ 10 slides, PDF) | P0 | pitch | T15 | todo |
+| [T17](T17-demo-video-3-min-rehearsal.md) | Demo video (≤ 3 min) + rehearsal | P0 | pitch | T08, T10–T12 | todo |
+| [T18](T18-submission-on-hacktribe.md) | Submission on HackTribe | P0 | pitch | T15–T17 | todo |
+
+Status values: `todo` · `in progress` · `done` · `cut`. Keep this table in sync with each ticket's **Status** line.

@@ -1,0 +1,25 @@
+# Challenge materials (not ours to publish)
+Partner Task*/
+
+# OS / editor
+.DS_Store
+.vscode/
+
+# Rust / Anchor
+target/
+.anchor/
+test-ledger/
+**/*-keypair.json
+*.keypair.json
+id.json
+
+# Node
+node_modules/
+.next/
+out/
+*.log
+
+# Env
+.env
+.env.*
+!.env.example

@@ -1,0 +1,22 @@
+# T11 — Frontend: create fundraiser + metadata JSON
+
+- **Priority:** P0
+- **Area:** frontend
+- **Depends on:** T09, T03
+- **Status:** todo
+- **Owner:** —
+
+## Description
+
+`/new`: pick recipient (verified list + free-text wallet so the fraud demo is possible), target, deadline, title, story, quote PDF. The PDF is hashed in the browser (SHA-256) — only the hash goes on-chain. `POST /api/metadata` stores title/story in `app/data/metadata.json`.
+
+## Acceptance criteria
+
+- [ ] Fraud demo works: own wallet as recipient → clear `RecipientNotVerified` message
+- [ ] No medical data is sent on-chain
+- [ ] Metadata is keyed by fundraiser pubkey
+
+## Docs to update when done
+
+- Update **Status** above and in [README.md](README.md).
+- If behaviour differs from [PLAN.md](../PLAN.md), update PLAN.md in the same commit.
