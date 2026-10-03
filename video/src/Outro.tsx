@@ -49,7 +49,7 @@ function End() {
   return (
     <AbsoluteFill style={{ background: C.ground, alignItems: "center", justifyContent: "center" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 28, transform: `scale(${0.9 + 0.1 * s})`, opacity: s }}>
-        <LogoMark size={120} stroke={2.4} />
+        <LogoMark size={128} />
         <div style={{ fontSize: 150, fontWeight: 700, color: C.ink, letterSpacing: -4 }}>Earmark</div>
       </div>
       <div style={{ fontSize: 54, fontWeight: 600, color: C.ink, marginTop: 40, letterSpacing: -0.8, ...fadeUp(frame, 14) }}>

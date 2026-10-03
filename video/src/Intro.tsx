@@ -397,7 +397,7 @@ function Title() {
       {frame >= b1 && (
         <>
           <div style={{ display: "flex", alignItems: "center", gap: 28, transform: `scale(${0.9 + 0.1 * s})`, opacity: s }}>
-            <LogoMark size={120} stroke={2.4} />
+            <LogoMark size={128} />
             <div style={{ fontSize: 150, fontWeight: 700, color: C.ink, letterSpacing: -4 }}>Earmark</div>
           </div>
           <div style={{ fontSize: 44, fontWeight: 500, color: C.muted, marginTop: 28, ...fadeUp(frame, b1 + 14) }}>

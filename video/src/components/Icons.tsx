@@ -8,10 +8,11 @@ function Svg({ size = 32, color = "currentColor", stroke = 2.4, children }: Icon
   );
 }
 
-export const LogoMark = ({ size = 28, color = "#0B6B55", stroke = 2.2 }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 28 28" fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M5 14 L14 5 L23 14 L14 23 Z" />
-    <path d="M10 14 L13 17 L18 11" />
+// Brand mark: docs/design/README.md#logo (dark backgrounds: dark={true}).
+export const LogoMark = ({ size = 28, dark = false }: { size?: number; dark?: boolean }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
+    <path d="M32 6 L54 19 V45 L32 58 L10 45 V19 Z" stroke={dark ? "#8EE0C6" : "#0B6B55"} strokeWidth="5" strokeLinejoin="round" />
+    <circle cx="32" cy="32" r="6" fill={dark ? "#FFFFFF" : "#0E1A17"} />
   </svg>
 );
 
