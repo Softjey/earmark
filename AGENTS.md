@@ -23,6 +23,7 @@ to a verified clinic or back to the donors, never to the organizer. Built for th
 | `tests/` | Program tests (TypeScript) |
 | `app/` | Next.js frontend (wallet connect, UI, metadata JSON API) |
 | `scripts/` | Deploy, mint ePLN, airdrop, seed demo state |
+| `video/` | Remotion project: animated intro, outro and role badges for the demo video |
 | `docs/` | Plan, demo script, tickets, design mockups |
 
 ## Hard rules
@@ -45,6 +46,7 @@ anchor build                      # build program + IDL
 anchor test --validator legacy                       # run program tests on a local validator
 anchor test --validator legacy -- --grep "refund"    # run a single test (prefer this over the full suite)
 pnpm --dir app dev                # run the frontend
+pnpm --dir video studio           # preview demo-video animations; `render:all` writes video/out/
 ```
 
 `--validator legacy` uses `solana-test-validator`; the default Surfpool runner failed to start on the dev machine.

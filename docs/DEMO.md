@@ -25,6 +25,23 @@
 | 5 | 20 s | `/audit` | All flows public + red flags (new recipient, unusual volume). |
 | 6 | 10 s | Editor | `donate` and `refund` are the only ways tokens leave the vault. Upgrade authority is *none*. |
 
+## Video cut (~2 min, recorded)
+
+Shorter than the live script: no editor scene, explorer shown once, fundraiser B pre-seeded. Record each
+screen scene as its own clip, cut out wallet pop-ups and spinners, record the voice-over afterwards.
+Animated clips come from [`video/`](../video/README.md) (`pnpm --dir video render:all`).
+
+| # | ~Time | Clip | Content |
+|---|---|---|---|
+| 1 | 31 s | `intro.mp4` | Antoś story → "Today" flow → "With Earmark" flow → title |
+| 2 | 15 s | screen + `role-organizer.mov` | `/new`, own wallet as recipient → `RecipientNotVerified` |
+| 3 | 20 s | screen + `role-clinic.mov` | Create honest fundraiser → clinic **Confirm** → Active |
+| 4 | 35 s | screen + `role-donor-1.mov`, `role-donor-2.mov` | 600 + 400 → payout in the same transaction; explorer: vault 0, clinic +1 000 |
+| 5 | 20 s | screen + `role-donor-1.mov` | Fundraiser B, deadline passed → **Get my money back** → +300 |
+| 6 | 11 s | `outro.mp4` | Four takeaways → logo |
+
+Role badges are ProRes 4444 with alpha: place them on a track above the screen recording.
+
 ## Expected questions
 
 **Where exactly does the intermediary disappear?**

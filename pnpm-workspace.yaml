@@ -1,6 +1,7 @@
 packages:
   - app
   - scripts
+  - video
 
 # Optional native speedups for ws; not needed.
 allowBuilds:

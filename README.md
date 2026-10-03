@@ -90,6 +90,7 @@ stablecoins (EURC/USDC) with a fiat on-ramp (cards, BLIK, SEPA).
 | `app/` | Next.js frontend (App Router, Tailwind v4, wallet adapter; `cp app/.env.example app/.env.local`, then `pnpm --dir app dev`) |
 | `assets/` | ePLN token logo and metadata JSON (served from GitHub raw) |
 | `scripts/` | Deploy, mint, faucet setup, token metadata, airdrop, seed demo state |
+| `video/` | Remotion project for the demo video's animated intro, outro and role badges (`pnpm --dir video render:all` → `video/out/`) |
 | `migrations/` | Anchor's default deploy hook (unused; we deploy with `scripts/deploy-devnet.sh`) |
 | `docs/` | Plan, demo script, tickets, design mockups |
 
