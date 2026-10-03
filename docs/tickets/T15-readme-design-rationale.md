@@ -3,7 +3,7 @@
 - **Priority:** P0
 - **Area:** docs
 - **Depends on:** —
-- **Status:** todo
+- **Status:** done
 - **Owner:** —
 
 ## Description
@@ -12,9 +12,9 @@ README for judges: what it is, target user, which relationship was redesigned, w
 
 ## Acceptance criteria
 
-- [ ] Answers every question in DEMO.md *Expected questions*
-- [ ] Repo map matches the actual tree
-- [ ] Program ID and mint address filled in after T07
+- [x] Answers every question in DEMO.md *Expected questions*
+- [x] Repo map matches the actual tree
+- [x] Program ID and mint address filled in after T07
 
 ## Docs to update when done
 
