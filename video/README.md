@@ -6,6 +6,7 @@ Colors and fonts follow [docs/design/](../docs/design/README.md).
 | Composition | Length | Output | What |
 |---|---|---|---|
 | `Intro` | 88 s | `out/intro.mp4` | Antoś story, the twist, fake fundraisers across causes (sourced stats), "Today" vs "With Earmark" money flow, title |
+| `IntroLewandowski` | 92 s | `out/intro-lewandowski.mp4` | Voiced variant that opens with "In 2017, Robert Lewandowski got scammed" (the Lewandowskis gave 100 000 zł to the same fake fundraiser) |
 | `IntroVoice` | 88 s | `out/intro-voice.mp4` | Same, with the voice-over from `public/vo/` |
 | `Outro` | 11 s | `out/outro.mp4` | Four takeaways, logo |
 | `RoleOrganizer`, `RoleClinic`, `RoleDonor1`, `RoleDonor2` | 4 s each | `out/role-*.mov` | Lower-third badge on a transparent background (ProRes 4444) to overlay on screen recordings |
@@ -20,7 +21,7 @@ Scene timings are constants at the top of `src/Intro.tsx` and `src/Outro.tsx`; r
 
 ## Voice-over
 
-The narration lives in [`voiceover/script.json`](voiceover/script.json), one entry per line, grouped by scene.
+The narration lives in [`voiceover/script.json`](voiceover/script.json), one entry per line, grouped by scene; `variants` lists which scenes each intro version plays.
 [`voiceover/generate.py`](voiceover/generate.py) turns it into `public/vo/<line>.mp3` with
 [Kokoro TTS](https://github.com/thewh1teagle/kokoro-onnx) (offline, voice `af_heart`) and writes `src/vo-durations.json`;
 `src/timeline.ts` sizes every scene to its lines, so after editing the script just regenerate and re-render.

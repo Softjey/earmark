@@ -1,7 +1,67 @@
 {
   "voice": "af_heart",
   "speed": 1.08,
+  "variants": {
+    "default": [
+      "story",
+      "twist",
+      "scale",
+      "today",
+      "question",
+      "earmark",
+      "title"
+    ],
+    "lewandowski": [
+      "hook",
+      "storyL",
+      "twistL",
+      "scale",
+      "today",
+      "question",
+      "earmark",
+      "title"
+    ]
+  },
   "scenes": [
+    {
+      "id": "hook",
+      "lines": [
+        {
+          "id": "hook-1",
+          "text": "In twenty seventeen, Robert Lewandowski got scammed."
+        }
+      ]
+    },
+    {
+      "id": "storyL",
+      "lines": [
+        {
+          "id": "storyL-1",
+          "text": "He and his wife gave a hundred thousand zloty to save Antosh, a two-year-old boy with eye cancer."
+        },
+        {
+          "id": "storyL-2",
+          "text": "More than six thousand other people gave too. Half a million zloty in total."
+        }
+      ]
+    },
+    {
+      "id": "twistL",
+      "lines": [
+        {
+          "id": "twistL-1",
+          "text": "But Antosh never existed."
+        },
+        {
+          "id": "twistL-2",
+          "text": "The organizer made him up, and spent the money on himself."
+        },
+        {
+          "id": "twistL-3",
+          "text": "The Lewandowskis got their money back. Thousands of others never did."
+        }
+      ]
+    },
     {
       "id": "story",
       "lines": [

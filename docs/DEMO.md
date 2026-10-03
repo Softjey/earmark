@@ -33,7 +33,7 @@ Animated clips come from [`video/`](../video/README.md) (`pnpm --dir video rende
 
 | # | ~Time | Clip | Content |
 |---|---|---|---|
-| 1 | 88 s | `intro-voice.mp4` (or silent `intro.mp4`) | Antoś story → twist → fake fundraisers across causes → "Today" flow → "what if" → "With Earmark" flow → title |
+| 1 | 88 s | `intro-voice.mp4` (or `intro-lewandowski.mp4`, 92 s, opens with the Lewandowskis; or silent `intro.mp4`) | Antoś story → twist → fake fundraisers across causes → "Today" flow → "what if" → "With Earmark" flow → title |
 | 2 | 15 s | screen + `role-organizer.mov` | `/new`, own wallet as recipient → `RecipientNotVerified` |
 | 3 | 20 s | screen + `role-clinic.mov` | Create honest fundraiser → recipient **Confirm** → Active |
 | 4 | 35 s | screen + `role-donor-1.mov`, `role-donor-2.mov` | 600 + 400 → payout in the same transaction; explorer: vault 0, recipient +1 000 |

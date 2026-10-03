@@ -4,9 +4,7 @@ import { Flow } from "./components/Flow";
 import { Building, Check, Cross, Eye, Heart, Lock, LogoMark, People, Person } from "./components/Icons";
 import { Node } from "./components/Node";
 import { C, fadeOut, fadeUp, MONO, pop, SANS } from "./theme";
-import { beats, scene, SCENES } from "./timeline";
-
-export { INTRO_FRAMES } from "./timeline";
+import { beats, scene, sequence, type Variant } from "./timeline";
 
 // Light tints for text on the dark (ink) scenes.
 const D = { muted: "#9FB3AC", soft: "#B9C3BF", accent: "#7FD4B8", error: "#F2A99F" };
@@ -21,17 +19,40 @@ function grow(frame: number, start: number, duration: number, to: number) {
   });
 }
 
-function Story() {
+function Story({ id = "story", lewandowski = false }: { id?: string; lewandowski?: boolean }) {
   const frame = useCurrentFrame();
-  const [b0, b2] = beats("story");
-  const { frames, lines } = scene("story");
-  const b1 = b0 + Math.round(lines[0].frames * 0.6);
+  const [b0, b2] = beats(id);
+  const { frames, lines } = scene(id);
+  const b1 = b0 + Math.round(lines[0].frames * (lewandowski ? 0.75 : 0.6));
   const progress = grow(frame, b2, 60, 1);
   return (
     <AbsoluteFill style={{ background: C.ink, color: "#fff", opacity: fadeOut(frame, frames - 10, 10) }}>
       <div style={{ position: "absolute", left: 160, top: 150, fontSize: 32, fontWeight: 700, letterSpacing: 4, color: D.muted, ...fadeUp(frame, b0) }}>
         POLAND, 2017
       </div>
+      {lewandowski && (
+        <div
+          style={{
+            position: "absolute",
+            left: 160,
+            top: 858,
+            width: 720,
+            boxSizing: "border-box",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: C.accentSoft,
+            border: `2px solid ${C.accent}`,
+            borderRadius: 16,
+            padding: "18px 32px",
+            color: C.ink,
+            ...fadeUp(frame, b0 + 30, 30),
+          }}
+        >
+          <span style={{ fontSize: 30, fontWeight: 600 }}>Anna &amp; Robert Lewandowski</span>
+          <span style={{ fontSize: 34, fontWeight: 700, color: C.accent }}>100 000 zł</span>
+        </div>
+      )}
       {/* The fundraiser, as donors saw it */}
       <div
         style={{
@@ -85,10 +106,38 @@ function Story() {
   );
 }
 
-function Twist() {
+function Hook() {
   const frame = useCurrentFrame();
-  const [b0, b1, b2] = beats("twist");
-  const { frames } = scene("twist");
+  const { frames } = scene("hook");
+  const [b0] = beats("hook");
+  const { fps } = useVideoConfig();
+  const stamp = pop(frame, fps, b0 + 40);
+  return (
+    <AbsoluteFill style={{ background: C.ink, color: "#fff", padding: "0 160px", justifyContent: "center", opacity: fadeOut(frame, frames - 10, 10) }}>
+      <div style={{ fontSize: 34, fontWeight: 700, letterSpacing: 4, color: D.muted, ...fadeUp(frame, 0) }}>2017</div>
+      <div style={{ fontSize: 140, fontWeight: 700, letterSpacing: -4, lineHeight: 1.05, marginTop: 20, ...fadeUp(frame, b0) }}>Robert Lewandowski</div>
+      <div
+        style={{
+          fontSize: 140,
+          fontWeight: 700,
+          letterSpacing: -4,
+          lineHeight: 1.05,
+          color: D.error,
+          opacity: stamp,
+          transform: `scale(${1.15 - 0.15 * stamp})`,
+          transformOrigin: "left center",
+        }}
+      >
+        got scammed.
+      </div>
+    </AbsoluteFill>
+  );
+}
+
+function Twist({ id = "twist", refunded = "famous donor got a refund" }: { id?: string; refunded?: string }) {
+  const frame = useCurrentFrame();
+  const [b0, b1, b2] = beats(id);
+  const { frames } = scene(id);
   return (
     <AbsoluteFill style={{ background: C.ink, color: "#fff", padding: "0 160px", justifyContent: "center", opacity: fadeOut(frame, frames - 10, 10) }}>
       <div style={{ fontSize: 120, fontWeight: 700, letterSpacing: -3, ...fadeUp(frame, b0, 0) }}>Antoś did not exist.</div>
@@ -99,7 +148,7 @@ function Twist() {
       <div style={{ display: "flex", gap: 120, marginTop: 90 }}>
         <div style={fadeUp(frame, b2)}>
           <div style={{ fontSize: 110, fontWeight: 700, color: D.accent, lineHeight: 1 }}>1</div>
-          <div style={{ fontSize: 32, color: D.soft, marginTop: 10 }}>famous donor got a refund</div>
+          <div style={{ fontSize: 32, color: D.soft, marginTop: 10 }}>{refunded}</div>
         </div>
         <div style={fadeUp(frame, b2 + 40)}>
           <div style={{ fontSize: 110, fontWeight: 700, color: D.error, lineHeight: 1 }}>6 500+</div>
@@ -363,8 +412,11 @@ function Title() {
 }
 
 const VIEWS: Record<string, () => React.ReactNode> = {
-  story: Story,
-  twist: Twist,
+  hook: Hook,
+  story: () => <Story />,
+  storyL: () => <Story id="storyL" lewandowski />,
+  twist: () => <Twist />,
+  twistL: () => <Twist id="twistL" refunded="donor refunded: the Lewandowskis" />,
   scale: Scale,
   today: Today,
   question: Question,
@@ -372,10 +424,10 @@ const VIEWS: Record<string, () => React.ReactNode> = {
   title: Title,
 };
 
-export function Intro({ voice = false }: { voice?: boolean }) {
+export function Intro({ voice = false, variant = "default" }: { voice?: boolean; variant?: Variant }) {
   return (
     <AbsoluteFill style={{ fontFamily: SANS, background: C.ink }}>
-      {SCENES.map((s) => {
+      {sequence(variant).map((s) => {
         const View = VIEWS[s.id];
         return (
           <Sequence key={s.id} from={s.from} durationInFrames={s.frames}>
