@@ -1,49 +1,84 @@
 import { AbsoluteFill, Audio, Easing, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { Caption, Kicker } from "./components/Caption";
 import { Flow } from "./components/Flow";
-import { Building, Check, Clinic, Cross, Lock, LogoMark, People, Person } from "./components/Icons";
+import { Building, Check, Clinic, Cross, Eye, Lock, LogoMark, People, Person } from "./components/Icons";
 import { Node } from "./components/Node";
 import { C, fadeOut, fadeUp, MONO, pop, SANS } from "./theme";
+import { beats, scene, SCENES } from "./timeline";
 
-// Scene lengths in frames (30 fps).
-const STORY = 210;
-const TWIST = 90;
-const TODAY = 270;
-const EARMARK = 330;
-const TITLE = 90;
-export const INTRO_FRAMES = STORY + TWIST + TODAY + EARMARK + TITLE;
+export { INTRO_FRAMES } from "./timeline";
+
+// Light tints for text on the dark (ink) scenes.
+const D = { muted: "#9FB3AC", soft: "#B9C3BF", accent: "#7FD4B8", error: "#F2A99F" };
 
 const fmt = (n: number) => n.toLocaleString("en-US").replace(/,/g, " ");
 
+function grow(frame: number, start: number, duration: number, to: number) {
+  return interpolate(frame, [start, start + duration], [0, to], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+}
+
 function Story() {
   const frame = useCurrentFrame();
-  const raised = interpolate(frame, [30, 95], [0, 500000], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.out(Easing.cubic),
-  });
-  const people = interpolate(frame, [30, 95], [0, 6500], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.out(Easing.cubic),
-  });
+  const [b0, b1, b2] = beats("story");
+  const { frames } = scene("story");
+  const progress = grow(frame, b2, 60, 1);
   return (
-    <AbsoluteFill style={{ background: C.ink, color: "#fff", padding: "0 160px", justifyContent: "center", opacity: fadeOut(frame, STORY - 10, 10) }}>
-      <div style={{ fontSize: 34, fontWeight: 600, color: "#9FB3AC", letterSpacing: 4, ...fadeUp(frame, 0) }}>POLAND, 2017</div>
-      <div style={{ display: "flex", gap: 80, marginTop: 28, ...fadeUp(frame, 15) }}>
-        <div>
-          <div style={{ fontSize: 120, fontWeight: 700, letterSpacing: -3, fontVariantNumeric: "tabular-nums" }}>{fmt(Math.round(people / 10) * 10)}</div>
-          <div style={{ fontSize: 34, color: "#B9C3BF" }}>people donated</div>
+    <AbsoluteFill style={{ background: C.ink, color: "#fff", opacity: fadeOut(frame, frames - 10, 10) }}>
+      <div style={{ position: "absolute", left: 160, top: 150, fontSize: 32, fontWeight: 700, letterSpacing: 4, color: D.muted, ...fadeUp(frame, b0) }}>
+        POLAND, 2017
+      </div>
+      {/* The fundraiser, as donors saw it */}
+      <div
+        style={{
+          position: "absolute",
+          left: 160,
+          top: 240,
+          width: 720,
+          background: C.surface,
+          borderRadius: 16,
+          overflow: "hidden",
+          color: C.ink,
+          ...fadeUp(frame, b0 + 12, 40),
+        }}
+      >
+        <div style={{ height: 260, background: C.track, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Eye size={120} color={C.muted} stroke={1.6} />
         </div>
-        <div>
-          <div style={{ fontSize: 120, fontWeight: 700, letterSpacing: -3, fontVariantNumeric: "tabular-nums" }}>
-            {fmt(Math.round(raised / 1000) * 1000)} zł
+        <div style={{ padding: "32px 40px 40px" }}>
+          <div style={{ fontSize: 22, fontWeight: 600, color: C.muted, letterSpacing: 1 }}>ONLINE FUNDRAISER</div>
+          <div style={{ fontSize: 46, fontWeight: 700, letterSpacing: -1, marginTop: 6 }}>„Boję się ciemności”</div>
+          <div style={{ fontSize: 26, color: C.muted, marginTop: 2 }}>“I'm afraid of the dark”</div>
+          <div style={{ display: "flex", gap: 12, marginTop: 22, ...fadeUp(frame, b1, 12) }}>
+            <span style={{ background: C.ground, border: `2px solid ${C.line}`, borderRadius: 999, padding: "6px 18px", fontSize: 24, fontWeight: 600 }}>
+              Antoś, 2½ years old
+            </span>
+            <span style={{ background: C.warnSoft, color: C.warn, borderRadius: 999, padding: "6px 18px", fontSize: 24, fontWeight: 600 }}>
+              eye cancer
+            </span>
           </div>
-          <div style={{ fontSize: 34, color: "#B9C3BF" }}>raised on a crowdfunding platform</div>
+          <div style={{ height: 16, background: C.track, borderRadius: 8, marginTop: 30, overflow: "hidden" }}>
+            <div style={{ width: `${progress * 100}%`, height: "100%", background: C.accent, borderRadius: 8 }} />
+          </div>
         </div>
       </div>
-      <div style={{ fontSize: 52, fontWeight: 500, marginTop: 64, ...fadeUp(frame, 105) }}>
-        to save the sight of a boy named Antoś.
+      {/* Counters */}
+      <div style={{ position: "absolute", left: 1000, top: 330, display: "flex", flexDirection: "column", gap: 56 }}>
+        <div style={fadeUp(frame, b2)}>
+          <div style={{ fontSize: 130, fontWeight: 700, letterSpacing: -3, fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>
+            {fmt(Math.round(grow(frame, b2, 45, 650)) * 10)}+
+          </div>
+          <div style={{ fontSize: 34, color: D.soft, marginTop: 10 }}>people donated</div>
+        </div>
+        <div style={fadeUp(frame, b2 + 25)}>
+          <div style={{ fontSize: 130, fontWeight: 700, letterSpacing: -3, fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>
+            {fmt(Math.round(grow(frame, b2 + 25, 45, 500)) * 1000)} zł
+          </div>
+          <div style={{ fontSize: 34, color: D.soft, marginTop: 10 }}>raised in a few weeks</div>
+        </div>
       </div>
     </AbsoluteFill>
   );
@@ -51,12 +86,126 @@ function Story() {
 
 function Twist() {
   const frame = useCurrentFrame();
+  const [b0, b1, b2] = beats("twist");
+  const { frames } = scene("twist");
   return (
-    <AbsoluteFill style={{ background: C.ink, alignItems: "center", justifyContent: "center", opacity: fadeOut(frame, TWIST - 10, 10) }}>
-      <div style={{ fontSize: 110, fontWeight: 700, color: "#fff", letterSpacing: -2.5, ...fadeUp(frame, 6, 0) }}>
-        Antoś did not exist.
+    <AbsoluteFill style={{ background: C.ink, color: "#fff", padding: "0 160px", justifyContent: "center", opacity: fadeOut(frame, frames - 10, 10) }}>
+      <div style={{ fontSize: 120, fontWeight: 700, letterSpacing: -3, ...fadeUp(frame, b0, 0) }}>Antoś did not exist.</div>
+      <div style={{ fontSize: 46, fontWeight: 500, color: D.soft, marginTop: 28, maxWidth: 1400, ...fadeUp(frame, b1) }}>
+        The organizer invented him and spent the money on himself.
+        <span style={{ color: D.muted }}> Later sentenced to six years in prison.</span>
+      </div>
+      <div style={{ display: "flex", gap: 120, marginTop: 90 }}>
+        <div style={fadeUp(frame, b2)}>
+          <div style={{ fontSize: 110, fontWeight: 700, color: D.accent, lineHeight: 1 }}>1</div>
+          <div style={{ fontSize: 32, color: D.soft, marginTop: 10 }}>famous donor got a refund</div>
+        </div>
+        <div style={fadeUp(frame, b2 + 40)}>
+          <div style={{ fontSize: 110, fontWeight: 700, color: D.error, lineHeight: 1 }}>6 500+</div>
+          <div style={{ fontSize: 32, color: D.soft, marginTop: 10 }}>others did not</div>
+        </div>
       </div>
     </AbsoluteFill>
+  );
+}
+
+function StatCard({ start, children, source }: { start: number; children: React.ReactNode; source: string }) {
+  const frame = useCurrentFrame();
+  return (
+    <div
+      style={{
+        width: 760,
+        height: 600,
+        background: C.surface,
+        border: `2px solid ${C.line}`,
+        borderRadius: 16,
+        padding: 48,
+        boxSizing: "border-box",
+        display: "flex",
+        flexDirection: "column",
+        boxShadow: "0 12px 32px rgba(14,26,23,0.08)",
+        ...fadeUp(frame, start, 40),
+      }}
+    >
+      {children}
+      <div style={{ marginTop: "auto", fontSize: 20, color: C.muted }}>{source}</div>
+    </div>
+  );
+}
+
+const PL_BARS = [
+  { year: "2019", value: 0.7 },
+  { year: "2020", value: 1.09 },
+  { year: "2021*", value: 2.04 },
+];
+
+function Scale() {
+  const frame = useCurrentFrame();
+  const [b0, b1, b2] = beats("scale");
+  const { frames } = scene("scale");
+  return (
+    <AbsoluteFill style={{ background: C.ground, opacity: fadeOut(frame, frames - 10, 10) }}>
+      <Kicker>The stakes</Kicker>
+      <div style={{ position: "absolute", left: 160, top: 210, fontSize: 56, fontWeight: 700, color: C.ink, letterSpacing: -1, ...fadeUp(frame, b0) }}>
+        People give online more every year.
+      </div>
+      <div style={{ position: "absolute", left: 160, top: 330, display: "flex", gap: 80 }}>
+        <StatCard start={b1} source="Source: Forsal.pl, 2021 (* projected)">
+          <div style={{ fontSize: 88, fontWeight: 700, color: C.ink, letterSpacing: -2, lineHeight: 1 }}>≈ 2 bn zł</div>
+          <div style={{ fontSize: 28, color: C.muted, marginTop: 10 }}>a year through online fundraisers in Poland</div>
+          <div style={{ display: "flex", alignItems: "flex-end", gap: 40, height: 230, marginTop: 30 }}>
+            {PL_BARS.map((b, i) => {
+              const h = grow(frame, b1 + 15 + i * 10, 30, (b.value / 2.04) * 160);
+              return (
+                <div key={b.year} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                  <div style={{ fontSize: 24, fontWeight: 600, color: C.ink, opacity: h > 10 ? 1 : 0 }}>{b.value.toFixed(2).replace(/0$/, "")}</div>
+                  <div style={{ width: 110, height: h, background: i === 2 ? C.accent : "#9FC9BB", borderRadius: "8px 8px 0 0" }} />
+                  <div style={{ fontSize: 22, color: C.muted }}>{b.year}</div>
+                </div>
+              );
+            })}
+          </div>
+        </StatCard>
+        <StatCard start={b2} source="Source: American Journal of Public Health, 2022">
+          <div style={{ fontSize: 88, fontWeight: 700, color: C.ink, letterSpacing: -2, lineHeight: 1 }}>
+            ${grow(frame, b2 + 10, 40, 2).toFixed(1)} bn+
+          </div>
+          <div style={{ fontSize: 28, color: C.muted, marginTop: 10 }}>raised by medical GoFundMe campaigns in the US, 2016–2020</div>
+          <div style={{ marginTop: 50, display: "flex", flexDirection: "column", gap: 18, ...fadeUp(frame, b2 + 40) }}>
+            <div style={{ fontSize: 36, fontWeight: 600, color: C.ink }}>
+              <span style={{ fontVariantNumeric: "tabular-nums" }}>{fmt(437596)}</span> <span style={{ color: C.muted, fontWeight: 500 }}>campaigns</span>
+            </div>
+            <div style={{ fontSize: 36, fontWeight: 600, color: C.ink }}>
+              <span style={{ fontVariantNumeric: "tabular-nums" }}>21.7 M</span> <span style={{ color: C.muted, fontWeight: 500 }}>donations</span>
+            </div>
+          </div>
+        </StatCard>
+      </div>
+    </AbsoluteFill>
+  );
+}
+
+function TrustTag({ x, y, start }: { x: number; y: number; start: number }) {
+  const frame = useCurrentFrame();
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: x - 70,
+        top: y,
+        width: 140,
+        textAlign: "center",
+        background: C.warnSoft,
+        color: C.warn,
+        borderRadius: 999,
+        padding: "6px 0",
+        fontSize: 26,
+        fontWeight: 700,
+        ...fadeUp(frame, start, 12),
+      }}
+    >
+      trust?
+    </div>
   );
 }
 
@@ -64,24 +213,33 @@ const ROW = 500;
 
 function Today() {
   const frame = useCurrentFrame();
-  const scammed = frame >= 150;
+  const [b0, b1, b2] = beats("today");
+  const { frames, lines } = scene("today");
+  const half = b1 + Math.round(lines[1].frames * 0.45);
   return (
-    <AbsoluteFill style={{ background: C.ground, opacity: fadeOut(frame, TODAY - 10, 10) }}>
+    <AbsoluteFill style={{ background: C.ground, opacity: fadeOut(frame, frames - 10, 10) }}>
       <Kicker>Today</Kicker>
-      <Flow from={{ x: 575, y: ROW }} to={{ x: 785, y: ROW }} start={50} color={C.muted} />
-      <Flow from={{ x: 1135, y: ROW }} to={{ x: 1345, y: ROW }} start={80} color={C.muted} />
-      <Node x={400} y={ROW} title="Donors" sub="6 500 people" icon={(c) => <People size={44} color={c} />} start={5} />
-      <Node x={960} y={ROW} title="Platform" sub="holds the money" icon={(c) => <Building size={44} color={c} />} start={18} />
-      <Node
-        x={1520}
-        y={ROW}
-        title="Organizer"
-        sub={scammed ? "spent it on himself" : "gets paid out"}
-        variant={scammed ? "danger" : "default"}
-        icon={(c) => <Person size={44} color={c} />}
-        start={31}
-      />
-      <Caption start={175}>The platform paid the organizer. Everything else was trust.</Caption>
+      <Flow from={{ x: 575, y: ROW }} to={{ x: 785, y: ROW }} start={b1} color={C.muted} />
+      <Flow from={{ x: 1135, y: ROW }} to={{ x: 1345, y: ROW }} start={half} color={C.muted} />
+      <Node x={400} y={ROW} title="Donors" icon={(c) => <People size={44} color={c} />} start={b0} />
+      <Node x={960} y={ROW} title="Platform" sub="holds the money" icon={(c) => <Building size={44} color={c} />} start={b0 + 12} />
+      <Node x={1520} y={ROW} title="Organizer" sub="own bank account" icon={(c) => <Person size={44} color={c} />} start={b0 + 24} />
+      <TrustTag x={960} y={ROW - 140} start={b2} />
+      <TrustTag x={1520} y={ROW - 140} start={b2 + 8} />
+      <Caption start={b2 + 4}>After the payout, all you have is trust.</Caption>
+    </AbsoluteFill>
+  );
+}
+
+function Question() {
+  const frame = useCurrentFrame();
+  const [b0] = beats("question");
+  const { frames } = scene("question");
+  return (
+    <AbsoluteFill style={{ background: C.ink, alignItems: "center", justifyContent: "center", opacity: fadeOut(frame, frames - 10, 10) }}>
+      <div style={{ fontSize: 100, fontWeight: 700, color: "#fff", letterSpacing: -2.5, textAlign: "center", lineHeight: 1.15, maxWidth: 1500, ...fadeUp(frame, b0) }}>
+        What if the organizer could <span style={{ color: D.accent }}>never</span> touch the money?
+      </div>
     </AbsoluteFill>
   );
 }
@@ -91,32 +249,23 @@ const VAULT = { x: 960, y: 460 };
 function WithEarmark() {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const blocked = pop(frame, fps, 145);
+  const [b0, b1, b2, b3] = beats("earmark");
+  const { frames, lines } = scene("earmark");
+  const notOrganizer = b0 + Math.round(lines[0].frames * 0.62);
+  const blocked = pop(frame, fps, notOrganizer + 22);
   return (
-    <AbsoluteFill style={{ background: C.ground, opacity: fadeOut(frame, EARMARK - 10, 10) }}>
+    <AbsoluteFill style={{ background: C.ground, opacity: fadeOut(frame, frames - 10, 10) }}>
       <Kicker color={C.accent}>With Earmark</Kicker>
-      <Flow from={{ x: 535, y: VAULT.y }} to={{ x: 775, y: VAULT.y }} start={40} color={C.accent} />
-      <Flow from={{ x: 1145, y: VAULT.y }} to={{ x: 1385, y: VAULT.y }} start={65} color={C.accent} />
-      {/* Organizer route: blocked half-way */}
-      <Flow from={{ x: VAULT.x, y: VAULT.y + 85 }} to={{ x: VAULT.x, y: 735 }} start={120} duration={25} stopAt={0.55} color={C.error} coins={false} />
-      {/* Refund route: arcs back to the donors */}
-      <Flow from={{ x: 880, y: VAULT.y - 85 }} via={{ x: 650, y: 200 }} to={{ x: 430, y: VAULT.y - 98 }} start={165} duration={30} color={C.info} />
+      <Flow from={{ x: 535, y: VAULT.y }} to={{ x: 775, y: VAULT.y }} start={b0 + 30} color={C.accent} />
+      <Flow from={{ x: 1145, y: VAULT.y }} to={{ x: 1385, y: VAULT.y }} start={b2} color={C.accent} />
+      <Flow from={{ x: VAULT.x, y: VAULT.y + 85 }} to={{ x: VAULT.x, y: 735 }} start={notOrganizer} duration={22} stopAt={0.55} color={C.error} coins={false} />
+      <Flow from={{ x: 880, y: VAULT.y - 85 }} via={{ x: 650, y: 200 }} to={{ x: 430, y: VAULT.y - 98 }} start={b3} duration={30} color={C.info} />
 
-      <Node x={360} y={VAULT.y} title="Donors" icon={(c) => <People size={44} color={c} />} start={5} />
-      <Node
-        x={VAULT.x}
-        y={VAULT.y}
-        w={370}
-        title="Vault"
-        sub="program-owned, no private key"
-        variant="vault"
-        icon={(c) => <Lock size={44} color={c} />}
-        start={15}
-      />
-      <Node x={1560} y={VAULT.y} title="Clinic" sub="verified recipient" variant="verified" icon={(c) => <Clinic size={44} color={c} />} start={25} />
-      <Node x={VAULT.x} y={830} h={130} title="Organizer" sub="cannot be paid" variant="disabled" icon={(c) => <Person size={36} color={c} />} start={110} />
+      <Node x={360} y={VAULT.y} title="Donors" icon={(c) => <People size={44} color={c} />} start={b0} />
+      <Node x={VAULT.x} y={VAULT.y} w={370} title="Vault" sub="nobody holds the key" variant="vault" icon={(c) => <Lock size={44} color={c} />} start={b0 + 12} />
+      <Node x={1560} y={VAULT.y} title="Clinic" sub="verified recipient" variant="verified" icon={(c) => <Clinic size={44} color={c} />} start={b1} />
+      <Node x={VAULT.x} y={830} h={130} title="Organizer" sub="cannot be paid" variant="disabled" icon={(c) => <Person size={36} color={c} />} start={notOrganizer - 8} />
 
-      {/* ✕ on the organizer route */}
       <div
         style={{
           position: "absolute",
@@ -146,43 +295,22 @@ function WithEarmark() {
           background: C.errorSoft,
           padding: "6px 14px",
           borderRadius: 10,
-          ...fadeUp(frame, 150, 10),
+          ...fadeUp(frame, notOrganizer + 26, 10),
         }}
       >
         RecipientNotVerified
       </div>
-      <div
-        style={{
-          position: "absolute",
-          left: 470,
-          top: 228,
-          fontSize: 28,
-          fontWeight: 600,
-          color: C.info,
-          ...fadeUp(frame, 190, 10),
-        }}
-      >
-        or back to each donor
+      <div style={{ position: "absolute", left: 1400, top: 300, display: "flex", alignItems: "center", gap: 8, fontSize: 26, fontWeight: 600, color: C.accent, ...fadeUp(frame, b1 + 20, 10) }}>
+        <Check size={28} color={C.accent} stroke={3} /> confirmed the quote
       </div>
-      <div
-        style={{
-          position: "absolute",
-          left: 1440,
-          top: 560,
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          fontSize: 26,
-          fontWeight: 600,
-          color: C.accent,
-          ...fadeUp(frame, 95, 10),
-        }}
-      >
+      <div style={{ position: "absolute", left: 1400, top: 560, display: "flex", alignItems: "center", gap: 8, fontSize: 26, fontWeight: 600, color: C.accent, ...fadeUp(frame, b2 + 25, 10) }}>
         <Check size={28} color={C.accent} stroke={3} /> paid when the target is hit
       </div>
-      <Caption start={215}>
-        Money can only go to a <span style={{ color: C.accent }}>verified clinic</span>, or{" "}
-        <span style={{ color: C.info }}>back to the donors</span>.
+      <div style={{ position: "absolute", left: 470, top: 228, fontSize: 28, fontWeight: 600, color: C.info, ...fadeUp(frame, b3 + 25, 10) }}>
+        or back to each donor
+      </div>
+      <Caption start={b3 + lines[3].frames}>
+        Only to a <span style={{ color: C.accent }}>verified clinic</span>. Or <span style={{ color: C.info }}>back to the donors</span>.
       </Caption>
     </AbsoluteFill>
   );
@@ -191,59 +319,61 @@ function WithEarmark() {
 function Title() {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const s = pop(frame, fps, 0);
+  const [b0, b1] = beats("title");
+  const s = pop(frame, fps, b1);
+  const linesOut = fadeOut(frame, b1 - 8, 8);
   return (
-    <AbsoluteFill style={{ background: C.ground, alignItems: "center", justifyContent: "center", gap: 28 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 28, transform: `scale(${0.9 + 0.1 * s})`, opacity: s }}>
-        <LogoMark size={120} stroke={2.4} />
-        <div style={{ fontSize: 150, fontWeight: 700, color: C.ink, letterSpacing: -4 }}>Earmark</div>
-      </div>
-      <div style={{ fontSize: 44, fontWeight: 500, color: C.muted, ...fadeUp(frame, 14) }}>
-        Medical fundraisers without an intermediary
-      </div>
+    <AbsoluteFill style={{ background: C.ground, alignItems: "center", justifyContent: "center" }}>
+      {frame < b1 && (
+        <div style={{ textAlign: "center", opacity: linesOut }}>
+          <div style={{ fontSize: 76, fontWeight: 700, color: C.ink, letterSpacing: -1.5, ...fadeUp(frame, b0) }}>No middleman holding the money.</div>
+          <div style={{ fontSize: 56, fontWeight: 500, color: C.muted, marginTop: 24, ...fadeUp(frame, b0 + 50) }}>
+            Just rules, written in code, that nobody can bend.
+          </div>
+        </div>
+      )}
+      {frame >= b1 && (
+        <>
+          <div style={{ display: "flex", alignItems: "center", gap: 28, transform: `scale(${0.9 + 0.1 * s})`, opacity: s }}>
+            <LogoMark size={120} stroke={2.4} />
+            <div style={{ fontSize: 150, fontWeight: 700, color: C.ink, letterSpacing: -4 }}>Earmark</div>
+          </div>
+          <div style={{ fontSize: 44, fontWeight: 500, color: C.muted, marginTop: 28, ...fadeUp(frame, b1 + 14) }}>
+            Medical fundraisers without an intermediary
+          </div>
+        </>
+      )}
     </AbsoluteFill>
   );
 }
 
-/** Voice-over line for one scene, starting `delay` frames into it (files from voiceover/generate.py). */
-function Voice({ from, delay, name }: { from: number; delay: number; name: string }) {
-  return (
-    <Sequence from={from + delay}>
-      <Audio src={staticFile(`vo/${name}.mp3`)} />
-    </Sequence>
-  );
-}
+const VIEWS: Record<string, () => React.ReactNode> = {
+  story: Story,
+  twist: Twist,
+  scale: Scale,
+  today: Today,
+  question: Question,
+  earmark: WithEarmark,
+  title: Title,
+};
 
 export function Intro({ voice = false }: { voice?: boolean }) {
-  const today = STORY + TWIST;
-  const earmark = today + TODAY;
-  const title = earmark + EARMARK;
   return (
     <AbsoluteFill style={{ fontFamily: SANS, background: C.ink }}>
-      <Sequence durationInFrames={STORY}>
-        <Story />
-      </Sequence>
-      <Sequence from={STORY} durationInFrames={TWIST}>
-        <Twist />
-      </Sequence>
-      <Sequence from={today} durationInFrames={TODAY}>
-        <Today />
-      </Sequence>
-      <Sequence from={earmark} durationInFrames={EARMARK}>
-        <WithEarmark />
-      </Sequence>
-      <Sequence from={title} durationInFrames={TITLE}>
-        <Title />
-      </Sequence>
-      {voice && (
-        <>
-          <Voice from={0} delay={12} name="story" />
-          <Voice from={STORY} delay={8} name="twist" />
-          <Voice from={today} delay={20} name="today" />
-          <Voice from={earmark} delay={12} name="earmark" />
-          <Voice from={title} delay={8} name="title" />
-        </>
-      )}
+      {SCENES.map((s) => {
+        const View = VIEWS[s.id];
+        return (
+          <Sequence key={s.id} from={s.from} durationInFrames={s.frames}>
+            <View />
+            {voice &&
+              s.lines.map((l) => (
+                <Sequence key={l.id} from={l.from}>
+                  <Audio src={staticFile(`vo/${l.id}.mp3`)} />
+                </Sequence>
+              ))}
+          </Sequence>
+        );
+      })}
     </AbsoluteFill>
   );
 }
