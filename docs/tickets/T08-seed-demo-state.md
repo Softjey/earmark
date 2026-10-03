@@ -3,7 +3,7 @@
 - **Priority:** P0
 - **Area:** infra
 - **Depends on:** T07
-- **Status:** todo
+- **Status:** in progress
 - **Owner:** —
 
 ## Description
@@ -12,11 +12,13 @@
 
 ## Acceptance criteria
 
-- [ ] One command resets the demo state
-- [ ] `--deadline-in <seconds>` flag for fundraiser B
-- [ ] Prints all wallet addresses and explorer links
+- [x] One command resets the demo state
+- [x] `--deadline-in <seconds>` flag for fundraiser B
+- [x] Prints all wallet addresses and explorer links
 
 ## Docs to update when done
 
 - Update **Status** above and in [README.md](README.md).
 - If behaviour differs from [PLAN.md](../PLAN.md), update PLAN.md in the same commit.
+
+_Verified against a local validator only; re-run on devnet after T07._
