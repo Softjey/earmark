@@ -404,9 +404,11 @@ def curve(total: int, points: list[tuple[float, float]]) -> np.ndarray:
     return np.interp(np.arange(total) / SR, xs, ys)[:, None]
 
 
-def score(scenes: list[dict], drive: bool) -> np.ndarray:
+def score(scenes: list[dict], drive: bool, v5: bool = False) -> np.ndarray:
     """One track for the whole cut. The same A-minor motif runs from the hook through the scam (darker, not cut),
-    holds on E for the question, turns to C major for Earmark and resolves on C for the title."""
+    holds on E for the question, turns to C major for Earmark and resolves on C for the title.
+    v5 keeps mid and high frequencies under the dark part too (a quiet arpeggio and an airy upper pad), so the
+    bed never sounds like silence on laptop speakers, and makes the twist dip gentler."""
     start = {s["id"].rstrip("LB"): s["start"] for s in scenes}
     seconds = scenes[-1]["start"] + scenes[-1]["length"]
     n = int(seconds * SR)
@@ -440,7 +442,11 @@ def score(scenes: list[dict], drive: bool) -> np.ndarray:
     pads_shut = np.zeros((n, 2))
     subs = np.zeros((n, 2))
     arp = np.zeros((n, 2))
+    air = np.zeros((n, 2))
     for at, chord, length in plan:
+        if v5:
+            upper = [hz(x) * 2 for x in CHORDS[chord][2:]]
+            place(air, pad(upper, length + 1.0, 3200, attack=1.0), at, 0.2)
         freqs = [hz(x) for x in CHORDS[chord]]
         place(pads_open, pad(freqs, length + 1.0, 1900, attack=0.6), at, 0.5)
         place(pads_shut, pad(freqs, length + 1.0, 520, attack=0.6), at, 0.6)
@@ -455,8 +461,12 @@ def score(scenes: list[dict], drive: bool) -> np.ndarray:
     # automation: the open pad and the arpeggio make way for the shut pad while the scam is told
     g_open = curve(n, [(0, 1), (dark, 1), (dark + fade, 0), (bright - fade, 0), (bright, 1)])
     g_shut = 1 - g_open
-    g_arp = curve(n, [(0, 1), (dark, 1), (dark + 0.8, 0), (bright, 0), (bright + 0.6, 1), (end, 1), (end + bar, 0)])
-    mix = pads_open * g_open + pads_shut * g_shut + subs + arp * g_arp
+    if v5:
+        g_arp = curve(n, [(0, 1), (dark, 1), (dark + 0.8, 0.7), (question, 0.7), (question + 1, 0.4), (bright, 0.4), (bright + 0.6, 1), (end, 1), (end + bar, 0)])
+        air *= curve(n, [(0, 1), (dark, 1), (dark + 1.5, 2.6), (bright - 0.5, 2.6), (bright + 0.5, 1)])
+    else:
+        g_arp = curve(n, [(0, 1), (dark, 1), (dark + 0.8, 0), (bright, 0), (bright + 0.6, 1), (end, 1), (end + bar, 0)])
+    mix = pads_open * g_open + pads_shut * g_shut + subs + arp * g_arp + air
 
     tt = np.arange(n) / SR
     drone = np.sin(2 * np.pi * hz("A1") * tt) * (0.6 + 0.4 * np.sin(2 * np.pi * 0.15 * tt)) * 0.3
@@ -505,10 +515,31 @@ def score(scenes: list[dict], drive: bool) -> np.ndarray:
     # the answer has no drone or heartbeat under it, so lift it to the level of the scam section
     mix *= curve(n, [(0, 1), (bright - 0.3, 1), (bright + 0.8, 1.45), (seconds, 1.45)])
     # a short dip right on "did not exist" so the impact effect lands
-    mix *= curve(n, [(0, 1), (dark - 0.05, 1), (dark + 0.25, 0.35), (dark + 1.8, 1), (seconds, 1)])
+    mix *= curve(n, [(0, 1), (dark - 0.05, 1), (dark + 0.25, 0.65 if v5 else 0.35), (dark + 1.8, 1), (seconds, 1)])
     mix = reverb(mix, 2.4, 0.3)[:n]
     mix *= curve(n, [(0, 0), (0.4, 1), (seconds - 2.5, 1), (seconds, 0)])
     return mix / (np.max(np.abs(mix)) + 1e-9) * 0.9
+
+
+def swell() -> np.ndarray:
+    """An A-minor chord played backwards out of its own reverb: rises for 1.2 s and stops dead on the beat."""
+    x = np.zeros(int(2.5 * SR))
+    for i, n in enumerate(["A3", "C4", "E4", "A4"]):
+        m = marimba(hz(n), 2.0) + 0.5 * pluck(hz(n), 2.0)
+        x[: len(m)] += m
+    wet = reverb(x, 2.5, 0.7)
+    y = wet[::-1][-int(1.2 * SR) :]
+    y = y * np.linspace(0, 1, len(y))[:, None] ** 1.5
+    return y / (np.max(np.abs(y)) + 1e-9) * 0.9
+
+
+def thud() -> np.ndarray:
+    """A soft, low landing under the twist (no noise burst)."""
+    tt = t(1.4)
+    freq = 42 + 30 * np.exp(-tt * 10)
+    x = np.sin(2 * np.pi * np.cumsum(freq) / SR) * np.exp(-tt * 3.5) * env(len(tt), 0.01, 0.2)
+    x = reverb(lowpass(x, 200), 1.5, 0.25)
+    return x / (np.max(np.abs(x)) + 1e-9) * 0.9
 
 
 def cut_timeline(variant: str, pacing: str) -> list[dict]:
@@ -521,11 +552,17 @@ def cut_timeline(variant: str, pacing: str) -> list[dict]:
 os.makedirs("../public/music", exist_ok=True)
 os.makedirs("../public/sfx", exist_ok=True)
 if len(sys.argv) > 2 and sys.argv[1] == "score":
-    variant = sys.argv[2]
+    # --v5: airier bed under the dark part, gentler twist dip, and the dynamic cut gets the calm (drum-free) score
+    variant, v5 = sys.argv[2], "--v5" in sys.argv
     for pacing, suffix in (("calm", ""), ("dynamic", "-dynamic")):
-        write(f"../public/music/score-{variant}{suffix}.mp3", score(cut_timeline(variant, pacing), pacing == "dynamic"), lufs=-18)
-    for name in ["pay", "confirm", "uhoh"]:
-        write(f"../public/sfx/{name}.mp3", mallet_sfx(name))
+        drive = pacing == "dynamic" and not v5
+        write(f"../public/music/score-{variant}{suffix}.mp3", score(cut_timeline(variant, pacing), drive, v5), lufs=-18)
+    for name in ["pay", "confirm", "uhoh"]:  # shared by v4+; written once so earlier cuts stay reproducible
+        if not os.path.exists(f"../public/sfx/{name}.mp3"):
+            write(f"../public/sfx/{name}.mp3", mallet_sfx(name))
+    if v5:
+        write("../public/sfx/swell.mp3", swell())
+        write("../public/sfx/thud.mp3", thud())
 else:
     for mood in ["story", "dark", "riser", "hope", "resolve"]:
         write(f"../public/music/{mood}.mp3", music(mood, drive=False), lufs=-18)

@@ -577,8 +577,8 @@ function Music({ scenes, dynamic }: { scenes: { id: string; from: number; frames
 /** Dynamic cut: every scene punches in (scale + blur) and slowly pushes the camera. */
 function SceneFrame({ frames, children }: { frames: number; children: React.ReactNode }) {
   const frame = useCurrentFrame();
-  const { pacing } = useCut();
-  if (pacing !== "dynamic") return <>{children}</>;
+  const { pacing, fx } = useCut();
+  if (pacing !== "dynamic" || !fx) return <>{children}</>;
   const enter = interpolate(frame, [0, 9], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: Easing.out(Easing.cubic) });
   const push = interpolate(frame, [0, frames], [1, 1.035]);
   return (
@@ -599,12 +599,40 @@ export interface IntroProps {
   /** v4+: one continuous track scored to this cut (public/music/<score>.mp3, from sound/generate.py score) */
   score?: string;
   sounds?: Cut["sounds"];
+  fx?: boolean;
+  sfxGain?: number;
 }
 
-export function Intro({ voice = false, variant = "default", pacing = "calm", sfx = "none", music = false, score, sounds = "v3" }: IntroProps) {
-  const scenes = sequence(variant, pacing);
+/** v5: instead of a hit, a chord swells backwards into "did not exist" and lands on a soft low thud. */
+function TwistSwell({ at }: { at: number }) {
+  const { sfxGain } = useCut();
   return (
-    <CutContext.Provider value={{ pacing, sfx, sounds }}>
+    <>
+      <Sequence from={Math.max(0, at - 36)} layout="none">
+        <Audio src={staticFile("sfx/swell.mp3")} volume={0.45 * sfxGain} />
+      </Sequence>
+      <Sequence from={at} layout="none">
+        <Audio src={staticFile("sfx/thud.mp3")} volume={0.6 * sfxGain} />
+      </Sequence>
+    </>
+  );
+}
+
+export function Intro({
+  voice = false,
+  variant = "default",
+  pacing = "calm",
+  sfx = "none",
+  music = false,
+  score,
+  sounds = "v3",
+  fx = true,
+  sfxGain = 1,
+}: IntroProps) {
+  const scenes = sequence(variant, pacing);
+  const twist = scenes.find((s) => s.id.startsWith("twist"));
+  return (
+    <CutContext.Provider value={{ pacing, sfx, sounds, fx, sfxGain }}>
       <AbsoluteFill style={{ fontFamily: SANS, background: C.ink }}>
         {scenes.map((s) => {
           const View = VIEWS[s.id];
@@ -623,7 +651,8 @@ export function Intro({ voice = false, variant = "default", pacing = "calm", sfx
           );
         })}
         {music && <Music scenes={scenes} dynamic={pacing === "dynamic"} />}
-        {score && <Audio src={staticFile(`music/${score}.mp3`)} volume={pacing === "dynamic" ? 0.17 : 0.14} />}
+        {score && <Audio src={staticFile(`music/${score}.mp3`)} volume={sounds === "v5" ? 0.17 : pacing === "dynamic" ? 0.17 : 0.14} />}
+        {sounds === "v5" && sfx !== "none" && twist && <TwistSwell at={twist.from + twist.lines[0].from} />}
       </AbsoluteFill>
     </CutContext.Provider>
   );
