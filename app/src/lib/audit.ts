@@ -18,6 +18,8 @@ export const HIGH_VOLUME_DAYS = 7;
 export const OUTLIER_FACTOR = 10;
 export const MANY_CANCELLED = 3;
 const DAY = 86_400;
+const CHUNK = 5;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export type FlagKind = "newRecipient" | "highVolume" | "targetOutlier" | "unclaimedRefunds" | "manyCancelled";
 
@@ -45,6 +47,8 @@ export type AuditData = {
   fundraisers: FundraiserView[];
   recipients: RecipientView[];
   movements: Movement[];
+  /** Set when the transaction history could not be read; accounts, totals and flags still work. */
+  movementsError?: unknown;
   /** Token base units still held in each fundraiser's vault, keyed by fundraiser pubkey. */
   vaultBalances: Map<string, bigint>;
   totals: { held: bigint; paid: bigint; refunded: bigint };
@@ -74,10 +78,13 @@ async function fetchMovements(program: Program<Earmark>, limit: number): Promise
   const sigs = (await connection.getSignaturesForAddress(program.programId, { limit }, "confirmed")).filter(
     (s) => !s.err,
   );
-  const txs = await connection.getTransactions(
-    sigs.map((s) => s.signature),
-    { commitment: "confirmed", maxSupportedTransactionVersion: 0 },
-  );
+  // The public RPC rejects big batches ("too many requests for a specific RPC call"), so go in small chunks.
+  const txs: Awaited<ReturnType<typeof connection.getTransactions>> = [];
+  for (let i = 0; i < sigs.length; i += CHUNK) {
+    const batch = sigs.slice(i, i + CHUNK).map((s) => s.signature);
+    const get = () => connection.getTransactions(batch, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
+    txs.push(...(await get().catch(async () => (await sleep(1500), get()))));
+  }
   const parser = new EventParser(program.programId, program.coder);
   const out: Movement[] = [];
   txs.forEach((tx, i) => {
@@ -98,18 +105,24 @@ async function fetchMovements(program: Program<Earmark>, limit: number): Promise
 }
 
 export async function fetchAudit(program: Program<Earmark>, movementLimit = 100): Promise<AuditData> {
-  const [fundraisers, recipients, movements, donations] = await Promise.all([
+  let movementsError: unknown;
+  const [fundraisers, recipients, donations] = await Promise.all([
     fetchFundraisers(program),
     fetchRecipients(program),
-    fetchMovements(program, movementLimit),
     program.account.donation.all(),
   ]);
   const vaultBalances = await fetchVaultBalances(program, fundraisers);
+  // History last: it is the heaviest call and the one public RPCs rate-limit first.
+  const movements = await fetchMovements(program, movementLimit).catch((e: unknown) => {
+    movementsError = e;
+    return [] as Movement[];
+  });
   const sum = (xs: Iterable<bigint>) => [...xs].reduce((a, b) => a + b, 0n);
   return {
     fundraisers,
     recipients,
     movements,
+    movementsError,
     vaultBalances,
     totals: {
       held: sum(vaultBalances.values()),
