@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { FaucetButton } from "./FaucetButton";
 import { CLUSTER } from "@/lib/config";
 import { useRole } from "@/lib/hooks";
 
@@ -44,6 +45,7 @@ export function Header() {
         {CLUSTER === "localnet" && (
           <span className="rounded-full bg-warn-soft px-2.5 py-1 text-xs font-semibold text-warn">localnet</span>
         )}
+        <FaucetButton />
         <WalletMultiButton />
       </div>
     </header>

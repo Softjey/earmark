@@ -9,7 +9,7 @@ import { BN } from "@anchor-lang/core";
 import { PublicKey } from "@solana/web3.js";
 import { createHash, randomBytes } from "crypto";
 import { getOrCreateAssociatedTokenAccount, mintTo } from "@solana/spl-token";
-import { configPda, demoKeypair, ensureSol, explorer, setup, tpln } from "./lib";
+import { configPda, demoKeypair, ensureSol, explorer, mintAuthority, setup, tpln } from "./lib";
 
 function parseDeadline(): number {
   const i = process.argv.indexOf("--deadline-in");
@@ -43,7 +43,7 @@ async function main() {
   for (const d of [wallets.donor1, wallets.donor2]) {
     const ata = await getOrCreateAssociatedTokenAccount(connection, deployer, mint, d.publicKey);
     if (Number(ata.amount) < tpln(2000))
-      await mintTo(connection, deployer, mint, ata.address, deployer, tpln(2000) - Number(ata.amount));
+      await mintTo(connection, deployer, mint, ata.address, mintAuthority(deployer), tpln(2000) - Number(ata.amount));
   }
 
   // Verify the clinic (once).

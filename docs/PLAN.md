@@ -135,9 +135,12 @@ are in [docs/design/](design/README.md). The frontend must follow them.
 | `/new` | organizer | create fundraiser (recipient picker, target, deadline, quote PDF → hash) |
 | `/clinic` | recipient | pending fundraisers to confirm / cancel |
 | `/verifier` | verifier | verify a clinic wallet (name + registry no.) |
-| `/audit` *(P1)* | everyone | all flows + red flags |
+| `/audit` *(P1)* | everyone | vault/payout/refund totals, recent money movements, red flags |
 
 Metadata: `POST /api/metadata` writes `app/data/metadata.json` (write-once, keyed by fundraiser pubkey; sent after the create tx confirms); `metadata_uri = /api/metadata/<fundraiser pubkey>`. `GET /api/metadata` returns all entries for the list page. `/clinic` and `/verifier` links appear in the header only for wallets that hold that role.
+`/audit` reads accounts and the last 100 program transactions client-side. Red flags (all computed in the browser, thresholds in `app/src/lib/audit.ts`): recipient verified < 7 days ago and already in a fundraiser; recipient in > 3 fundraisers created within 7 days; target > 10× the median target; deadline passed or cancelled with tPLN still in the vault; organizer with ≥ 3 cancelled fundraisers. Each flag links to the fundraisers/accounts that triggered it.
+
+**tPLN faucet (devnet only, not part of the trust model):** `POST /api/faucet {wallet}` mints 100 tPLN (`FAUCET_AMOUNT`) to the wallet's ATA. The mint authority is a dedicated faucet key (`FAUCET_SECRET_KEY`, set up by `scripts/setup-faucet.ts`, funded with 0.2 SOL), never the deployer. Limits: 1 request per wallet per hour, 3 per IP per hour, at most 40 token accounts opened on the faucet's rent (in-memory counters; reset on restart). The header shows *Get test tPLN* for connected wallets.
 Works when the app runs locally (the demo). On a serverless host the file is read-only → fine for P0.
 
 ## 7. Demo (~3 min) — details in [DEMO.md](DEMO.md)

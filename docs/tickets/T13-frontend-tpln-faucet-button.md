@@ -3,7 +3,7 @@
 - **Priority:** P1
 - **Area:** frontend
 - **Depends on:** T07, T09
-- **Status:** todo
+- **Status:** in progress (code done; run `scripts/setup-faucet.ts` on devnet to finish)
 - **Owner:** —
 - **Design (read before coding):** header wallet button area in any mockup (match button style from `docs/design/README.md` tokens) in [docs/design/](../design/README.md) · [canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt)
 
@@ -22,9 +22,9 @@ A *Get test tPLN* button for judges/visitors. Implemented as a Next.js API route
 
 ## Acceptance criteria
 
-- [ ] Rate-limited per wallet and per IP, with a per-request amount cap
+- [x] Rate-limited per wallet and per IP, with a per-request amount cap
 - [ ] Uses a dedicated faucet key (not the deployer wallet); funded with ≤ 0.2 SOL
-- [ ] Clearly labelled as devnet-only
+- [x] Clearly labelled as devnet-only
 
 ## Docs to update when done
 

@@ -1,10 +1,10 @@
 /**
- * Mints tPLN to a wallet's associated token account. The deployer wallet is the mint authority.
+ * Mints tPLN to a wallet's associated token account. The mint authority is the faucet key (scripts/.keys/faucet.json) if it exists, else the deployer wallet.
  * Usage: pnpm tsx scripts/airdrop.ts <wallet> <amount in whole tPLN>
  */
 import { PublicKey } from "@solana/web3.js";
 import { getOrCreateAssociatedTokenAccount, mintTo } from "@solana/spl-token";
-import { readEnv, setup, tpln } from "./lib";
+import { mintAuthority, readEnv, setup, tpln } from "./lib";
 
 async function main() {
   const [walletArg, amountArg] = process.argv.slice(2);
@@ -19,7 +19,7 @@ async function main() {
   const { connection, deployer } = setup();
   const mint = new PublicKey(mintAddress);
   const ata = await getOrCreateAssociatedTokenAccount(connection, deployer, mint, new PublicKey(walletArg));
-  const sig = await mintTo(connection, deployer, mint, ata.address, deployer, tpln(amount));
+  const sig = await mintTo(connection, deployer, mint, ata.address, mintAuthority(deployer), tpln(amount));
   console.log(`Minted ${amount} tPLN to ${walletArg} (token account ${ata.address.toBase58()})`);
   console.log("tx:", sig);
 }
