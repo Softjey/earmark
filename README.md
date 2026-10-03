@@ -35,7 +35,7 @@ the demo.
 | `programs/earmark/` | Anchor program: all money rules |
 | `tests/` | Program tests |
 | `app/` | Next.js frontend (App Router, Tailwind v4, wallet adapter; `cp app/.env.example app/.env.local`, then `pnpm --dir app dev`) |
-| `assets/` | tPLN token logo and metadata JSON (served from GitHub raw) |
+| `assets/` | ePLN token logo and metadata JSON (served from GitHub raw) |
 | `scripts/` | Deploy, mint, seed demo state |
 | `docs/` | Plan, demo script, tickets, design mockups |
 
@@ -52,7 +52,7 @@ anchor test --validator legacy                 # runs tests/ against a local sol
 ```
 
 `--validator legacy` is used because Anchor's default Surfpool runner did not start on our machines.
-Scripts (run with `pnpm exec tsx scripts/<name>.ts`): `deploy-devnet.sh`, `sync-idl.ts` (IDL → `app/src/idl`), `create-mint.ts`, `setup-faucet.ts` (devnet faucet key + mint authority handover, run once), `set-token-metadata.ts` (names the tPLN mint and sets its logo, from `assets/tpln/`), `airdrop.ts <wallet> <amount>`, `seed-demo.ts [--deadline-in <s>]`. Demo wallets are stored in git-ignored `scripts/.keys/`.
+Scripts (run with `pnpm exec tsx scripts/<name>.ts`): `deploy-devnet.sh`, `sync-idl.ts` (IDL → `app/src/idl`), `create-mint.ts`, `setup-faucet.ts` (devnet faucet key + mint authority handover, run once), `set-token-metadata.ts` (names the ePLN mint and sets its logo, from `assets/epln/`), `airdrop.ts <wallet> <amount>`, `seed-demo.ts [--deadline-in <s>]`. Demo wallets are stored in git-ignored `scripts/.keys/`.
 
 `anchor keys sync` regenerates the program ID from `target/deploy/earmark-keypair.json`; the keypair is
 git-ignored, so on a fresh clone the ID in `declare_id!` and `Anchor.toml` is replaced by T07.
@@ -63,7 +63,7 @@ git-ignored, so on a fresh clone the ID in `declare_id!` and `Anchor.toml` is re
 |---|---|
 | Network | Solana devnet |
 | Program ID | [`GWaY7mkSSwBzK6KfSGEJa9EriyvyE5k25yZQ9q4PCfMf`](https://explorer.solana.com/address/GWaY7mkSSwBzK6KfSGEJa9EriyvyE5k25yZQ9q4PCfMf?cluster=devnet) |
-| tPLN mint | [`9ho3Zsfuzz5kxxLNs1U2Prmk2kYAgyvertDpe3NqzmYr`](https://explorer.solana.com/address/9ho3Zsfuzz5kxxLNs1U2Prmk2kYAgyvertDpe3NqzmYr?cluster=devnet) |
+| ePLN mint | [`9ho3Zsfuzz5kxxLNs1U2Prmk2kYAgyvertDpe3NqzmYr`](https://explorer.solana.com/address/9ho3Zsfuzz5kxxLNs1U2Prmk2kYAgyvertDpe3NqzmYr?cluster=devnet) |
 | Verifier | `4gWcjmyT4pwTL89nNym8z3UxAtXZeK6fajk3191suDc8` |
 | Upgrade authority | deployer wallet `AAm3Sq5dWC7ZNr6wAidip51vKmupYKm4mXi5FuYwSmRg` (set to final before the demo) |
 | Design | [Claude Design canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt) · mockups & tokens in [docs/design](docs/design/README.md) |
@@ -74,6 +74,6 @@ git-ignored, so on a fresh clone the ID in `declare_id!` and `Anchor.toml` is re
 - A fake clinic that passes verification, or a clinic colluding with an organizer, is not stopped by
   the program; the audit page only flags it.
 - Fundraisers without a single payee (e.g. living costs) are out of scope.
-- tPLN is a devnet test token; production would use a stablecoin and a fiat on-ramp.
-- The *Get test tPLN* faucet (`/api/faucet`) holds the tPLN mint-authority key on the server. That is test money and not part of the trust model; its rate limits are in memory, so they reset on restart.
+- ePLN is a devnet test token; production would use a stablecoin and a fiat on-ramp.
+- The *Get test ePLN* faucet (`/api/faucet`) holds the ePLN mint-authority key on the server. That is test money and not part of the trust model; its rate limits are in memory, so they reset on restart.
 - The audit page reads the 100 most recent program transactions and recomputes flags in the browser; it is a hint for humans, not a fraud verdict.

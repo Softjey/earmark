@@ -2,7 +2,7 @@
 
 ## Setup (do before going on stage)
 
-- [ ] 5 wallets in separate browser profiles (or Phantom accounts), each with devnet SOL + tPLN:
+- [ ] 5 wallets in separate browser profiles (or Phantom accounts), each with devnet SOL + ePLN:
       **Verifier**, **Eye Clinic**, **Organizer** (also plays the fraudster), **Donor 1**, **Donor 2**
 - [ ] Clinic is already verified (`scripts/seed-demo.ts`)
 - [ ] Fundraiser **B** created by the seed script: target 1 000, 300 donated by Donor 1, deadline ≈ 2 min after the demo starts
@@ -16,7 +16,7 @@
 |---|---|---|---|
 | 0 | 15 s | Slide | "6 500 people, 500 000 zł, and Antoś never existed. The platform paid the money to the organizer; everything else was trust." |
 | 1 | 30 s | `/new` as Organizer | Create "Therapy for Antoś" with **own wallet** as recipient → error `RecipientNotVerified`. "He can invent a story. He cannot send the money to himself." |
-| 2 | 30 s | `/new` → `/clinic` | Create an honest fundraiser, 1 000 tPLN, for Eye Clinic, attach quote PDF. Status *awaiting clinic*. Switch to the clinic profile → **Confirm** → Active. |
+| 2 | 30 s | `/new` → `/clinic` | Create an honest fundraiser, 1 000 ePLN, for Eye Clinic, attach quote PDF. Status *awaiting clinic*. Switch to the clinic profile → **Confirm** → Active. |
 | 3 | 45 s | `/fundraisers/[id]` | Donor 1 pays 600 (60 %). Donor 2 pays 400 → target hit → **payout in the same transaction**. Explorer: vault 0, clinic +1 000. "The organizer never touched the money. Nobody held it in between." |
 | 4 | 30 s | Fundraiser B | Deadline passed, target missed. Donor 1 → **Get my money back** → +300. "The Lewandowskis got their money back. 6 500 others did not. Here the refund is the same for everyone and needs nobody's permission." |
 | 5 | 20 s | `/audit` | All flows public + red flags (new recipient, unusual volume). |

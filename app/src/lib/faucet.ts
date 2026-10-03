@@ -7,7 +7,7 @@ import {
 import { Connection, Keypair, PublicKey, Transaction, sendAndConfirmTransaction } from "@solana/web3.js";
 import { RPC_URL, TPLN_DECIMALS, TPLN_MINT } from "./config";
 
-// Devnet test money only. The faucet key is the tPLN mint authority and fee payer; it is NOT part of
+// Devnet test money only. The faucet key is the ePLN mint authority and fee payer; it is NOT part of
 // the trust model (docs/PLAN.md §6) and must hold only a few cents of SOL.
 
 export const AMOUNT_TPLN = Math.min(Number(process.env.FAUCET_AMOUNT) || 100, 1000);
@@ -57,7 +57,7 @@ function loadFaucetKey(): Keypair {
 }
 
 export async function claimTpln(walletAddress: string, ip: string): Promise<{ signature: string; amount: number }> {
-  if (!TPLN_MINT) throw new FaucetError("The tPLN mint is not configured.", 503);
+  if (!TPLN_MINT) throw new FaucetError("The ePLN mint is not configured.", 503);
   if (/mainnet/i.test(RPC_URL)) throw new FaucetError("The faucet works on devnet only.", 403);
 
   let wallet: PublicKey;
@@ -72,7 +72,7 @@ export async function claimTpln(walletAddress: string, ip: string): Promise<{ si
   const connection = new Connection(RPC_URL, "confirmed");
   const mint = await getMint(connection, TPLN_MINT);
   if (!mint.mintAuthority?.equals(faucet.publicKey))
-    throw new FaucetError("The faucet is not the tPLN mint authority yet.", 503);
+    throw new FaucetError("The faucet is not the ePLN mint authority yet.", 503);
   if ((await connection.getBalance(faucet.publicKey)) < MIN_LAMPORTS)
     throw new FaucetError("The faucet is out of devnet SOL. Please tell the organizers.", 503);
 
@@ -80,7 +80,7 @@ export async function claimTpln(walletAddress: string, ip: string): Promise<{ si
   const walletKey = `w:${wallet.toBase58()}`;
   const ipKey = `ip:${ip}`;
   if (!takeSlot(walletKey, WALLET_LIMIT, now))
-    throw new FaucetError("This wallet already got test tPLN in the last hour. Try again later.", 429);
+    throw new FaucetError("This wallet already got test ePLN in the last hour. Try again later.", 429);
   if (!takeSlot(ipKey, IP_LIMIT, now)) {
     releaseSlot(walletKey, now);
     throw new FaucetError("Too many requests from your network. Try again later.", 429);
@@ -92,7 +92,7 @@ export async function claimTpln(walletAddress: string, ip: string): Promise<{ si
     const needsAccount = !(await connection.getAccountInfo(ata));
     if (needsAccount) {
       if (newAccounts >= MAX_NEW_ACCOUNTS)
-        throw new FaucetError("The faucet cannot open new token accounts right now. Ask the organizers for tPLN.", 503);
+        throw new FaucetError("The faucet cannot open new token accounts right now. Ask the organizers for ePLN.", 503);
       newAccounts++;
       createdAccount = true;
     }

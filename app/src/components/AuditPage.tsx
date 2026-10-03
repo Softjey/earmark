@@ -113,10 +113,10 @@ export function AuditPage() {
       {data && (
         <>
           <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
-            <Stat label="Held in vaults" value={`${formatTpln(data.audit.totals.held)} tPLN`} />
-            <Stat label="Paid to clinics" value={`${formatTpln(data.audit.totals.paid)} tPLN`} />
-            <Stat label="Refunded to donors" value={`${formatTpln(data.audit.totals.refunded)} tPLN`} />
-            <Stat label="Paid to organizers" value="0 tPLN · always" accent />
+            <Stat label="Held in vaults" value={`${formatTpln(data.audit.totals.held)} ePLN`} />
+            <Stat label="Paid to clinics" value={`${formatTpln(data.audit.totals.paid)} ePLN`} />
+            <Stat label="Refunded to donors" value={`${formatTpln(data.audit.totals.refunded)} ePLN`} />
+            <Stat label="Paid to organizers" value="0 ePLN · always" accent />
           </div>
 
           <section className="flex flex-col gap-3">
@@ -137,7 +137,7 @@ export function AuditPage() {
               <table className="w-full min-w-[720px] border-collapse text-[15px]">
                 <thead>
                   <tr className="text-left text-[13px] text-muted">
-                    {["When", "Type", "Fundraiser", "From → To", "Amount (tPLN)", ""].map((h, i) => (
+                    {["When", "Type", "Fundraiser", "From → To", "Amount (ePLN)", ""].map((h, i) => (
                       <th key={i} className={`px-5 py-3.5 font-semibold ${i === 4 ? "text-right" : ""}`}>
                         {h}
                       </th>

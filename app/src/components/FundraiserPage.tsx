@@ -28,7 +28,7 @@ const CODE_URL = "https://github.com/Softjey/earmark/blob/main/programs/earmark/
 const mono = "font-mono text-sm";
 
 function ActivityRow({ item, now }: { item: ActivityItem; now: number }) {
-  const amount = item.amount ? <strong>{formatTpln(item.amount)} tPLN</strong> : null;
+  const amount = item.amount ? <strong>{formatTpln(item.amount)} ePLN</strong> : null;
   const who = item.wallet ? <span className={mono}>{shortKey(item.wallet.toBase58())}</span> : null;
   const text = {
     created: <>Fundraiser created</>,
@@ -154,7 +154,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
             <p className="text-[#2b3733]">
               {status === "cancelled"
                 ? "This fundraiser was cancelled, so the clinic will not be paid. "
-                : `The fundraiser collected ${formatTpln(f.raised)} of ${formatTpln(f.target)} tPLN before its deadline, so the clinic will not be paid. `}
+                : `The fundraiser collected ${formatTpln(f.raised)} of ${formatTpln(f.target)} ePLN before its deadline, so the clinic will not be paid. `}
               Every donor can take their own donation back from the vault. Nobody has to approve it, and nobody can stop it.
             </p>
           </div>
@@ -208,7 +208,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
           {status === "deadlinePassed" && (
             <div className="flex flex-wrap gap-x-4 gap-y-2 border-b border-[#e8ecea] py-3">
               <span className="min-w-60 flex-1">
-                Deadline passed · vault holds <strong>{formatTpln((raised - refundedTotal).toString())} tPLN</strong>
+                Deadline passed · vault holds <strong>{formatTpln((raised - refundedTotal).toString())} ePLN</strong>
               </span>
               <span className="text-sm text-muted">{timeAgo(deadline, now)}</span>
             </div>
@@ -221,7 +221,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
         <div className={`${card} gap-4`}>
           <div className="flex flex-wrap items-baseline gap-2">
             <span className="text-[32px] font-bold tracking-tight">{formatTpln(f.raised)}</span>
-            <span className="text-muted">of {formatTpln(f.target)} tPLN</span>
+            <span className="text-muted">of {formatTpln(f.target)} ePLN</span>
           </div>
           <ProgressBar raised={f.raised.toNumber()} target={f.target.toNumber()} thick muted={refundable} />
           <div className="flex justify-between text-sm text-muted">
@@ -244,17 +244,17 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
                   onChange={(e) => setAmount(e.target.value)}
                   className="min-w-0 flex-1 border-0 bg-transparent text-lg font-semibold outline-none"
                 />
-                <span className="text-muted">tPLN</span>
+                <span className="text-muted">ePLN</span>
               </div>
               <p className="text-[13px] text-muted">
                 {accepted === null
                   ? "Enter an amount greater than zero."
                   : units! >= remaining
-                    ? `${formatTpln(remaining.toString())} tPLN completes the target${units! > remaining ? " (the program caps your donation there)" : ""}. The clinic is paid in the same transaction.`
-                    : `${formatTpln((remaining - units!).toString())} tPLN would still be missing after your donation.`}
+                    ? `${formatTpln(remaining.toString())} ePLN completes the target${units! > remaining ? " (the program caps your donation there)" : ""}. The clinic is paid in the same transaction.`
+                    : `${formatTpln((remaining - units!).toString())} ePLN would still be missing after your donation.`}
               </p>
               <button type="button" className={btnPrimary} disabled={!wallet || accepted === null || donate.busy} onClick={onDonate}>
-                {!wallet ? "Connect a wallet to donate" : donate.busy ? "Waiting for wallet…" : `Donate ${accepted === null ? "" : formatTpln(accepted.toString())} tPLN`}
+                {!wallet ? "Connect a wallet to donate" : donate.busy ? "Waiting for wallet…" : `Donate ${accepted === null ? "" : formatTpln(accepted.toString())} ePLN`}
               </button>
               <ErrorAlert error={donate.error} />
               {justDonated && (
@@ -273,7 +273,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
 
           {status === "released" && (
             <p className="rounded-input bg-accent-soft p-3 text-sm text-accent">
-              Target reached. {formatTpln(f.target)} tPLN was paid to {clinicName} automatically.
+              Target reached. {formatTpln(f.target)} ePLN was paid to {clinicName} automatically.
               {payout && (
                 <>
                   {" "}
@@ -288,7 +288,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
               <div className="flex items-center justify-between border-t border-line pt-4">
                 <span className="text-sm text-muted">Your donation in the vault</span>
                 <span className="font-semibold">
-                  {donation && !donation.refunded ? `${formatTpln(donation.amount)} tPLN` : "0 tPLN"}
+                  {donation && !donation.refunded ? `${formatTpln(donation.amount)} ePLN` : "0 ePLN"}
                 </span>
               </div>
               {donation && !donation.refunded ? (
@@ -314,7 +314,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
               <path d="M5 12l5 5L20 7" />
             </svg>
             <span>
-              Refunded · <strong>+{formatTpln(myRefund.amount)} tPLN</strong> · <TxLink signature={myRefund.signature} />
+              Refunded · <strong>+{formatTpln(myRefund.amount)} ePLN</strong> · <TxLink signature={myRefund.signature} />
             </span>
           </div>
         )}

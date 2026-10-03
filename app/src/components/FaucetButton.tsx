@@ -7,7 +7,7 @@ import { useProgram } from "@/lib/hooks";
 
 type Result = { kind: "ok"; amount: number; signature: string } | { kind: "error"; message: string };
 
-/** Header button for judges and visitors: devnet test tPLN, no real value. */
+/** Header button for judges and visitors: devnet test ePLN, no real value. */
 export function FaucetButton() {
   const { wallet } = useProgram();
   const [busy, setBusy] = useState(false);
@@ -41,12 +41,12 @@ export function FaucetButton() {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <button type="button" className={btnOutline} disabled={busy} onClick={claim} title="Devnet test tokens, no real value">
-        {busy ? "Minting…" : "Get test tPLN"}
+        {busy ? "Minting…" : "Get test ePLN"}
       </button>
       <span role="status" className="text-sm">
         {result?.kind === "ok" && (
           <span className="text-accent">
-            +{result.amount} tPLN <TxLink signature={result.signature} />
+            +{result.amount} ePLN <TxLink signature={result.signature} />
           </span>
         )}
         {result?.kind === "error" && <span className="text-error">{result.message}</span>}

@@ -1,5 +1,5 @@
 /**
- * Creates the tPLN SPL mint (6 decimals), calls `init_config` and writes app/.env.local.
+ * Creates the ePLN SPL mint (6 decimals), calls `init_config` and writes app/.env.local.
  * Idempotent: if the program is already configured, only refreshes app/.env.local.
  * Usage: pnpm tsx scripts/create-mint.ts
  */
@@ -19,7 +19,7 @@ async function main() {
       .initConfig(verifier.publicKey)
       .accounts({ deployer: deployer.publicKey, mint })
       .rpc();
-    console.log("Created tPLN mint and initialised config");
+    console.log("Created ePLN mint and initialised config");
   } else {
     console.log("Config already initialised, reusing mint");
   }
@@ -29,7 +29,7 @@ async function main() {
     NEXT_PUBLIC_TPLN_MINT: mint.toBase58(),
   });
   console.log("Program ID:", program.programId.toBase58());
-  console.log("tPLN mint :", mint.toBase58(), explorer("address", mint.toBase58()));
+  console.log("ePLN mint :", mint.toBase58(), explorer("address", mint.toBase58()));
   console.log("Verifier  :", (existing?.verifier ?? verifier.publicKey).toBase58());
   console.log("Wrote app/.env.local");
 }

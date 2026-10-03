@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#0B6B55"/>
-  <g transform="translate(88 58) scale(12)" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M5 14 L14 5 L23 14 L14 23 Z"/>
-    <path d="M10 14 L13 17 L18 11"/>
-  </g>
-  <text x="256" y="440" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="52" font-weight="700" fill="#E3F1EC">tPLN</text>
-</svg>

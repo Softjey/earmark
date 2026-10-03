@@ -169,7 +169,7 @@ export function computeFlags(
       const when = days < 1 ? "less than a day ago" : `${days} day${days === 1 ? "" : "s"} ago`;
       flags.push({
         kind: "newRecipient",
-        text: `${r.account.name} was verified ${when} and is already named in ${theirs.length === 1 ? `a ${fmt(BigInt(theirs[0].account.target.toString()))} tPLN fundraiser` : `${theirs.length} fundraisers`}.`,
+        text: `${r.account.name} was verified ${when} and is already named in ${theirs.length === 1 ? `a ${fmt(BigInt(theirs[0].account.target.toString()))} ePLN fundraiser` : `${theirs.length} fundraisers`}.`,
         links: [accountLink, ...theirs.map(fLink)],
       });
     }
@@ -193,7 +193,7 @@ export function computeFlags(
       if (med > 0 && target > OUTLIER_FACTOR * med)
         flags.push({
           kind: "targetOutlier",
-          text: `${titleOf(f.pubkey)} asks for ${fmt(BigInt(target))} tPLN, more than ${OUTLIER_FACTOR}× the median target (${fmt(BigInt(Math.round(med)))} tPLN).`,
+          text: `${titleOf(f.pubkey)} asks for ${fmt(BigInt(target))} ePLN, more than ${OUTLIER_FACTOR}× the median target (${fmt(BigInt(Math.round(med)))} ePLN).`,
           links: [fLink(f)],
         });
     }
@@ -206,7 +206,7 @@ export function computeFlags(
     if ((status === "deadlinePassed" || status === "cancelled") && left > 0n)
       flags.push({
         kind: "unclaimedRefunds",
-        text: `${titleOf(f.pubkey)} ${status === "cancelled" ? "was cancelled" : "ended"} with ${fmt(left)} tPLN still in the vault. Donors can claim it.`,
+        text: `${titleOf(f.pubkey)} ${status === "cancelled" ? "was cancelled" : "ended"} with ${fmt(left)} ePLN still in the vault. Donors can claim it.`,
         links: [fLink(f)],
       });
   }

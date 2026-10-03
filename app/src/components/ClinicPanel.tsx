@@ -83,7 +83,7 @@ export function ClinicPanel() {
                 {title(v)}
               </Link>
               <span className="text-sm text-[#2b3733]">
-                Target {formatTpln(v.account.target)} tPLN · deadline {formatDate(v.account.deadline.toNumber())} · organizer{" "}
+                Target {formatTpln(v.account.target)} ePLN · deadline {formatDate(v.account.deadline.toNumber())} · organizer{" "}
                 <span className="font-mono">{shortKey(v.account.organizer.toBase58())}</span>
               </span>
               <span className="text-sm text-muted">

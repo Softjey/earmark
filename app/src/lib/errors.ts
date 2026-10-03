@@ -72,9 +72,9 @@ export function describeError(err: unknown): ErrorInfo {
   if (/no record of a prior credit|insufficient lamports|insufficient funds for fee/i.test(text))
     return { title: "Not enough SOL", message: "Your wallet needs a little devnet SOL to pay the network fee." };
   if (/owner does not match|AccountNotInitialized|could not find account|TokenAccountNotFound/i.test(text))
-    return { title: "No tPLN in this wallet", message: "Your wallet has no tPLN token account yet. Get some test tPLN first." };
+    return { title: "No ePLN in this wallet", message: "Your wallet has no ePLN token account yet. Get some test ePLN first." };
   if (/insufficient funds/i.test(text))
-    return { title: "Not enough tPLN", message: "Your wallet holds less tPLN than the amount you entered." };
+    return { title: "Not enough ePLN", message: "Your wallet holds less ePLN than the amount you entered." };
   if (/blockhash not found|expired/i.test(text))
     return { title: "Transaction expired", message: "The network took too long. Please try again." };
   if (/failed to fetch|network|429|timeout/i.test(text))

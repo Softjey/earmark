@@ -49,7 +49,7 @@ export function FundraiserCard({
       )}
       <ProgressBar raised={f.raised.toNumber()} target={f.target.toNumber()} muted={status === "deadlinePassed" || status === "cancelled"} />
       <span className="text-sm text-muted">
-        <strong className="text-ink">{formatTpln(f.raised)}</strong> of {formatTpln(f.target)} tPLN{footer}
+        <strong className="text-ink">{formatTpln(f.raised)}</strong> of {formatTpln(f.target)} ePLN{footer}
       </span>
     </Link>
   );

@@ -1,7 +1,7 @@
 /**
  * Puts the chain into the state docs/DEMO.md expects:
- *  - Eye Clinic verified, all demo wallets funded with SOL and tPLN
- *  - Fundraiser B: target 1000 tPLN, 300 donated by Donor 1, deadline N seconds from now
+ *  - Eye Clinic verified, all demo wallets funded with SOL and ePLN
+ *  - Fundraiser B: target 1000 ePLN, 300 donated by Donor 1, deadline N seconds from now
  * Run it again for a fresh fundraiser B (every run creates a new one).
  * Usage: pnpm tsx scripts/seed-demo.ts [--deadline-in <seconds>]   (default 120)
  */
@@ -38,7 +38,7 @@ async function main() {
     );
   }
 
-  // SOL for fees + rent, tPLN for the donors.
+  // SOL for fees + rent, ePLN for the donors.
   for (const w of Object.values(wallets)) await ensureSol(connection, deployer, w.publicKey, 0.2);
   for (const d of [wallets.donor1, wallets.donor2]) {
     const ata = await getOrCreateAssociatedTokenAccount(connection, deployer, mint, d.publicKey);
@@ -59,7 +59,7 @@ async function main() {
       .rpc();
   }
 
-  // Fundraiser B: created, confirmed, 300 tPLN from Donor 1.
+  // Fundraiser B: created, confirmed, 300 ePLN from Donor 1.
   const id = Date.now();
   const quoteHash = Array.from(createHash("sha256").update(randomBytes(32)).digest());
   const deadline = Math.floor(Date.now() / 1000) + deadlineIn;
@@ -95,8 +95,8 @@ async function main() {
     console.log(`${name.padEnd(10)} ${w.publicKey.toBase58()}  ${explorer("address", w.publicKey.toBase58())}`);
   console.log(`\nFundraiser B ${fundraiser.toBase58()}`);
   console.log(`  ${explorer("address", fundraiser.toBase58())}`);
-  console.log(`  target 1000 tPLN, 300 raised, deadline ${new Date(deadline * 1000).toISOString()} (in ${deadlineIn}s)`);
-  console.log(`tPLN mint    ${mint.toBase58()}`);
+  console.log(`  target 1000 ePLN, 300 raised, deadline ${new Date(deadline * 1000).toISOString()} (in ${deadlineIn}s)`);
+  console.log(`ePLN mint    ${mint.toBase58()}`);
   console.log(`Program      ${program.programId.toBase58()}`);
   console.log("Wallet keys are in scripts/.keys/ (git-ignored); import them into Phantom/Solflare.");
 }

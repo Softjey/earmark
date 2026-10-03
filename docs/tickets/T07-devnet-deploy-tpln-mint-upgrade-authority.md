@@ -1,4 +1,4 @@
-# T07 — Devnet deploy, tPLN mint, upgrade authority
+# T07 — Devnet deploy, ePLN mint, upgrade authority
 
 - **Priority:** P0
 - **Area:** infra
@@ -8,12 +8,12 @@
 
 ## Description
 
-Scripts to deploy to devnet, create the tPLN SPL mint (6 decimals), call `init_config`, and airdrop tPLN to demo wallets. Document the program ID and mint in README.
+Scripts to deploy to devnet, create the ePLN SPL mint (6 decimals), call `init_config`, and airdrop ePLN to demo wallets. Document the program ID and mint in README.
 
 ## Acceptance criteria
 
 - [x] `scripts/deploy-devnet.sh` deploys and prints the program ID
-- [x] `scripts/create-mint.ts` creates tPLN and writes the address to `app/.env.local`
+- [x] `scripts/create-mint.ts` creates ePLN and writes the address to `app/.env.local`
 - [x] `scripts/airdrop.ts <wallet> <amount>` works
 - [x] Before the final demo: `solana program set-upgrade-authority <ID> --final` (documented, run manually)
 

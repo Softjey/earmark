@@ -22,7 +22,7 @@ to a verified clinic or back to the donors, never to the organizer. Built for th
 | `programs/earmark/` | Anchor program (Rust). **All money rules live here and nowhere else.** |
 | `tests/` | Program tests (TypeScript) |
 | `app/` | Next.js frontend (wallet connect, UI, metadata JSON API) |
-| `scripts/` | Deploy, mint tPLN, airdrop, seed demo state |
+| `scripts/` | Deploy, mint ePLN, airdrop, seed demo state |
 | `docs/` | Plan, demo script, tickets, design mockups |
 
 ## Hard rules
@@ -63,7 +63,7 @@ The program is **already deployed** to devnet and `init_config` has been called 
 - **Do not re-run `create-mint.ts`**: config can be initialised only once; it is idempotent and just rewrites `app/.env.local`.
 - `seed-demo.ts` is safe to re-run (costs a few cents, creates a new fundraiser B each time).
 - **Never delete `scripts/.keys/`** (git-ignored): `verifier.json` is the on-chain verifier key and cannot be
-  replaced. The deployer wallet `~/.config/solana/id.json` is the upgrade authority and tPLN mint authority.
+  replaced. The deployer wallet `~/.config/solana/id.json` is the upgrade authority and ePLN mint authority.
 - Never run `set-upgrade-authority --final` without the user's explicit go-ahead; it is irreversible.
 - Do not use `anchor deploy` (its IDL step needs npx and fails); the script uses `solana program deploy`.
 

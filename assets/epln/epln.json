@@ -1,7 +1,7 @@
 {
-  "name": "Earmark Test PLN",
-  "symbol": "tPLN",
+  "name": "Earmark PLN",
+  "symbol": "ePLN",
   "description": "Devnet test token for Earmark, medical fundraisers where donations can only go to a verified clinic or back to the donors. No real value.",
-  "image": "https://raw.githubusercontent.com/Softjey/earmark/main/assets/tpln/logo.png",
+  "image": "https://raw.githubusercontent.com/Softjey/earmark/main/assets/epln/logo.png",
   "external_url": "https://github.com/Softjey/earmark"
 }

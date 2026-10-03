@@ -1,17 +1,17 @@
 /**
- * Gives the tPLN mint a name, symbol and image (Metaplex Token Metadata) so wallets show "Earmark Test PLN"
+ * Gives the ePLN mint a name, symbol and image (Metaplex Token Metadata) so wallets show "Earmark PLN"
  * instead of "Unknown Token". Signed by the faucet key (mint authority and update authority).
  * Creates the metadata account (~0.006 SOL rent) or updates it; safe to re-run.
- * The JSON at URI is assets/tpln/tpln.json and must be pushed to GitHub before wallets can read it.
+ * The JSON at URI is assets/epln/epln.json and must be pushed to GitHub before wallets can read it.
  * Usage: pnpm tsx scripts/set-token-metadata.ts
  */
 import { PublicKey, Transaction, TransactionInstruction, SystemProgram, sendAndConfirmTransaction } from "@solana/web3.js";
 import { demoKeypair, explorer, readEnv, setup } from "./lib";
 
 const METADATA_PROGRAM = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
-const NAME = "Earmark Test PLN";
-const SYMBOL = "tPLN";
-const URI = "https://raw.githubusercontent.com/Softjey/earmark/main/assets/tpln/tpln.json";
+const NAME = "Earmark PLN";
+const SYMBOL = "ePLN";
+const URI = "https://raw.githubusercontent.com/Softjey/earmark/main/assets/epln/epln.json";
 
 const str = (s: string) => {
   const b = Buffer.from(s);
@@ -23,7 +23,7 @@ const str = (s: string) => {
 async function main() {
   const { connection } = setup();
   const mintAddress = process.env.TPLN_MINT ?? readEnv().NEXT_PUBLIC_TPLN_MINT;
-  if (!mintAddress) throw new Error("tPLN mint unknown: run scripts/create-mint.ts first");
+  if (!mintAddress) throw new Error("ePLN mint unknown: run scripts/create-mint.ts first");
   const mint = new PublicKey(mintAddress);
   const faucet = demoKeypair("faucet");
 

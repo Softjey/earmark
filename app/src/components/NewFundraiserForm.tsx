@@ -115,7 +115,7 @@ export function NewFundraiserForm() {
           </div>
         </Field>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <Field label="Target (tPLN)" htmlFor="target">
+          <Field label="Target (ePLN)" htmlFor="target">
             <input id="target" required inputMode="decimal" placeholder="1000" value={target} onChange={(e) => setTarget(e.target.value)} className={inputCls} />
           </Field>
           <Field label="Deadline" htmlFor="deadline">

@@ -4,13 +4,13 @@ export function shortKey(key: string, n = 4): string {
   return key.length <= n * 2 + 1 ? key : `${key.slice(0, n)}…${key.slice(-n)}`;
 }
 
-/** Base units (bigint/number/BN-like) to a human tPLN string, e.g. 1 000. */
+/** Base units (bigint/number/BN-like) to a human ePLN string, e.g. 1 000. */
 export function formatTpln(units: { toString(): string }): string {
   const v = Number(units.toString()) / 10 ** TPLN_DECIMALS;
   return v.toLocaleString("en-US", { maximumFractionDigits: 2 }).replace(/,/g, " ");
 }
 
-/** Plain tPLN number (e.g. "400") to base units. Returns null for anything but a positive amount. */
+/** Plain ePLN number (e.g. "400") to base units. Returns null for anything but a positive amount. */
 export function parseTpln(input: string): bigint | null {
   const m = /^(\d+)(?:[.,](\d{1,6}))?$/.exec(input.replace(/\s/g, ""));
   if (!m) return null;

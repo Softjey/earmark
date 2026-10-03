@@ -1,6 +1,6 @@
 /**
  * One-time devnet faucet setup (T13): creates a dedicated faucet key, funds it with 0.1 SOL and
- * moves the tPLN mint authority from the deployer wallet to it, then writes FAUCET_SECRET_KEY to app/.env.local.
+ * moves the ePLN mint authority from the deployer wallet to it, then writes FAUCET_SECRET_KEY to app/.env.local.
  * The faucet key is test-money only and never the upgrade authority. Spends ~0.1 SOL of devnet SOL.
  * Usage: pnpm tsx scripts/setup-faucet.ts
  */
@@ -13,7 +13,7 @@ const FAUCET_SOL = 0.1;
 async function main() {
   const { connection, deployer } = setup();
   const mintAddress = process.env.TPLN_MINT ?? readEnv().NEXT_PUBLIC_TPLN_MINT;
-  if (!mintAddress) throw new Error("tPLN mint unknown: run scripts/create-mint.ts first");
+  if (!mintAddress) throw new Error("ePLN mint unknown: run scripts/create-mint.ts first");
   const mint = new PublicKey(mintAddress);
   const faucet = demoKeypair("faucet");
 
@@ -24,7 +24,7 @@ async function main() {
     console.log("Faucet is already the mint authority");
   } else if (info.mintAuthority?.equals(deployer.publicKey)) {
     await setAuthority(connection, deployer, mint, deployer, AuthorityType.MintTokens, faucet.publicKey);
-    console.log("Moved tPLN mint authority to the faucet key");
+    console.log("Moved ePLN mint authority to the faucet key");
   } else {
     throw new Error(`Unexpected mint authority ${info.mintAuthority?.toBase58()}`);
   }

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#0B6B55"/>
+  <path d="M256 56 L456 256 L256 456 L56 256 Z" fill="none" stroke="#3E9C85" stroke-width="14" stroke-linejoin="round"/>
+  <path d="M256 92 L420 256 L256 420 L92 256 Z" fill="#0A5E4A"/>
+  <text x="256" y="300" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="190" font-weight="700" font-style="italic" fill="#FFFFFF">zł</text>
+</svg>

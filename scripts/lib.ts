@@ -35,7 +35,7 @@ export function demoKeypair(name: string): Keypair {
   return kp;
 }
 
-/** tPLN mint authority: the dedicated faucet key once `setup-faucet.ts` ran, the deployer before that. */
+/** ePLN mint authority: the dedicated faucet key once `setup-faucet.ts` ran, the deployer before that. */
 export function mintAuthority(deployer: Keypair): Keypair {
   const file = path.join(KEYS_DIR, "faucet.json");
   return fs.existsSync(file) ? loadKeypair(file) : deployer;

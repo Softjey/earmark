@@ -1,6 +1,6 @@
 /**
- * Mints tPLN to a wallet's associated token account. The mint authority is the faucet key (scripts/.keys/faucet.json) if it exists, else the deployer wallet.
- * Usage: pnpm tsx scripts/airdrop.ts <wallet> <amount in whole tPLN>
+ * Mints ePLN to a wallet's associated token account. The mint authority is the faucet key (scripts/.keys/faucet.json) if it exists, else the deployer wallet.
+ * Usage: pnpm tsx scripts/airdrop.ts <wallet> <amount in whole ePLN>
  */
 import { PublicKey } from "@solana/web3.js";
 import { getOrCreateAssociatedTokenAccount, mintTo } from "@solana/spl-token";
@@ -14,13 +14,13 @@ async function main() {
     process.exit(1);
   }
   const mintAddress = process.env.TPLN_MINT ?? readEnv().NEXT_PUBLIC_TPLN_MINT;
-  if (!mintAddress) throw new Error("tPLN mint unknown: run scripts/create-mint.ts first");
+  if (!mintAddress) throw new Error("ePLN mint unknown: run scripts/create-mint.ts first");
 
   const { connection, deployer } = setup();
   const mint = new PublicKey(mintAddress);
   const ata = await getOrCreateAssociatedTokenAccount(connection, deployer, mint, new PublicKey(walletArg));
   const sig = await mintTo(connection, deployer, mint, ata.address, mintAuthority(deployer), tpln(amount));
-  console.log(`Minted ${amount} tPLN to ${walletArg} (token account ${ata.address.toBase58()})`);
+  console.log(`Minted ${amount} ePLN to ${walletArg} (token account ${ata.address.toBase58()})`);
   console.log("tx:", sig);
 }
 
