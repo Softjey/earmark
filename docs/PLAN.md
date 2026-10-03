@@ -141,7 +141,7 @@ are in [docs/design/](design/README.md). The frontend must follow them.
 | `/new` | organizer | create fundraiser (category, recipient picker, target, deadline, supporting document → hash) |
 | `/recipient` | recipient | pending fundraisers to confirm / cancel |
 | `/verifier` | verifier | verify a recipient wallet (name + registry no.) |
-| `/audit` *(P1)* | everyone | vault/payout/refund totals, recent money movements, red flags |
+| `/audit` *(P1)* | everyone | where the donated money is (paid / in vaults / refunded), red flags, per-fundraiser ledger, filterable money movements |
 
 Metadata: `POST /api/metadata` writes `app/data/metadata.json` (write-once, keyed by fundraiser pubkey; holds `title`, `story` and an optional descriptive `category` (medical, humanitarian, disaster, children, animals, community, other) used only for browsing and filtering, never by the program; sent after the create tx confirms); `metadata_uri = /api/metadata/<fundraiser pubkey>`. `GET /api/metadata` returns all entries for the list page. `/recipient` and `/verifier` links appear in the header only for wallets that hold that role.
 `/audit` reads accounts and the last 100 program transactions client-side. Red flags (all computed in the browser, thresholds in `app/src/lib/audit.ts`): recipient verified < 7 days ago and already in a fundraiser; recipient in > 3 fundraisers created within 7 days; target > 10× the median target; deadline passed or cancelled with ePLN still in the vault; organizer with ≥ 3 cancelled fundraisers. Each flag links to the fundraisers/accounts that triggered it.
