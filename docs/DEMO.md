@@ -4,7 +4,7 @@
 
 - [ ] 5 wallets in separate browser profiles (or Phantom accounts), each with devnet SOL + ePLN:
       **Verifier**, **Eye Clinic**, **Organizer** (also plays the fraudster), **Donor 1**, **Donor 2**
-- [ ] Clinic is already verified (`scripts/seed-demo.ts`)
+- [ ] Clinic is already verified (`scripts/seed-demo.ts`); optionally add four more with `scripts/seed-clinics.ts` so the picker on `/new` looks populated
 - [ ] Fundraiser **B** created by the seed script: target 1 000, 300 donated by Donor 1, deadline ≈ 2 min after the demo starts
 - [ ] Explorer tabs open: program account (upgrade authority = none), clinic token account
 - [ ] Backup video recorded (T17)
