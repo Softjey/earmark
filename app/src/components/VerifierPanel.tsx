@@ -117,7 +117,7 @@ export function VerifierPanel() {
                       {r.account.name}
                       <span className="block text-sm text-muted">{r.account.registryId}</span>
                     </td>
-                    <td className="px-5 py-3 font-mono text-sm">{shortKey(r.account.wallet.toBase58())}</td>
+                    <td className="px-5 py-3 font-mono text-xs text-muted">{shortKey(r.account.wallet.toBase58())}</td>
                     <td className="px-5 py-3">{formatDate(r.account.verifiedAt.toNumber())}</td>
                     <td className="px-5 py-3 text-right">
                       {!r.account.active ? (

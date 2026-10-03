@@ -8,7 +8,7 @@ import { VerifiedBadge } from "./VerifiedBadge";
 import { ErrorAlert, Field, Notice, PageTitle, btnPrimary, inputCls } from "./ui";
 import { configPda, fetchRecipients, fundraiserPda } from "@/lib/chain";
 import { useAction, useLoad, useProgram } from "@/lib/hooks";
-import { formatDate, parseTpln, shortKey } from "@/lib/format";
+import { formatDate, parseTpln } from "@/lib/format";
 import { STORY_MAX, TITLE_MAX, saveMetadata } from "@/lib/metadata";
 
 /** SHA-256 of the file, computed in the browser. The file itself never leaves the device. */
@@ -133,7 +133,7 @@ export function NewFundraiserForm() {
                       <strong className="text-base">{c.account.name}</strong>
                       {selected && <VerifiedBadge label="Selected" />}
                     </span>
-                    <span className="font-mono text-[13px] text-muted">{shortKey(wallet58)}</span>
+                    <span className="text-[13px] text-muted">Registry no. {c.account.registryId}</span>
                     <span className="text-[13px] text-muted">Verified {formatDate(c.account.verifiedAt.toNumber())}</span>
                   </label>
                 );

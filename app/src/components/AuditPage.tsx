@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
+import type { PublicKey } from "@solana/web3.js";
 import { fundraiserTitle } from "./FundraiserCard";
 import { TxLink } from "./TxLink";
 import { ErrorAlert, Notice, PageTitle } from "./ui";
 import { computeFlags, fetchAudit, fetchMovements, type Flag, type FlagKind, type Movement } from "@/lib/audit";
 import { explorerUrl } from "@/lib/config";
-import { formatTpln, shortKey, timeAgo } from "@/lib/format";
+import { formatTpln, timeAgo } from "@/lib/format";
 import { useLoad, useNow, useProgram } from "@/lib/hooks";
 import { fetchAllMetadata } from "@/lib/metadata";
 
@@ -24,8 +25,6 @@ const MOVEMENT_STYLE = {
   payout: { label: "Payout", cls: "font-semibold text-accent" },
   refund: { label: "Refund", cls: "font-semibold text-info" },
 };
-
-const mono = "font-mono text-[13px]";
 
 function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
@@ -61,8 +60,7 @@ function FlagRow({ flag }: { flag: Flag }) {
 
 function MovementRow({ m, titleOf, now }: { m: Movement; titleOf: (k: string) => string; now: number }) {
   const { label, cls } = MOVEMENT_STYLE[m.kind];
-  const party = shortKey(m.party.toBase58());
-  const route = { donation: `${party} → vault`, payout: "vault → clinic", refund: `vault → ${party}` }[m.kind];
+  const route = { donation: "donor → vault", payout: "vault → clinic", refund: "vault → donor" }[m.kind];
   return (
     <tr className="border-t border-[#e8ecea]">
       <td className="px-5 py-3.5 text-muted">{timeAgo(m.blockTime, now)}</td>
@@ -70,7 +68,9 @@ function MovementRow({ m, titleOf, now }: { m: Movement; titleOf: (k: string) =>
       <td className="px-5 py-3.5">
         <Link href={`/fundraisers/${m.fundraiser.toBase58()}`}>{titleOf(m.fundraiser.toBase58())}</Link>
       </td>
-      <td className={`px-5 py-3.5 ${mono}`}>{route}</td>
+      <td className="px-5 py-3.5 text-sm text-muted" title={m.party.toBase58()}>
+        {route}
+      </td>
       <td className="px-5 py-3.5 text-right font-semibold">{formatTpln(m.amount)}</td>
       <td className="px-5 py-3.5">
         <TxLink signature={m.signature} label="" />
@@ -95,11 +95,14 @@ export function AuditPage() {
   const { data: history, loading: historyLoading } = useLoad(() => fetchMovements(program), [program], 30_000, "audit:movements");
   const movements = history?.movements ?? [];
 
-  const titleOf = (key: string) => fundraiserTitle(data?.metadata[key], key);
+  const clinicOf = (wallet: string) => data?.audit.recipients.find((r) => r.account.wallet.toBase58() === wallet)?.account.name;
+  const titleFor = (f?: { pubkey: PublicKey; account: { recipient: PublicKey } }) =>
+    f ? fundraiserTitle(data?.metadata[f.pubkey.toBase58()], clinicOf(f.account.recipient.toBase58())) : "Fundraiser";
+  const titleOf = (key: string) => titleFor(data?.audit.fundraisers.find((f) => f.pubkey.toBase58() === key));
   const flags = useMemo(
     () =>
       data
-        ? computeFlags(data.audit, (k) => fundraiserTitle(data.metadata[k.toBase58()], k.toBase58()), program.programId, now)
+        ? computeFlags(data.audit, (k) => titleOf(k.toBase58()), program.programId, now)
         : [],
     [data, program.programId, now],
   );

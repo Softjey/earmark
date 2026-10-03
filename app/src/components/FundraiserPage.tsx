@@ -25,11 +25,17 @@ import { fetchAllMetadata } from "@/lib/metadata";
 
 const CODE_URL = "https://github.com/Softjey/earmark/blob/main/programs/earmark/src/instructions/donate.rs";
 
-const mono = "font-mono text-sm";
-
-function ActivityRow({ item, now }: { item: ActivityItem; now: number }) {
+function ActivityRow({ item, now, me }: { item: ActivityItem; now: number; me?: PublicKey | null }) {
   const amount = item.amount ? <strong>{formatTpln(item.amount)} ePLN</strong> : null;
-  const who = item.wallet ? <span className={mono}>{shortKey(item.wallet.toBase58())}</span> : null;
+  const who = item.wallet ? (
+    me?.equals(item.wallet) ? (
+      "you"
+    ) : (
+      <>
+        a donor <span className="font-mono text-xs text-muted">({shortKey(item.wallet.toBase58())})</span>
+      </>
+    )
+  ) : null;
   const text = {
     created: <>Fundraiser created</>,
     confirmed: <>Clinic confirmed the fundraiser</>,
@@ -110,7 +116,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
   const payout = activity.find((a) => a.kind === "released");
   const myRefund = me && activity.find((a) => a.kind === "refund" && a.wallet?.equals(me));
   const refundedTotal = activity.filter((a) => a.kind === "refund").reduce((s, a) => s + BigInt(a.amount!.toString()), 0n);
-  const clinicName = recipient?.name ?? shortKey(f.recipient.toBase58());
+  const clinicName = recipient?.name ?? "Unverified clinic";
 
   const units = parseTpln(amount);
   const accepted = units === null ? null : units > remaining ? remaining : units;
@@ -143,7 +149,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
             status={status}
             detail={status === "active" ? `ends ${formatDate(deadline)}` : status === "deadlinePassed" ? undefined : undefined}
           />
-          <h1 className="text-[40px] font-bold leading-[1.15] tracking-tight">{fundraiserTitle(meta, pubkey)}</h1>
+          <h1 className="text-[40px] font-bold leading-[1.15] tracking-tight">{fundraiserTitle(meta, recipient?.name)}</h1>
           <p className="text-muted">
             {refundable ? (
               <>
@@ -151,7 +157,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
               </>
             ) : (
               <>
-                Organized by <span className={mono}>{shortKey(f.organizer.toBase58())}</span>
+                For <strong>{clinicName}</strong> · ends {formatDate(deadline)}
               </>
             )}
           </p>
@@ -194,9 +200,6 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
                   ? `Healthcare registry no. ${recipient.registryId} · verified ${formatDate(recipient.verifiedAt.toNumber())}`
                   : "No verification record"}
               </span>
-              <a href={`https://explorer.solana.com/address/${f.recipient.toBase58()}`} target="_blank" rel="noreferrer" className={mono}>
-                {shortKey(f.recipient.toBase58())} ↗
-              </a>
             </div>
             {recipient?.active ? (
               <VerifiedBadge />
@@ -210,6 +213,13 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
               SHA-256 {Buffer.from(f.quoteHash).toString("hex").slice(0, 4)}…{Buffer.from(f.quoteHash).toString("hex").slice(-4)}
             </span>
           </div>
+          <p className="text-xs text-muted">
+            On-chain details: clinic wallet{" "}
+            <a href={`https://explorer.solana.com/address/${f.recipient.toBase58()}`} target="_blank" rel="noreferrer" className="font-mono">
+              {shortKey(f.recipient.toBase58())} ↗
+            </a>{" "}
+            · organizer wallet <span className="font-mono">{shortKey(f.organizer.toBase58())}</span>
+          </p>
         </div>
 
         <div className={`${card} gap-1`}>
@@ -222,7 +232,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
               <span className="text-sm text-muted">{timeAgo(deadline, now)}</span>
             </div>
           )}
-          {sorted.length ? sorted.map((a, i) => <ActivityRow key={`${a.signature}-${a.kind}-${i}`} item={a} now={now} />) : <span className="text-muted">{activityReady ? "No activity yet." : "Loading activity…"}</span>}
+          {sorted.length ? sorted.map((a, i) => <ActivityRow key={`${a.signature}-${a.kind}-${i}`} item={a} now={now} me={me} />) : <span className="text-muted">{activityReady ? "No activity yet." : "Loading activity…"}</span>}
         </div>
       </section>
 
@@ -286,7 +296,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
               {payout && (
                 <>
                   {" "}
-                  <TxLink signature={payout.signature} label="payout tx" />
+                  <TxLink signature={payout.signature} label="Payout transaction" />
                 </>
               )}
             </p>

@@ -60,7 +60,7 @@ export function ClinicPanel() {
   const { fundraisers, recipient, metadata, payouts } = data;
   const pending = fundraisers.filter((v) => "pendingConfirmation" in v.account.status);
   const others = fundraisers.filter((v) => !("pendingConfirmation" in v.account.status));
-  const title = (v: FundraiserView) => fundraiserTitle(metadata[v.pubkey.toBase58()], v.pubkey.toBase58());
+  const title = (v: FundraiserView) => fundraiserTitle(metadata[v.pubkey.toBase58()], recipient?.name);
   const hash = (v: FundraiserView) => Buffer.from(v.account.quoteHash).toString("hex");
 
   return (
@@ -83,11 +83,11 @@ export function ClinicPanel() {
                 {title(v)}
               </Link>
               <span className="text-sm text-[#2b3733]">
-                Target {formatTpln(v.account.target)} ePLN · deadline {formatDate(v.account.deadline.toNumber())} · organizer{" "}
-                <span className="font-mono">{shortKey(v.account.organizer.toBase58())}</span>
+                Target {formatTpln(v.account.target)} ePLN · deadline {formatDate(v.account.deadline.toNumber())}
               </span>
               <span className="text-sm text-muted">
                 Quote fingerprint <span className="font-mono">{hash(v).slice(0, 4)}…{hash(v).slice(-4)}</span> · compare with your file
+                {" · "}organizer wallet <span className="font-mono">{shortKey(v.account.organizer.toBase58())}</span>
               </span>
             </div>
             <div className="flex gap-3">
