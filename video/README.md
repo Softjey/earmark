@@ -7,6 +7,7 @@ Colors and fonts follow [docs/design/](../docs/design/README.md).
 |---|---|---|---|
 | `Intro` | 89 s | `out/intro.mp4` | Antoś story, the twist, fake fundraisers across causes (sourced stats), "Today" vs "With Earmark" money flow, title |
 | `IntroLewandowski` | 93 s | `out/intro-lewandowski.mp4` | Voiced variant that opens with "In 2017, Robert Lewandowski got scammed" (the Lewandowskis gave 100 000 zł to the same fake fundraiser) |
+| `IntroLewandowskiV6Dynamic` | 102 s | `out/intro-lewandowski-v6-dynamic.mp4` | v5 dynamic slowed down: voice 7 % faster than calm (v5: 15 %), pauses halfway between the calm and v5 dynamic cuts |
 | `IntroLewandowskiV5` | 110 s | `out/intro-lewandowski-v5.mp4` | v4 with effects at half volume, an audible music bed under the dark part (no "silent" stretches), and a reversed-chord swell + soft thud instead of the twist impact |
 | `IntroLewandowskiV5Dynamic` | 92 s | `out/intro-lewandowski-v5-dynamic.mp4` | Same as v5, just faster: quicker voice and tighter gaps; same few effects, no transitions/shake, drum-free score |
 | `IntroLewandowskiV4` | 110 s | `out/intro-lewandowski-v4.mp4` | v3 with one continuous track scored to the picture (no hard cut at the twist), no bells, music ~5 dB lower |
@@ -52,6 +53,7 @@ Earmark and resolves on C for the title. v4 also replaces the bell-like effects 
 (`pay`, `confirm`, `uhoh`). Re-run `score` whenever the voice-over or scene list of a cut changes.
 `score <variant> --v5` adds an airy upper pad and keeps the arpeggio under the dark part (so laptop speakers never
 fall silent), softens the twist dip, gives the dynamic cut the drum-free score, and writes `sfx/swell.mp3` and `sfx/thud.mp3`.
+`score <variant> --brisk` scores only the v6 dynamic cut (pacing `brisk`, voice from `voiceover/generate.py --brisk`).
 
 Sources for the on-screen facts: the 2017 case ([TVN24](https://tvn24.pl/wroclaw/chcieli-pomoc-choremu-antosiowi-lewandowscy-odzyskali-pieniadze-ra755931-ls2473202),
 [TVN24, sentence](https://tvn24.pl/wroclaw/wroclaw-wyrok-za-akcje-bojesieciemnosci-ra878385-ls2336600)); 150 fake flood fundraisers

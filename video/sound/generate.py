@@ -553,14 +553,16 @@ os.makedirs("../public/music", exist_ok=True)
 os.makedirs("../public/sfx", exist_ok=True)
 if len(sys.argv) > 2 and sys.argv[1] == "score":
     # --v5: airier bed under the dark part, gentler twist dip, and the dynamic cut gets the calm (drum-free) score
-    variant, v5 = sys.argv[2], "--v5" in sys.argv
-    for pacing, suffix in (("calm", ""), ("dynamic", "-dynamic")):
+    # --brisk: only the v6 dynamic cut (its pacing is "brisk")
+    variant, v5 = sys.argv[2], "--v5" in sys.argv or "--brisk" in sys.argv
+    cuts = (("brisk", "-dynamic"),) if "--brisk" in sys.argv else (("calm", ""), ("dynamic", "-dynamic"))
+    for pacing, suffix in cuts:
         drive = pacing == "dynamic" and not v5
         write(f"../public/music/score-{variant}{suffix}.mp3", score(cut_timeline(variant, pacing), drive, v5), lufs=-18)
     for name in ["pay", "confirm", "uhoh"]:  # shared by v4+; written once so earlier cuts stay reproducible
         if not os.path.exists(f"../public/sfx/{name}.mp3"):
             write(f"../public/sfx/{name}.mp3", mallet_sfx(name))
-    if v5:
+    if v5 and not os.path.exists("../public/sfx/swell.mp3"):
         write("../public/sfx/swell.mp3", swell())
         write("../public/sfx/thud.mp3", thud())
 else:

@@ -8,7 +8,8 @@
 #
 # Run from video/voiceover/:  .venv/bin/python generate.py [voice] [--fast]
 # Writes ../public/vo/<line>.mp3 and ../src/vo-durations.json; the intro's scene lengths follow the durations.
-# --fast reads 15 % quicker into ../public/vo-fast/ and ../src/vo-durations-fast.json (the dynamic cut).
+# --fast reads 15 % quicker into ../public/vo-fast/ and ../src/vo-durations-fast.json (the v3–v5 dynamic cuts);
+# --brisk reads 7 % quicker into ../public/vo-brisk/ and ../src/vo-durations-brisk.json (the v6 dynamic cut).
 import json
 import os
 import subprocess
@@ -19,11 +20,11 @@ from kokoro_onnx import EspeakConfig, Kokoro
 
 script = json.load(open("script.json"))
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
-fast = "--fast" in sys.argv
+tempo = "fast" if "--fast" in sys.argv else "brisk" if "--brisk" in sys.argv else None
 voice = args[0] if args else script["voice"]
-speed = script.get("speed", 1.0) * (1.15 if fast else 1.0)
-out_dir = "../public/vo-fast" if fast else "../public/vo"
-durations_file = "../src/vo-durations-fast.json" if fast else "../src/vo-durations.json"
+speed = script.get("speed", 1.0) * {"fast": 1.15, "brisk": 1.07, None: 1.0}[tempo]
+out_dir = f"../public/vo-{tempo}" if tempo else "../public/vo"
+durations_file = f"../src/vo-durations-{tempo}.json" if tempo else "../src/vo-durations.json"
 kokoro = Kokoro(
     "kokoro-v1.0.onnx",
     "voices-v1.0.bin",
