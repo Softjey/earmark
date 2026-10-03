@@ -8,7 +8,9 @@
 - [ ] Fundraiser **B** created by the seed script: target 1 000, 300 donated by Donor 1, deadline ≈ 2 min after the demo starts
 - [ ] Explorer tabs open: program account (upgrade authority = none), clinic token account
 - [ ] Backup video recorded (T17)
-- [ ] Reliable devnet RPC (Helius / QuickNode free tier), not only the public endpoint
+- [ ] Reliable devnet RPC (Helius / QuickNode free tier): set `NEXT_PUBLIC_RPC_URL` in `app/.env.local`. The public endpoint
+      rate-limits (429); the app caches transaction logs and retries, but the first load can still take 30 s+ on it.
+      Open `/audit` and each demo fundraiser once before going on stage to warm the cache
 
 ## Script (~3 min)
 

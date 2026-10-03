@@ -2,6 +2,7 @@ import { BN, EventParser, type Program } from "@anchor-lang/core";
 import { AccountLayout } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
 import type { Earmark } from "./anchor";
+import { fetchTxLogs } from "./txs";
 import {
   fetchFundraisers,
   fetchRecipients,
@@ -18,8 +19,6 @@ export const HIGH_VOLUME_DAYS = 7;
 export const OUTLIER_FACTOR = 10;
 export const MANY_CANCELLED = 3;
 const DAY = 86_400;
-const CHUNK = 5;
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export type FlagKind = "newRecipient" | "highVolume" | "targetOutlier" | "unclaimedRefunds" | "manyCancelled";
 
@@ -73,24 +72,18 @@ async function fetchVaultBalances(program: Program<Earmark>, fundraisers: Fundra
 }
 
 /** Most recent program transactions, decoded into donations, payouts and refunds. */
-async function fetchMovements(program: Program<Earmark>, limit: number): Promise<Movement[]> {
+async function fetchMovements(program: Program<Earmark>, limit: number): Promise<{ movements: Movement[]; failed: boolean }> {
   const connection = program.provider.connection;
   const sigs = (await connection.getSignaturesForAddress(program.programId, { limit }, "confirmed")).filter(
     (s) => !s.err,
   );
-  // The public RPC rejects big batches ("too many requests for a specific RPC call"), so go in small chunks.
-  const txs: Awaited<ReturnType<typeof connection.getTransactions>> = [];
-  for (let i = 0; i < sigs.length; i += CHUNK) {
-    const batch = sigs.slice(i, i + CHUNK).map((s) => s.signature);
-    const get = () => connection.getTransactions(batch, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
-    txs.push(...(await get().catch(async () => (await sleep(1500), get()))));
-  }
+  const { logs: logsBySig, failed } = await fetchTxLogs(connection, sigs.map((s) => s.signature));
   const parser = new EventParser(program.programId, program.coder);
   const out: Movement[] = [];
-  txs.forEach((tx, i) => {
-    const logs = tx?.meta?.logMessages;
-    if (!logs) return;
-    const base = { signature: sigs[i].signature, blockTime: sigs[i].blockTime ?? null };
+  for (const sig of sigs) {
+    const logs = logsBySig.get(sig.signature);
+    if (!logs) continue;
+    const base = { signature: sig.signature, blockTime: sig.blockTime ?? null };
     for (const e of parser.parseLogs(logs)) {
       const d = e.data as { fundraiser: PublicKey; donor?: PublicKey; recipient?: PublicKey; amount: BN };
       const kind: MovementKind | undefined =
@@ -98,10 +91,10 @@ async function fetchMovements(program: Program<Earmark>, limit: number): Promise
       const party = kind === "payout" ? d.recipient : d.donor;
       if (kind && party) out.push({ ...base, kind, fundraiser: d.fundraiser, party, amount: d.amount });
     }
-  });
+  }
   // Payout is emitted in the same tx as the donation that completed the target; show the payout first.
   const rank: Record<MovementKind, number> = { payout: 0, refund: 1, donation: 2 };
-  return out.sort((a, b) => (b.blockTime ?? 0) - (a.blockTime ?? 0) || rank[a.kind] - rank[b.kind]);
+  return { movements: out.sort((a, b) => (b.blockTime ?? 0) - (a.blockTime ?? 0) || rank[a.kind] - rank[b.kind]), failed };
 }
 
 export async function fetchAudit(program: Program<Earmark>, movementLimit = 100): Promise<AuditData> {
@@ -113,10 +106,14 @@ export async function fetchAudit(program: Program<Earmark>, movementLimit = 100)
   ]);
   const vaultBalances = await fetchVaultBalances(program, fundraisers);
   // History last: it is the heaviest call and the one public RPCs rate-limit first.
-  const movements = await fetchMovements(program, movementLimit).catch((e: unknown) => {
+  let movements: Movement[] = [];
+  try {
+    const res = await fetchMovements(program, movementLimit);
+    movements = res.movements;
+    if (res.failed) movementsError = new Error("Part of the transaction history could not be read.");
+  } catch (e) {
     movementsError = e;
-    return [] as Movement[];
-  });
+  }
   const sum = (xs: Iterable<bigint>) => [...xs].reduce((a, b) => a + b, 0n);
   return {
     fundraisers,

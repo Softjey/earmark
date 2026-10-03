@@ -1,6 +1,7 @@
 import { BN, EventParser, type Program } from "@anchor-lang/core";
 import { PublicKey } from "@solana/web3.js";
 import type { Earmark } from "./anchor";
+import { fetchTxLogs } from "./txs";
 import type { FundraiserStatus } from "@/components/StatusBadge";
 
 const enc = (s: string) => Buffer.from(s);
@@ -85,16 +86,14 @@ export async function fetchActivity(program: Program<Earmark>, fundraiser: Publi
   const connection = program.provider.connection;
   const sigs = await connection.getSignaturesForAddress(fundraiser, { limit: 50 }, "confirmed");
   const ok = sigs.filter((s) => !s.err);
-  const txs = await connection.getTransactions(
-    ok.map((s) => s.signature),
-    { commitment: "confirmed", maxSupportedTransactionVersion: 0 },
-  );
+  // A throttled RPC leaves some transactions out; they are filled in on the next poll.
+  const { logs: logsBySig } = await fetchTxLogs(connection, ok.map((s) => s.signature));
   const parser = new EventParser(program.programId, program.coder);
   const items: ActivityItem[] = [];
-  txs.forEach((tx, i) => {
-    const logs = tx?.meta?.logMessages;
+  ok.forEach((sig) => {
+    const logs = logsBySig.get(sig.signature);
     if (!logs) return;
-    const base = { signature: ok[i].signature, blockTime: ok[i].blockTime ?? null };
+    const base = { signature: sig.signature, blockTime: sig.blockTime ?? null };
     const events = [...parser.parseLogs(logs)];
     for (const e of events) {
       const d = e.data as { donor?: PublicKey; amount: BN };

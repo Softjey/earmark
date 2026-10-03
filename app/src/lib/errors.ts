@@ -77,7 +77,7 @@ export function describeError(err: unknown): ErrorInfo {
     return { title: "Not enough ePLN", message: "Your wallet holds less ePLN than the amount you entered." };
   if (/blockhash not found|expired/i.test(text))
     return { title: "Transaction expired", message: "The network took too long. Please try again." };
-  if (/failed to fetch|network|429|timeout/i.test(text))
+  if (/too many requests|rate limit|failed to fetch|network|429|timeout/i.test(text))
     return { title: "Network problem", message: "Could not reach the Solana network. Check your connection and try again." };
   return { title: "Something went wrong", message: (err as Error)?.message || "Unknown error. Please try again." };
 }

@@ -131,7 +131,7 @@ export function AuditPage() {
           <section className="flex flex-col gap-3">
             <h2 className="text-xl font-semibold">All money movements</h2>
             {!!data.audit.movementsError && (
-              <Notice>The transaction history could not be loaded (the RPC may be rate-limiting). Totals and flags above are still read from accounts. Reload to retry.</Notice>
+              <Notice>Part of the transaction history could not be loaded (the RPC may be rate-limiting). Totals and flags above are still read from accounts; the rest fills in on the next refresh.</Notice>
             )}
             <div className="overflow-x-auto rounded-[14px] border border-line bg-surface">
               <table className="w-full min-w-[720px] border-collapse text-[15px]">
