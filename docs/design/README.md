@@ -15,6 +15,13 @@ reference mockups, not production code: re-implement them as React components in
 | `Verifier.dc.html` | Verifier panel | `/verifier` |
 | `Audit.dc.html` | Public audit | `/audit` |
 
+## Logo
+
+Hexagon outline (accent `#0B6B55`, stroke 5 on a 64 grid, round joins) with a solid ink dot: the earmarked
+funds. Files: `assets/brand/logo-mark.svg`, `logo-mark-dark.svg`, `logo.svg` (lockup); in the app
+`app/src/components/LogoMark.tsx` and `app/src/app/icon.svg` (favicon). Dark backgrounds use `#8EE0C6` and white.
+Source canvas: https://claude.ai/artifact/BbXijcYYpX4WYMT5o57HsP (direction 15).
+
 ## Tokens
 
 | Token | Value | Use |

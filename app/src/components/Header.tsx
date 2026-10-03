@@ -3,6 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { FaucetButton } from "./FaucetButton";
+import { LogoMark } from "./LogoMark";
 import { CLUSTER } from "@/lib/config";
 import { useRole } from "@/lib/hooks";
 
@@ -29,10 +30,7 @@ export function Header() {
     <header className="border-b border-line bg-surface">
       <div className="mx-auto flex max-w-[1160px] flex-wrap items-center gap-x-6 gap-y-3 px-6 py-4">
         <Link href="/" className="flex items-center gap-2.5 text-ink no-underline">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#0B6B55" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M5 14 L14 5 L23 14 L14 23 Z" />
-            <path d="M10 14 L13 17 L18 11" />
-          </svg>
+          <LogoMark />
           <span className="text-xl font-bold tracking-tight">Earmark</span>
         </Link>
         <nav className="flex grow flex-wrap gap-5">

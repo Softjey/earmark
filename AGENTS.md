@@ -26,6 +26,7 @@ organisation or back to the donors, never to the organizer. Keep the program and
 | `app/` | Next.js frontend (wallet connect, UI, metadata JSON API) |
 | `scripts/` | Deploy, mint ePLN, airdrop, seed demo state |
 | `video/` | Remotion project: animated intro, outro and role badges for the demo video |
+| `assets/` | Brand logo (`assets/brand/`), ePLN token logo and metadata |
 | `docs/` | Plan, demo script, tickets, design mockups |
 
 ## Hard rules

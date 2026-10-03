@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <title>Earmark</title>
+  <path d="M32 6 L54 19 V45 L32 58 L10 45 V19 Z" stroke="#0B6B55" stroke-width="5" stroke-linejoin="round"/>
+  <circle cx="32" cy="32" r="6" fill="#0E1A17"/>
+</svg>
