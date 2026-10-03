@@ -219,29 +219,27 @@ function Scale() {
           </div>
           <div style={{ fontSize: 34, color: C.ink, marginTop: 14, fontWeight: 500 }}>fake fundraisers for flood victims found by the police</div>
         </StatCard>
-        <StatCard start={b2} source="Sources: Lee et al., Sensors 2022; AP, 2024 · our estimate">
-          <div style={{ fontSize: 30, fontWeight: 700, color: C.muted, letterSpacing: 2 }}>HOW MANY ARE FAKE?</div>
-          <div style={{ fontSize: 100, fontWeight: 700, color: C.ink, letterSpacing: -3, lineHeight: 1, marginTop: 16, whiteSpace: "nowrap" }}>&lt; 0.1%</div>
-          <div style={{ fontSize: 28, color: C.muted, marginTop: 8 }}>of campaigns are fraud, says GoFundMe</div>
+        <StatCard start={b2} source="Source: FBI Internet Crime Complaint Center (IC3), Jan 2025">
+          <div style={{ fontSize: 30, fontWeight: 700, color: C.muted, letterSpacing: 2 }}>USA, 2024</div>
+          <div style={{ fontSize: 150, fontWeight: 700, color: C.error, letterSpacing: -4, lineHeight: 1, marginTop: 16, whiteSpace: "nowrap" }}>
+            ${Math.round(grow(frame, b2 + 10, 45, 96))} M
+          </div>
+          <div style={{ fontSize: 34, color: C.ink, marginTop: 14, fontWeight: 500 }}>lost to fake charities, fundraisers and disaster appeals</div>
           <div
             style={{
               display: "inline-flex",
               alignSelf: "flex-start",
-              marginTop: 14,
+              marginTop: 22,
               background: C.warnSoft,
               color: C.warn,
               borderRadius: 999,
               padding: "6px 18px",
-              fontSize: 24,
+              fontSize: 26,
               fontWeight: 700,
-              ...fadeUp(frame, b2 + 75, 10),
+              ...fadeUp(frame, b3, 10),
             }}
           >
-            never independently verified
-          </div>
-          <div style={{ marginTop: 26, display: "flex", alignItems: "baseline", gap: 20, ...fadeUp(frame, b3) }}>
-            <div style={{ fontSize: 72, fontWeight: 700, color: C.error, letterSpacing: -2, lineHeight: 1.1, whiteSpace: "nowrap" }}>≈ $30 M</div>
-            <div style={{ fontSize: 26, color: C.muted }}>even that rate, on $30 bn raised</div>
+            only what was reported
           </div>
         </StatCard>
       </div>
