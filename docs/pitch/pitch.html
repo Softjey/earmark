@@ -69,23 +69,10 @@
     <div class="card"><div class="big">500k zł</div><p style="margin-top:20px">raised for "Antoś", a made-up story</p></div>
     <div class="card"><div class="big" style="color:var(--err)">1</div><p style="margin-top:20px">organizer received it all and spent it on himself</p></div>
   </div>
-  <p class="lead">The platform paid the organizer. Everything else was trust, and fraud like this makes people trust the honest fundraisers less too.</p>
+  <p class="lead">The platform held the money and paid the organizer. Everything else was trust. More vetting by the platform only moves that trust from one party to another.</p>
   <div class="foot"><span class="mark">Earmark</span><span>02</span></div>
 </section>
 
-<!-- 3. Intermediaries -->
-<section class="slide">
-  <div class="kicker">Who is trusted today</div>
-  <h2>Two intermediaries stand between the donor and the cause</h2>
-  <div class="grid g2">
-    <div class="card"><span class="pill wrn">Intermediary 1</span><h3 style="margin-top:24px">The platform</h3>
-      <ul><li>holds the money</li><li>checks stories by hand</li><li>decides payouts and refunds</li><li>takes a fee</li></ul></div>
-    <div class="card"><span class="pill bad">Intermediary 2</span><h3 style="margin-top:24px">The organizer</h3>
-      <ul><li>receives the money</li><li>is trusted to spend it as promised</li><li>cannot prove they never touched it</li></ul></div>
-  </div>
-  <p class="lead">More vetting by the platform only moves the trust from one party to another.</p>
-  <div class="foot"><span class="mark">Earmark</span><span>03</span></div>
-</section>
 
 <!-- 4. Solution -->
 <section class="slide">
@@ -114,8 +101,8 @@
     <rect x="660" y="430" width="300" height="80" rx="40" fill="#FBE7E4"/>
     <text x="810" y="482" text-anchor="middle" font-size="28" font-weight="700" fill="#A3261B">Organizer: never</text>
   </svg>
-  <p class="lead" style="margin-top:24px">Only two code paths move tokens out of a vault. The organizer is never a possible destination, and neither are we.</p>
-  <div class="foot"><span class="mark">Earmark</span><span>04</span></div>
+  <p class="lead" style="margin-top:24px">A database operator can edit balances and pay anyone. On Solana, these two exits are code that even its authors cannot bypass, and anyone can check every transfer.</p>
+  <div class="foot"><span class="mark">Earmark</span><span>03</span></div>
 </section>
 
 <!-- 5. How it works -->
@@ -128,7 +115,7 @@
     <div class="card"><div class="num">3</div><h3>Confirm</h3><p>The recipient confirms the document hash on-chain. No donations are accepted before that.</p></div>
     <div class="card"><div class="num">4</div><h3>Pay out or refund</h3><p>The donation that hits the target pays the recipient in the same transaction. Otherwise a keeper refunds every donor.</p></div>
   </div>
-  <div class="foot"><span class="mark">Earmark</span><span>05</span></div>
+  <div class="foot"><span class="mark">Earmark</span><span>04</span></div>
 </section>
 
 <!-- 6. Roles -->
@@ -143,7 +130,7 @@
     <tr><td>Donor</td><td class="can">donate, get refunded after a cancel or missed deadline</td><td class="cannot">receive anyone else's refund</td></tr>
     <tr><td>Us</td><td class="can">nothing, once the upgrade authority is final</td><td class="cannot">edit balances, pay out, block refunds</td></tr>
   </table>
-  <div class="foot"><span class="mark">Earmark</span><span>06</span></div>
+  <div class="foot"><span class="mark">Earmark</span><span>05</span></div>
 </section>
 
 <!-- 7. Trust -->
@@ -156,16 +143,9 @@
     <div class="card"><span class="pill wrn">Production</span><h3 style="margin-top:24px">Not us</h3><p>A multisig council of independent parties, then attestations from banks' KYB checks via the Solana Attestation Service.</p></div>
   </div>
   <p class="lead" style="font-size:30px;margin-top:28px">If the organizer and the recipient collude, the thief is a registered legal entity that signed the invoice on-chain under its own name, not an anonymous person.</p>
-  <div class="foot"><span class="mark">Earmark</span><span>07</span></div>
+  <div class="foot"><span class="mark">Earmark</span><span>06</span></div>
 </section>
 
-<!-- 8. Why chain -->
-<section class="slide dark" style="justify-content:center">
-  <div class="kicker" style="color:#3FBF9A">Why a blockchain, not a database?</div>
-  <h2 style="color:#fff">A database operator can edit balances, pay anyone, refund selectively. That is exactly what went wrong in 2017.</h2>
-  <p class="lead" style="font-size:42px">On Solana, "only to the recipient or back to the donors" is code that even its authors cannot bypass, and anyone can check every transfer without asking us.</p>
-  <div class="foot"><span class="mark">Earmark</span><span>08</span></div>
-</section>
 
 <!-- 9. Built -->
 <section class="slide">
@@ -177,7 +157,7 @@
     <div class="card"><h3>Around it</h3><ul><li>keeper bot that refunds automatically</li><li>ePLN test stablecoin and faucet</li><li>card on-ramp (Ramp Network)</li></ul></div>
   </div>
   <p class="lead" style="font-size:32px">No medical or personal data on-chain, only document hashes. The token is a single config field, so a regulated PLN or EUR stablecoin can replace ePLN.</p>
-  <div class="foot"><span class="mark">Earmark</span><span>09</span></div>
+  <div class="foot"><span class="mark">Earmark</span><span>07</span></div>
 </section>
 
 <!-- 10. Beyond -->
@@ -191,7 +171,7 @@
     <div class="card"><h3>City co-funding</h3><p>"residents raise X and the city adds Y, otherwise refund"</p></div>
   </div>
   <div class="card" style="margin-top:32px;padding:36px 44px"><h3>Next steps</h3><p>Multisig verifier council → Solana Attestation Service · registry API integration · regulated stablecoin with BLIK / SEPA on-ramp · milestone payouts · Polish UI · pilot with a Polish hospital or foundation</p></div>
-  <div class="foot"><span class="mark">Earmark</span><span>10</span></div>
+  <div class="foot"><span class="mark">Earmark</span><span>08</span></div>
 </section>
 
 <!-- 11. Try it -->
