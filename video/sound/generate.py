@@ -551,6 +551,64 @@ def thud() -> np.ndarray:
     return x / (np.max(np.abs(x)) + 1e-9) * 0.9
 
 
+def word_time(scenes: list[dict], scene_id: str, line: int, phrase: str) -> float:
+    """When `phrase` is spoken, estimated from its position in the line's text (same rule as src/v8.tsx)."""
+    ln = next(s for s in scenes if s["id"] == scene_id)["lines"][line]
+    return ln["start"] + ln["length"] * max(0, ln["text"].find(phrase)) / max(1, len(ln["text"]))
+
+
+def score_v9(scenes: list[dict]) -> np.ndarray:
+    """v9: the music follows the story. A carefree tune under "Robert Lewandowski" stops dead on "got scammed"
+    (the record scratch and sad violin play alone), an uneasy minor bed comes in under the donations, the v5 dark
+    section carries the scam and the stakes, and only Earmark brings the hopeful part."""
+    seconds = scenes[-1]["start"] + scenes[-1]["length"]
+    n = int(seconds * SR)
+    start = {s["id"].rstrip("LB"): s["start"] for s in scenes}
+    dark = start["twist"]
+    scammed = word_time(scenes, "hook", 0, "got scammed")
+    uneasy = scammed + 3.8  # after the violin has said its piece
+
+    base = score(scenes, drive=False, v5=True)
+    # keep the v5 score from the twist on; fade it in under the dun-dun-dun
+    mix = base * curve(n, [(0, 0), (dark - 0.5, 0), (dark + 1.0, 1), (seconds, 1)])
+
+    # 1. carefree: bright C-major plucks and a light bounce, cut dead on "got scammed"
+    bpm = 104
+    beat = 60 / bpm
+    happy = np.zeros((n, 2))
+    notes = ["C5", "E5", "G5", "E5", "A5", "G5", "E5", "D5"]
+    k = 0
+    while k * beat / 2 < scammed:
+        at = k * beat / 2
+        place(happy, marimba(hz(notes[k % len(notes)]), 0.6), at, 0.35)
+        if k % 2 == 0:
+            place(happy, bass(hz("C2") if (k // 8) % 2 == 0 else hz("G1"), beat * 0.4), at, 0.35)
+        if k % 4 == 0:
+            place(happy, lowpass(kick(0.5), 900), at)
+        if k % 2 == 1:
+            place(happy, hat(0.25), at)
+        k += 1
+    happy *= curve(n, [(0, 0.6), (0.3, 1), (scammed - 0.02, 1), (scammed, 0)])
+    mix += happy * 0.9
+
+    # 2. uneasy: low minor pads (Am, F, Dm, E), sparse low notes, no drums
+    uneasy_mix = np.zeros((n, 2))
+    bar = 4 * 60 / 84
+    chords = ["Am", "F", "Dm", "E"]
+    at, i = uneasy, 0
+    while at < dark + 1.0:
+        freqs = [hz(x) for x in CHORDS[chords[i % 4]]]
+        place(uneasy_mix, pad(freqs, bar + 1.2, 800, attack=1.0), at, 0.55)
+        place(uneasy_mix, sub(freqs[0] / 2, bar + 0.5), at, 0.22)
+        place(uneasy_mix, marimba(freqs[2], 1.4), at + bar / 2, 0.18)
+        at += bar
+        i += 1
+    uneasy_mix *= curve(n, [(0, 0), (uneasy, 0), (uneasy + 2.0, 1), (dark - 0.3, 1), (dark + 0.8, 0)])
+    mix += reverb(uneasy_mix, 2.6, 0.35)[:n] * 1.7
+    mix *= curve(n, [(0, 1), (seconds - 2.5, 1), (seconds, 0)])
+    return mix / (np.max(np.abs(mix)) + 1e-9) * 0.9
+
+
 def cut_timeline(variant: str, pacing: str) -> list[dict]:
     out = subprocess.run(
         ["../../node_modules/.bin/tsx", "export-timeline.ts", variant, pacing], capture_output=True, text=True, check=True, cwd="."
@@ -560,7 +618,11 @@ def cut_timeline(variant: str, pacing: str) -> list[dict]:
 
 os.makedirs("../public/music", exist_ok=True)
 os.makedirs("../public/sfx", exist_ok=True)
-if len(sys.argv) > 2 and sys.argv[1] == "score":
+if len(sys.argv) > 2 and sys.argv[1] == "score-v9":
+    # v9: one cut at the brisk pacing; music follows the story (see score_v9)
+    variant = sys.argv[2]
+    write(f"../public/music/score-{variant}-dynamic.mp3", score_v9(cut_timeline(variant, "brisk")), lufs=-18)
+elif len(sys.argv) > 2 and sys.argv[1] == "score":
     # --v5: airier bed under the dark part, gentler twist dip, and the dynamic cut gets the calm (drum-free) score
     # --brisk: only the v6 dynamic cut (its pacing is "brisk")
     # --groove: a light rhythmic pulse (v7)

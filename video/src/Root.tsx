@@ -27,6 +27,22 @@ export function RemotionRoot() {
         {...SIZE}
       />
       <Composition
+        id="IntroLewandowskiV9"
+        component={Intro}
+        durationInFrames={introFrames("lewandowski-v9", "brisk")}
+        defaultProps={{
+          voice: true,
+          variant: "lewandowski-v9" as const,
+          score: "score-lewandowski-v9-dynamic",
+          sfx: "key" as const,
+          sounds: "v8" as const,
+          pacing: "brisk" as const,
+          fx: false,
+          look: "v8" as const,
+        }}
+        {...SIZE}
+      />
+      <Composition
         id="IntroLewandowskiV8"
         component={Intro}
         durationInFrames={introFrames("lewandowski-v8", "brisk")}
