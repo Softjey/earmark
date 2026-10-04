@@ -9,22 +9,24 @@ import { type Pacing, scene, type Scene } from "./timeline";
 export type Cut = {
   pacing: Pacing;
   sfx: "none" | "key" | "full";
-  sounds: "v3" | "v4" | "v5";
+  sounds: "v3" | "v4" | "v5" | "v8";
   /** dynamic cut only: punch-in transitions, camera shake and a whoosh per scene (v3/v4); v5 drops them */
   fx: boolean;
   /** overall level of the effects; v5 plays them at half volume */
   sfxGain: number;
   /** "v7": the more animated scenes from v7.tsx, a slow camera push on every scene, film grain */
-  look: "classic" | "v7";
+  look: "classic" | "v7" | "v8";
 };
 
 export const CutContext = createContext<Cut>({ pacing: "calm", sfx: "none", sounds: "v3", fx: true, sfxGain: 1, look: "classic" });
 
-// v4 swapped the bell-like effects for soft mallets; v5 also replaces the twist impact (see TwistSwell)
+// Paths under public/ without ".mp3"; the default is sfx/<name>. v4 swapped the bell-like effects for soft mallets;
+// v5 also replaces the twist impact (see TwistSwell); v8 uses meme sounds from media/fetch.py on the product beats.
 const SOUND_FILES: Record<Cut["sounds"], Partial<Record<SfxName, string | null>>> = {
   v3: {},
-  v4: { chime: "confirm", coin: "pay", doubt: "uhoh" },
-  v5: { chime: "confirm", coin: "pay", doubt: "uhoh", impact: null },
+  v4: { chime: "sfx/confirm", coin: "sfx/pay", doubt: "sfx/uhoh" },
+  v5: { chime: "sfx/confirm", coin: "sfx/pay", doubt: "sfx/uhoh", impact: null },
+  v8: { chime: "sfx/confirm", coin: "v8/ka-ching.norm", doubt: "v8/huh.norm", error: "v8/windows-xp-error.norm", impact: null, stamp: null },
 };
 
 export const useCut = () => useContext(CutContext);
@@ -45,13 +47,13 @@ export type SfxName = "whoosh" | "impact" | "stamp" | "counter" | "pop" | "coin"
 export function Sfx({ at, name, volume = 0.5, beat = false }: { at: number; name: SfxName; volume?: number; beat?: boolean }) {
   const { sfx, pacing, sounds, fx, sfxGain } = useCut();
   if (sfx === "none" || (sfx === "key" && !beat)) return null;
-  const file = name in SOUND_FILES[sounds] ? SOUND_FILES[sounds][name] : name;
+  const file = name in SOUND_FILES[sounds] ? SOUND_FILES[sounds][name] : `sfx/${name}`;
   if (!file) return null;
   // the v3/v4 dynamic cut stacks drums and more effects, so each effect sits a little lower to avoid clipping
   const gain = (pacing === "dynamic" && fx ? 0.8 : 1) * sfxGain;
   return (
     <Sequence from={Math.max(0, Math.round(at))} layout="none">
-      <Audio src={staticFile(`sfx/${file}.mp3`)} volume={volume * gain} />
+      <Audio src={staticFile(`${file}.mp3`)} volume={volume * gain} />
     </Sequence>
   );
 }

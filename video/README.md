@@ -7,6 +7,7 @@ Colors and fonts follow [docs/design/](../docs/design/README.md).
 |---|---|---|---|
 | `Intro` | 89 s | `out/intro.mp4` | Antoś story, the twist, fake fundraisers across causes (sourced stats), "Today" vs "With Earmark" money flow, title |
 | `IntroLewandowski` | 93 s | `out/intro-lewandowski.mp4` | Voiced variant that opens with "In 2017, Robert Lewandowski got scammed" (the Lewandowskis gave 100 000 zł to the same fake fundraiser) |
+| `IntroLewandowskiV8` | 102 s | `out/intro-lewandowski-v8.mp4` | v6 voice and pacing, the problem half cut as a documentary meme edit (`src/v8.tsx`): real photos and stock footage, hard cuts on the words, bold captions, meme sounds; the product half keeps the v6 diagrams. Needs `python3 media/fetch.py` first |
 | `IntroLewandowskiV7` | 102 s | `out/intro-lewandowski-v7.mp4` | v6 dynamic pacing with livelier scenes (`src/v7.tsx`): words land with the voice, a live donation feed, the card itself stamped FAKE, a wall of fundraisers flipping to FAKE, camera pulls back from the vault, a database edited live vs locked blocks; slow push, film grain, light rhythm in the music |
 | `IntroLewandowskiV6Dynamic` | 102 s | `out/intro-lewandowski-v6-dynamic.mp4` | v5 dynamic slowed down: voice 7 % faster than calm (v5: 15 %), pauses halfway between the calm and v5 dynamic cuts |
 | `IntroLewandowskiV5` | 110 s | `out/intro-lewandowski-v5.mp4` | v4 with effects at half volume, an audible music bed under the dark part (no "silent" stretches), and a reversed-chord swell + soft thud instead of the twist impact |
@@ -37,6 +38,12 @@ The narration lives in [`voiceover/script.json`](voiceover/script.json), one ent
 [Kokoro TTS](https://github.com/thewh1teagle/kokoro-onnx) (offline, voice `af_heart`) and writes `src/vo-durations.json`;
 `src/timeline.ts` sizes every scene to its lines, so after editing the script just regenerate and re-render.
 Setup steps are at the top of `generate.py`.
+
+## Third-party media (v8)
+
+`media/fetch.py` downloads the photos (Wikimedia Commons), stock clips (Mixkit, Free licence only) and meme sounds
+(myinstants.com) into `public/v8/`, which is git-ignored. Authors and licences are in [`media/CREDITS.md`](media/CREDITS.md):
+put them in the video description when publishing.
 
 ## Music and sound effects
 

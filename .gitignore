@@ -30,3 +30,6 @@ scripts/.keys/
 
 # Local demo metadata (docs/PLAN.md §6)
 app/data/
+
+# Third-party media for the v8 cut (video/media/fetch.py)
+video/public/v8/

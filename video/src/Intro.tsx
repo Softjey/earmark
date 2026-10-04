@@ -8,6 +8,7 @@ import { CutContext, type Cut, Sfx, useBeats, useCut, useScene, useShake } from 
 import { sequence, type Variant, voFolder } from "./timeline";
 import { D, fmt, grow } from "./util";
 import { EarmarkPullBack, Grain, Hook7, Scale7, Story7, Twist7, Why7 } from "./v7";
+import { Hook8, Scale8, Story8, Twist8, V8Audio, v8MusicDuck } from "./v8";
 
 function Story({ id = "story", lewandowski = false }: { id?: string; lewandowski?: boolean }) {
   const frame = useCurrentFrame();
@@ -525,6 +526,13 @@ const VIEWS7: Record<string, () => React.ReactNode> = {
   why: Why7,
 };
 
+const VIEWS8: Record<string, () => React.ReactNode> = {
+  hook: Hook8,
+  storyL: Story8,
+  twistL: Twist8,
+  scale: Scale8,
+};
+
 type Mood = "story" | "dark" | "riser" | "hope" | "resolve";
 
 const MOOD: Record<string, Mood> = {
@@ -643,7 +651,7 @@ export function Intro({
     <CutContext.Provider value={{ pacing, sfx, sounds, fx, sfxGain, look }}>
       <AbsoluteFill style={{ fontFamily: SANS, background: C.ink }}>
         {scenes.map((s) => {
-          const View = (look === "v7" && VIEWS7[s.id]) || VIEWS[s.id];
+          const View = (look === "v7" && VIEWS7[s.id]) || (look === "v8" && VIEWS8[s.id]) || VIEWS[s.id];
           return (
             <Sequence key={s.id} from={s.from} durationInFrames={s.frames}>
               <SceneFrame frames={s.frames}>
@@ -660,7 +668,9 @@ export function Intro({
         })}
         {look === "v7" && <Grain />}
         {music && <Music scenes={scenes} dynamic={pacing === "dynamic"} />}
-        {score && <Audio src={staticFile(`music/${score}.mp3`)} volume={sounds === "v5" ? 0.17 : pacing === "dynamic" ? 0.17 : 0.14} />}
+        {score && look !== "v8" && <Audio src={staticFile(`music/${score}.mp3`)} volume={sounds === "v5" ? 0.17 : pacing === "dynamic" ? 0.17 : 0.14} />}
+        {score && look === "v8" && <Audio src={staticFile(`music/${score}.mp3`)} volume={(f) => 0.17 * v8MusicDuck(scenes, pacing)(f)} />}
+        {look === "v8" && sfx !== "none" && <V8Audio scenes={scenes} />}
         {sounds === "v5" && sfx !== "none" && twist && <TwistSwell at={twist.from + twist.lines[0].from} />}
       </AbsoluteFill>
     </CutContext.Provider>
