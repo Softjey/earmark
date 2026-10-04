@@ -1,0 +1,38 @@
+# Local production-like stack: the Docker image of the app plus Postgres (devnet chain).
+# Config comes from app/.env.local (NEXT_PUBLIC_* are inlined at build time, FAUCET_SECRET_KEY is runtime only).
+# Run: docker compose up --build   ->  http://localhost:${APP_PORT:-3000}
+services:
+  app:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_CLUSTER: ${NEXT_PUBLIC_CLUSTER:-devnet}
+        NEXT_PUBLIC_RPC_URL: ${NEXT_PUBLIC_RPC_URL:-}
+        NEXT_PUBLIC_PROGRAM_ID: ${NEXT_PUBLIC_PROGRAM_ID:?run with --env-file app/.env.local}
+        NEXT_PUBLIC_TPLN_MINT: ${NEXT_PUBLIC_TPLN_MINT:?run with --env-file app/.env.local}
+    env_file: app/.env.local
+    environment:
+      DATABASE_URL: postgresql://earmark:earmark@db:5432/earmark
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: earmark
+      POSTGRES_PASSWORD: earmark
+      POSTGRES_DB: earmark
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U earmark"]
+      interval: 3s
+      retries: 20
+
+volumes:
+  pgdata:

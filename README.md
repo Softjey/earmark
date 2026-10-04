@@ -146,7 +146,13 @@ The root `Dockerfile` builds only `app/` (the program is already on devnet). In 
 - Runtime secret: `FAUCET_SECRET_KEY` (never a build arg).
 - `DATABASE_URL=${{Postgres.DATABASE_URL}}`, a reference to the Railway Postgres service. Stories live in the `metadata` table (created on first use), so they survive redeploys. Without `DATABASE_URL` the app falls back to `app/data/metadata.json` (local dev only).
 
-Local check: `docker build -t earmark-app . && docker run -p 3000:3000 earmark-app`.
+Local production-like stack (app image + Postgres, devnet chain, config from `app/.env.local`):
+
+```bash
+docker compose --env-file app/.env.local up -d --build   # http://localhost:3000, or APP_PORT=3200 to change the port
+DATABASE_URL=postgresql://earmark:earmark@localhost:5433/earmark pnpm --dir app exec tsx ../scripts/seed-metadata.ts   # optional: copy app/data/metadata.json in
+docker compose down        # keeps the pgdata volume; add -v to wipe it
+```
 
 ## Limitations
 

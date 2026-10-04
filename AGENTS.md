@@ -101,6 +101,7 @@ environment `production`). The root `Dockerfile` builds only `app/`; the on-chai
   TCP proxy only for the seed and **remove it afterwards**.
 - **CLI quirks:** `railway volume add` panics on CLI 5.49; use the Railway MCP `create-volume` if a volume is ever needed.
   Do not delete services, volumes or proxies without the user's go-ahead.
+- **Local container stack:** `docker compose --env-file app/.env.local up -d --build` (app + Postgres, Postgres on host port 5433, app on `APP_PORT`, default 3000). See README *Hosting*.
 - Program changes (`programs/earmark`) are a separate devnet upgrade, see the budget section above; a web deploy never needs one.
 - After changing deploy setup, update this section and the *Hosting* section of README.md in the same commit.
 
