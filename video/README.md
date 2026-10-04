@@ -13,6 +13,7 @@ The other compositions below are earlier cuts kept for comparison.
 |---|---|---|---|
 | `Intro` | 89 s | `out/intro.mp4` | Antoś story, the twist, fake fundraisers across causes (sourced stats), "Today" vs "With Earmark" money flow, title |
 | `IntroLewandowski` | 93 s | `out/intro-lewandowski.mp4` | Voiced variant that opens with "In 2017, Robert Lewandowski got scammed" (the Lewandowskis gave 100 000 zł to the same fake fundraiser) |
+| `IntroLewandowskiV16Sarah` | 124 s | `out/intro-lewandowski-v16-sarah.mp4` | v15 with `earmark.help` instead of `localhost:3100` in the address bar |
 | `IntroLewandowskiV15Sarah` | 124 s | `out/intro-lewandowski-v15-sarah.mp4` | v14 redone: near full-screen browser windows with the whole page and its real URL, 2x screenshots (`public/app2x/`), a camera that shows the full page and then zooms into the highlighted spot (`src/v15.tsx`) |
 | `IntroLewandowskiV14Sarah` | 124 s | `out/intro-lewandowski-v14-sarah.mp4` | v12-sarah with the animated diagram kept and the real app / Explorer screenshots popping out of its nodes as browser windows, with animated highlights (`src/v14.tsx`) |
 | `IntroLewandowskiV13Sarah` | 124 s | `out/intro-lewandowski-v13-sarah.mp4` | v12-sarah with the "With Earmark" diagram replaced by screenshots of the running app and Solana Explorer (`src/v13.tsx`, `public/app/`): rejected own-wallet transaction, recipient confirmation, automatic payout (+1 000 to the clinic, vault 0) and a refund |

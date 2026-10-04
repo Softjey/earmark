@@ -546,6 +546,10 @@ const VIEWS14: Record<string, () => React.ReactNode> = { earmarkB: DiagramWithAp
 const VIEWS15: Record<string, () => React.ReactNode> = {
   earmarkB: () => <DiagramWithBrowser a={shots.a} b={shots.b} reject={shots.reject} payout={shots.aPayout} />,
 };
+// v16: v15 with the production domain in the address bar
+const VIEWS16: Record<string, () => React.ReactNode> = {
+  earmarkB: () => <DiagramWithBrowser a={shots.a} b={shots.b} reject={shots.reject} payout={shots.aPayout} host="earmark.help" />,
+};
 
 type Mood = "story" | "dark" | "riser" | "hope" | "resolve";
 
@@ -666,8 +670,8 @@ export function Intro({
     <CutContext.Provider value={{ pacing, sfx, sounds, fx, sfxGain, look }}>
       <AbsoluteFill style={{ fontFamily: SANS, background: C.ink }}>
         {scenes.map((s) => {
-          const edit = look === "v8" || look === "v10" || look === "v11" || look === "v12" || look === "v13" || look === "v14" || look === "v15"; // v10/v11 reuse the v8 scenes with their own swaps
-          const View = (look === "v7" && VIEWS7[s.id]) || (look === "v13" && VIEWS13[s.id]) || (look === "v14" && VIEWS14[s.id]) || (look === "v15" && VIEWS15[s.id]) || (edit && VIEWS8[s.id]) || VIEWS[s.id];
+          const edit = look === "v8" || look === "v10" || look === "v11" || look === "v12" || look === "v13" || look === "v14" || look === "v15" || look === "v16"; // v10/v11 reuse the v8 scenes with their own swaps
+          const View = (look === "v7" && VIEWS7[s.id]) || (look === "v13" && VIEWS13[s.id]) || (look === "v14" && VIEWS14[s.id]) || (look === "v15" && VIEWS15[s.id]) || (look === "v16" && VIEWS16[s.id]) || (edit && VIEWS8[s.id]) || VIEWS[s.id];
           return (
             <Sequence key={s.id} from={s.from} durationInFrames={s.frames}>
               <SceneFrame frames={s.frames}>
@@ -684,10 +688,10 @@ export function Intro({
         })}
         {look === "v7" && <Grain />}
         {music && <Music scenes={scenes} dynamic={pacing === "dynamic"} />}
-        {score && look !== "v8" && look !== "v10" && look !== "v11" && look !== "v12" && look !== "v13" && look !== "v14" && look !== "v15" && <Audio src={staticFile(`music/${score}.mp3`)} volume={sounds === "v5" ? 0.17 : pacing === "dynamic" ? 0.17 : 0.14} />}
+        {score && look !== "v8" && look !== "v10" && look !== "v11" && look !== "v12" && look !== "v13" && look !== "v14" && look !== "v15" && look !== "v16" && <Audio src={staticFile(`music/${score}.mp3`)} volume={sounds === "v5" ? 0.17 : pacing === "dynamic" ? 0.17 : 0.14} />}
         {score && look === "v8" && <Audio src={staticFile(`music/${score}.mp3`)} volume={(f) => 0.17 * v8MusicDuck(scenes, pacing)(f)} />}
-        {score && (look === "v10" || look === "v11" || look === "v12" || look === "v13" || look === "v14" || look === "v15") && <Audio src={staticFile(`music/${score}.mp3`)} volume={0.17} />}
-        {(look === "v8" || look === "v10" || look === "v11" || look === "v12" || look === "v13" || look === "v14" || look === "v15") && sfx !== "none" && <V8Audio scenes={scenes} />}
+        {score && (look === "v10" || look === "v11" || look === "v12" || look === "v13" || look === "v14" || look === "v15" || look === "v16") && <Audio src={staticFile(`music/${score}.mp3`)} volume={0.17} />}
+        {(look === "v8" || look === "v10" || look === "v11" || look === "v12" || look === "v13" || look === "v14" || look === "v15" || look === "v16") && sfx !== "none" && <V8Audio scenes={scenes} />}
         {sounds === "v5" && sfx !== "none" && twist && <TwistSwell at={twist.from + twist.lines[0].from} />}
       </AbsoluteFill>
     </CutContext.Provider>

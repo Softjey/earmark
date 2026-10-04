@@ -163,7 +163,19 @@ const RECIPIENT: [number, number] = [1560, 460];
 const BLOCKED: [number, number] = [960, 644];
 const short = (k: string) => `${k.slice(0, 4)}…${k.slice(-4)}`;
 
-export function DiagramWithBrowser({ a, b, reject, payout }: { a: string; b: string; reject: string; payout: string }) {
+export function DiagramWithBrowser({
+  a,
+  b,
+  reject,
+  payout,
+  host = "localhost:3100",
+}: {
+  a: string;
+  b: string;
+  reject: string;
+  payout: string;
+  host?: string; // shown in the address bar (v16: earmark.help)
+}) {
   const { lines } = useScene("earmarkB");
   const [l0, l1, l2, l3] = lines.map((l) => l.from);
   const notOrganizer = l0 + Math.round(lines[0].frames * 0.78);
@@ -181,7 +193,7 @@ export function DiagramWithBrowser({ a, b, reject, payout }: { a: string; b: str
         anchor={VAULT}
         src="a-pending.png"
         pageH={1080}
-        url={`localhost:3100/fundraisers/${short(a)}`}
+        url={`${host}/fundraisers/${short(a)}`}
         keys={[FULL(l0 + 60), FULL(l0 + 95), { at: l0 + 125, x: 1346, y: 255, z: 2.1 }]}
         marks={[
           { box: { x: 1200, y: 150, w: 200, h: 46 }, at: l0 + 130, color: GREEN, label: "held by the program", place: "bottom" },
@@ -214,7 +226,7 @@ export function DiagramWithBrowser({ a, b, reject, payout }: { a: string; b: str
         anchor={RECIPIENT}
         src="a-active.png"
         pageH={1080}
-        url={`localhost:3100/fundraisers/${short(a)}`}
+        url={`${host}/fundraisers/${short(a)}`}
         keys={[FULL(l1 + 54), FULL(l1 + 84), { at: l1 + 112, x: 775, y: 548, z: 1.9 }]}
         marks={[
           { box: { x: 971, y: 507, w: 148, h: 31 }, at: l1 + 116, color: GREEN, label: "verified" },
@@ -228,7 +240,7 @@ export function DiagramWithBrowser({ a, b, reject, payout }: { a: string; b: str
         anchor={RECIPIENT}
         src="a-paid.png"
         pageH={1300}
-        url={`localhost:3100/fundraisers/${short(a)}`}
+        url={`${host}/fundraisers/${short(a)}`}
         keys={[{ at: l2 + 10, x: 960, y: 540, z: 1 }, { at: l2 + 34, x: 1346, y: 255, z: 2.0 }]}
         marks={[{ box: { x: 1201, y: 272, w: 290, h: 84 }, at: l2 + 36, color: GREEN, label: "paid automatically" }]}
       />
@@ -253,7 +265,7 @@ export function DiagramWithBrowser({ a, b, reject, payout }: { a: string; b: str
         anchor={DONORS}
         src="b-refunded.png"
         pageH={1500}
-        url={`localhost:3100/fundraisers/${short(b)}`}
+        url={`${host}/fundraisers/${short(b)}`}
         keys={[{ at: l3 + 34, x: 960, y: 540, z: 1 }, { at: l3 + 56, x: 775, y: 1150, z: 1.8 }]}
         marks={[{ box: { x: 428, y: 1184, w: 690, h: 40 }, at: l3 + 60, color: BLUE, label: "refund, no approval needed" }]}
       />

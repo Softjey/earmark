@@ -23,9 +23,9 @@ function wordAt(sceneId: string, lineIdx: number, phrase: string, pacing: Pacing
 }
 
 // v11 = v10 without the "bruh" before the refund split screen
-const useV10 = () => ["v10", "v11", "v12", "v13", "v14", "v15"].includes(useCut().look);
+const useV10 = () => ["v10", "v11", "v12", "v13", "v14", "v15", "v16"].includes(useCut().look);
 /** v12 sound and caption choices, kept by v13 */
-const isV12 = (look: string) => look === "v12" || look === "v13" || look === "v14" || look === "v15";
+const isV12 = (look: string) => look === "v12" || look === "v13" || look === "v14" || look === "v15" || look === "v16";
 
 export function useWordAt(sceneId: string, lineIdx: number, phrase: string): number {
   return wordAt(sceneId, lineIdx, phrase, useCut().pacing);
