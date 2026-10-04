@@ -32,10 +32,18 @@ CLIPS = {
     "cash-flip": 18304,  # hands flipping through a wad of dollars
     "empty-wallet": 18299,  # person realizes that they no longer have money in his wallet
     "hacker": 50745,  # hacker wearing an anonymous face mask
+    # v10: one clip per shot, no repeats
+    "laptop-buy": 42121,  # man and woman buying online on a laptop
+    "rain-window": 2846,  # window on a rainy day
+    "cash-count": 18296,  # man counting a wad of bills
+    "screens": 50748,  # computer screens with matrix-like scrolling text
 }
 
 # myinstants.com sound effects (name -> file)
-SOUNDS = ["record-scratch", "sad-violin", "vine-boom", "ka-ching", "dun-dun-dun", "bruh", "windows-xp-error", "police-siren", "huh"]
+SOUNDS = [
+    "record-scratch", "sad-violin", "vine-boom", "ka-ching", "dun-dun-dun", "bruh", "windows-xp-error", "police-siren", "huh",
+    "kids-yay", "sad-trombone",  # v10: the refunded / not refunded split screen
+]
 
 
 def get(url: str, headers: dict, path: str) -> None:

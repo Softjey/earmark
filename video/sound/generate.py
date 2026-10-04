@@ -609,6 +609,76 @@ def score_v9(scenes: list[dict]) -> np.ndarray:
     return mix / (np.max(np.abs(mix)) + 1e-9) * 0.9
 
 
+def score_v10(scenes: list[dict]) -> np.ndarray:
+    """v10: nothing hopeful until Earmark. The carefree tune under "Robert Lewandowski" still stops dead on
+    "got scammed"; from there to the answer the bed is a documentary-style tension layer instead of the old
+    A-minor pop progression (Am-F-C-G reads as uplifting): a low A drone, a dissonant cluster that never resolves,
+    a slow descending minor line, a quiet clock tick, and a heartbeat once the scam is out. Hope arrives with the
+    riser into Earmark and the C-major section after it (taken from the v5 score)."""
+    seconds = scenes[-1]["start"] + scenes[-1]["length"]
+    n = int(seconds * SR)
+    start = {s["id"].rstrip("LB"): s["start"] for s in scenes}
+    dark, question, bright = start["twist"], start["question"], start["earmark"]
+    scammed = word_time(scenes, "hook", 0, "got scammed")
+    tense_in = scammed + 3.8  # after the violin
+
+    # hopeful part from the v5 score: the held E and riser on the question, then C major
+    base = score(scenes, drive=False, v5=True)
+    mix = base * curve(n, [(0, 0), (question - 0.6, 0), (question + 0.4, 1), (seconds, 1)])
+
+    # carefree tune (same as v9), cut dead on "got scammed"
+    beat = 60 / 104
+    happy = np.zeros((n, 2))
+    notes = ["C5", "E5", "G5", "E5", "A5", "G5", "E5", "D5"]
+    k = 0
+    while k * beat / 2 < scammed:
+        at = k * beat / 2
+        place(happy, marimba(hz(notes[k % len(notes)]), 0.6), at, 0.35)
+        if k % 2 == 0:
+            place(happy, bass(hz("C2") if (k // 8) % 2 == 0 else hz("G1"), beat * 0.4), at, 0.35)
+        if k % 4 == 0:
+            place(happy, lowpass(kick(0.5), 900), at)
+        if k % 2 == 1:
+            place(happy, hat(0.25), at)
+        k += 1
+    happy *= curve(n, [(0, 0.6), (0.3, 1), (scammed - 0.02, 1), (scammed, 0)])
+    mix += happy * 0.9
+
+    # tension layer
+    tense = np.zeros((n, 2))
+    tt = np.arange(n) / SR
+    drone = np.sin(2 * np.pi * hz("A1") * tt) + 0.5 * np.sin(2 * np.pi * hz("E2") * tt)
+    drone *= 0.7 + 0.3 * np.sin(2 * np.pi * 0.11 * tt)
+    tense += np.stack([drone, drone], axis=1) * 0.22
+    span = 6.0  # one cluster every 6 s, overlapping so it never settles
+    cluster = [hz(x) for x in ["A2", "C3", "E3", "F3"]]  # A minor with the flat sixth rubbing against the fifth
+    at = tense_in
+    while at < question + 1:
+        place(tense, pad(cluster, span + 3.0, 700, attack=2.0), at, 0.5)
+        at += span
+    line = ["A3", "G3", "F3", "E3"]  # slow descending minor line, one note every 3 s
+    at, i = tense_in + 1.5, 0
+    while at < question:
+        place(tense, marimba(hz(line[i % 4]), 2.5) + 0.4 * pluck(hz(line[i % 4]), 2.5), at, 0.22)
+        at += 3.0
+        i += 1
+    tick = 60 / 84  # a quiet clock under the story and the stakes
+    at = tense_in
+    while at < question:
+        place(tense, highpass(hat(0.18), 3000), at)
+        at += tick
+    b = dark + 1.2
+    while b < question:  # heartbeat once the scam is revealed
+        place(tense, lowpass(kick(0.85), 280), b)
+        place(tense, lowpass(kick(0.55), 280), b + 0.32)
+        b += 1.6
+    tense = reverb(tense, 3.0, 0.4)[:n]
+    tense *= curve(n, [(0, 0), (tense_in, 0), (tense_in + 2.5, 1), (dark - 0.1, 1), (dark + 0.25, 0.5), (dark + 1.5, 1), (question, 1), (question + 1.2, 0)])
+    mix += tense * 2.2
+    mix *= curve(n, [(0, 1), (seconds - 2.5, 1), (seconds, 0)])
+    return mix / (np.max(np.abs(mix)) + 1e-9) * 0.9
+
+
 def cut_timeline(variant: str, pacing: str) -> list[dict]:
     out = subprocess.run(
         ["../../node_modules/.bin/tsx", "export-timeline.ts", variant, pacing], capture_output=True, text=True, check=True, cwd="."
@@ -618,7 +688,12 @@ def cut_timeline(variant: str, pacing: str) -> list[dict]:
 
 os.makedirs("../public/music", exist_ok=True)
 os.makedirs("../public/sfx", exist_ok=True)
-if len(sys.argv) > 2 and sys.argv[1] == "score-v9":
+if len(sys.argv) > 3 and sys.argv[1] == "score-v10":
+    # v10: score-v10 <variant> <pacing> [suffix]  (e.g. lewandowski-v10 brisk, lewandowski-v10 sarah -sarah)
+    variant, pacing = sys.argv[2], sys.argv[3]
+    suffix = sys.argv[4] if len(sys.argv) > 4 else ""
+    write(f"../public/music/score-{variant}{suffix}.mp3", score_v10(cut_timeline(variant, pacing)), lufs=-18)
+elif len(sys.argv) > 2 and sys.argv[1] == "score-v9":
     # v9: one cut at the brisk pacing; music follows the story (see score_v9)
     variant = sys.argv[2]
     write(f"../public/music/score-{variant}-dynamic.mp3", score_v9(cut_timeline(variant, "brisk")), lufs=-18)

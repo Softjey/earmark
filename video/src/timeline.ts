@@ -2,6 +2,7 @@ import script from "../voiceover/script.json";
 import durations from "./vo-durations.json";
 import durationsBrisk from "./vo-durations-brisk.json";
 import durationsFast from "./vo-durations-fast.json";
+import durationsSarah from "./vo-durations-sarah.json";
 
 export const FPS = 30;
 
@@ -22,7 +23,7 @@ const TAIL: Record<string, number> = {
   titleB: 60,
 };
 
-export type Pacing = "calm" | "dynamic" | "brisk";
+export type Pacing = "calm" | "dynamic" | "brisk" | "sarah";
 
 const PACING: Record<Pacing, { lead: number; gap: number; tail: number; durations: Record<string, number>; vo: string }> = {
   // lead: frames before a scene's first line, gap: frames between lines, tail: share of TAIL kept after the last line
@@ -30,6 +31,8 @@ const PACING: Record<Pacing, { lead: number; gap: number; tail: number; duration
   dynamic: { lead: 4, gap: 4, tail: 0.5, durations: durationsFast, vo: "vo-fast" },
   // v6 dynamic cut: between the two
   brisk: { lead: 7, gap: 6, tail: 0.75, durations: durationsBrisk, vo: "vo-brisk" },
+  // v10-sarah: ElevenLabs voice (voiceover/elevenlabs.py), brisk gaps
+  sarah: { lead: 7, gap: 6, tail: 0.75, durations: durationsSarah as Record<string, number>, vo: "vo-sarah" },
 };
 
 export type Line = { id: string; from: number; frames: number };
@@ -52,7 +55,7 @@ function build(pacing: Pacing): Record<string, Scene> {
   return scenes;
 }
 
-const SCENES: Record<Pacing, Record<string, Scene>> = { calm: build("calm"), dynamic: build("dynamic"), brisk: build("brisk") };
+const SCENES: Record<Pacing, Record<string, Scene>> = { calm: build("calm"), dynamic: build("dynamic"), brisk: build("brisk"), sarah: build("sarah") };
 
 /** Folder under public/ that holds the voice-over for this pacing. */
 export const voFolder = (pacing: Pacing) => PACING[pacing].vo;

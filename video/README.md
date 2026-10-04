@@ -7,6 +7,8 @@ Colors and fonts follow [docs/design/](../docs/design/README.md).
 |---|---|---|---|
 | `Intro` | 89 s | `out/intro.mp4` | Antoś story, the twist, fake fundraisers across causes (sourced stats), "Today" vs "With Earmark" money flow, title |
 | `IntroLewandowski` | 93 s | `out/intro-lewandowski.mp4` | Voiced variant that opens with "In 2017, Robert Lewandowski got scammed" (the Lewandowskis gave 100 000 zł to the same fake fundraiser) |
+| `IntroLewandowskiV10` | 102 s | `out/intro-lewandowski-v10.mp4` | v9 with: the happy photo edited into a sad one for "got scammed" (`media/sad-edit.py`), a different clip on every shot, tension-only music until Earmark (`generate.py score-v10`), fewer drama hits, a happy sound on "refunded" and a losing one on "6 500+ others" |
+| `IntroLewandowskiV10Sarah` | 124 s | `out/intro-lewandowski-v10-sarah.mp4` | Same as v10, narrated by ElevenLabs "Sarah" (`voiceover/elevenlabs.py`, model eleven_v4) |
 | `IntroLewandowskiV9` | 102 s | `out/intro-lewandowski-v9.mp4` | v8 with music that follows the story: a carefree tune stops dead on "got scammed", an uneasy minor bed under the donations, dark through the scam and stakes, hopeful only from Earmark on (`generate.py score-v9 <variant>`) |
 | `IntroLewandowskiV8` | 102 s | `out/intro-lewandowski-v8.mp4` | v6 voice and pacing, the problem half cut as a documentary meme edit (`src/v8.tsx`): real photos and stock footage, hard cuts on the words, bold captions, meme sounds; the product half keeps the v6 diagrams. Needs `python3 media/fetch.py` first |
 | `IntroLewandowskiV7` | 102 s | `out/intro-lewandowski-v7.mp4` | v6 dynamic pacing with livelier scenes (`src/v7.tsx`): words land with the voice, a live donation feed, the card itself stamped FAKE, a wall of fundraisers flipping to FAKE, camera pulls back from the vault, a database edited live vs locked blocks; slow push, film grain, light rhythm in the music |
@@ -44,7 +46,10 @@ Setup steps are at the top of `generate.py`.
 
 `media/fetch.py` downloads the photos (Wikimedia Commons), stock clips (Mixkit, Free licence only) and meme sounds
 (myinstants.com) into `public/v8/`, which is git-ignored. Authors and licences are in [`media/CREDITS.md`](media/CREDITS.md):
-put them in the video description when publishing.
+put them in the video description when publishing. `media/sad-edit.py` makes the edited sad photo from the happy one.
+
+ElevenLabs narration: `voiceover/elevenlabs.py <variant> sarah` reads the key from `ELEVENLABS_API_KEY` or the repo-root
+`.env.local`, skips lines that already have audio (it costs credits) and writes `public/vo-sarah/` plus `src/vo-durations-sarah.json`.
 
 ## Music and sound effects
 

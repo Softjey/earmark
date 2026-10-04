@@ -1,6 +1,8 @@
 // v8 look: the problem half of the story is cut like a documentary meme edit — real photos and stock footage,
 // hard cuts on the words, bold captions and meme sounds — before the clean product diagrams take over.
 // Media comes from media/fetch.py (public/v8/, credits in media/CREDITS.md).
+// The v10 look reuses these scenes with a few swaps (useV10): the sad hook photo is an edit of the happy one
+// (media/sad-edit.py), every shot gets its own clip, and fewer, story-led sound effects.
 import { AbsoluteFill, Audio, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import script from "../voiceover/script.json";
 import { Heart } from "./components/Icons";
@@ -20,12 +22,15 @@ function wordAt(sceneId: string, lineIdx: number, phrase: string, pacing: Pacing
   return line.from + Math.round((line.frames * i) / Math.max(1, text.length));
 }
 
+const useV10 = () => useCut().look === "v10";
+
 function useWordAt(sceneId: string, lineIdx: number, phrase: string): number {
   return wordAt(sceneId, lineIdx, phrase, useCut().pacing);
 }
 
-type Grade = "warm" | "doc" | "sad" | "dark";
+type Grade = "warm" | "doc" | "sad" | "dark" | "none";
 const GRADES: Record<Grade, string> = {
+  none: "none",
   warm: "contrast(1.05) saturate(1.15)",
   doc: "contrast(1.12) saturate(0.75) brightness(0.72)",
   sad: "grayscale(0.9) contrast(1.15) brightness(0.75)",
@@ -155,6 +160,7 @@ function Source({ children }: { children: React.ReactNode }) {
 }
 
 export function Hook8() {
+  const v10 = useV10();
   const { frames } = useScene("hook");
   const robert = useWordAt("hook", 0, "Robert");
   const scammed = useWordAt("hook", 0, "got scammed");
@@ -168,7 +174,12 @@ export function Hook8() {
         </Cap>
       </Shot>
       <Shot from={scammed} to={frames}>
-        <Portrait src="rl-sad.jpg" grade="sad" frames={frames - scammed} from={1.12} to={1.22} />
+        {v10 ? (
+          // same photo, same framing: the zoom carries on from the happy shot
+          <Still src="rl-happy-sad.jpg" grade="none" position="50% 30%" from={1.12} to={1.2} frames={frames - scammed} />
+        ) : (
+          <Portrait src="rl-sad.jpg" grade="sad" frames={frames - scammed} from={1.12} to={1.22} />
+        )}
         <Cap at={0} bottom={110} size={150} center>
           got <R>scammed.</R>
         </Cap>
@@ -250,6 +261,7 @@ function FundraiserCard8({ at }: { at: number }) {
 
 export function Story8() {
   const frame = useCurrentFrame();
+  const v10 = useV10();
   const id = "storyL";
   const { frames, lines } = useScene(id);
   const hundred = useWordAt(id, 0, "a hundred thousand");
@@ -264,7 +276,7 @@ export function Story8() {
         <DonationToast at={hundred - 4} />
       </Shot>
       <Shot from={antosh - 4} to={crowdAt}>
-        <Footage src="phone.mp4" grade="dark" startFrom={90} blur={12} />
+        {v10 ? <Footage src="laptop-buy.mp4" grade="dark" blur={10} /> : <Footage src="phone.mp4" grade="dark" startFrom={90} blur={12} />}
         <FundraiserCard8 at={0} />
         <Cap at={10} bottom={90} size={78} center>
           to save a <Y>2-year-old</Y>'s sight
@@ -349,6 +361,7 @@ export function Twist8() {
 
 export function Scale8() {
   const frame = useCurrentFrame();
+  const v10 = useV10();
   const id = "scale";
   const { frames, lines } = useScene(id);
   const floods = useWordAt(id, 0, "Floods");
@@ -361,7 +374,7 @@ export function Scale8() {
   return (
     <AbsoluteFill style={{ background: "#000" }}>
       <Shot from={0} to={floods}>
-        <Footage src="hacker.mp4" grade="doc" />
+        {v10 ? <Footage src="rain-window.mp4" grade="doc" /> : <Footage src="hacker.mp4" grade="doc" />}
         <Cap at={4} bottom={110} size={110} center>
           it's not only <Y>medical</Y>
         </Cap>
@@ -402,7 +415,11 @@ export function Scale8() {
         <Source>Source: Polish police cybercrime bureau (CBZC), 2024 · Photo: Tabrus, CC0</Source>
       </Shot>
       <Shot from={l2 - 2} to={l3 - 2}>
-        <Footage src={frame < ninetySix ? "cash-flip.mp4" : "cash-falling.mp4"} grade="doc" startFrom={frame < ninetySix ? 120 : 60} />
+        {v10 ? (
+          <Footage src="cash-count.mp4" grade="doc" />
+        ) : (
+          <Footage src={frame < ninetySix ? "cash-flip.mp4" : "cash-falling.mp4"} grade="doc" startFrom={frame < ninetySix ? 120 : 60} />
+        )}
         <Tag at={2}>USA · 2024</Tag>
         <Cap at={ninetySix - l2 + 2} y={300} size={200} center>
           <R>$96 000 000</R>
@@ -415,7 +432,7 @@ export function Scale8() {
         <Source>Source: FBI Internet Crime Complaint Center (IC3), Jan 2025</Source>
       </Shot>
       <Shot from={l3 - 2} to={frames}>
-        <Footage src="hacker.mp4" grade="dark" startFrom={150} />
+        {v10 ? <Footage src="screens.mp4" grade="dark" /> : <Footage src="hacker.mp4" grade="dark" startFrom={150} />}
         <Cap at={4} y={340} size={110} center>
           and that's <Y>only</Y>
           <br />
@@ -428,7 +445,7 @@ export function Scale8() {
 
 /** Sounds that cross scene boundaries live here, placed on the whole cut's timeline. */
 export function V8Audio({ scenes }: { scenes: { id: string; from: number; frames: number }[] }) {
-  const { pacing } = useCut();
+  const { pacing, look } = useCut();
   const at = (id: string) => scenes.find((s) => s.id === id)?.from ?? 0;
   const hit = (key: string, frame: number, file: string, volume: number | ((f: number) => number)) => (
     <Sequence key={key} from={Math.max(0, Math.round(frame))} layout="none">
@@ -443,6 +460,24 @@ export function V8Audio({ scenes }: { scenes: { id: string; from: number; frames
   const fifty = at("scale") + wordAt("scale", 1, "a hundred and fifty", pacing);
   const policeShot = at("scale") + sceneOf("scale", pacing).lines[1].from;
   const ninetySix = at("scale") + wordAt("scale", 2, "ninety-six", pacing);
+  if (look === "v10") {
+    // fewer "drama" hits: one dun-dun-dun on the twist, one boom on the biggest number;
+    // the refund split screen gets a happy / a losing sound
+    const refunded = twist + spentLine;
+    const others = twist + wordAt("twistL", 2, "Thousands", pacing);
+    return (
+      <>
+        {hit("scratch", scammed - 3, "record-scratch", 0.5)}
+        {hit("violin", scammed + 2, "sad-violin", (f) => 0.4 * interpolate(f, [0, 90, 150], [1, 1, 0], { extrapolateRight: "clamp" }))}
+        {hit("kaching", hundred, "ka-ching", 0.35)}
+        {hit("dun", twist + 3, "dun-dun-dun", 0.4)}
+        {hit("bruh", twist + wordAt("twistL", 1, "on himself", pacing) + 20, "bruh", 0.35)}
+        {hit("yay", refunded, "kids-yay", (f) => 0.3 * interpolate(f, [0, others - refunded - 4, others - refunded + 8], [1, 1, 0], { extrapolateRight: "clamp" }))}
+        {hit("trombone", others, "sad-trombone", 0.35)}
+        {hit("boom-96", ninetySix + 2, "vine-boom", 0.35)}
+      </>
+    );
+  }
   return (
     <>
       {hit("scratch", scammed - 3, "record-scratch", 0.5)}
