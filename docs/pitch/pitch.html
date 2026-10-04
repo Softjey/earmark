@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Earmark pitch</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  @page { size: 1920px 1080px; margin: 0; }
+  :root { --ground:#F4F6F4; --surface:#FFFFFF; --ink:#0E1A17; --muted:#4A5752; --line:#D9DFDC;
+          --accent:#0B6B55; --accent-soft:#E3F1EC; --warn:#8A4200; --warn-soft:#FBEEDD;
+          --err:#A3261B; --err-soft:#FBE7E4; --info:#24467A; --info-soft:#E9EEF7; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--ground); color: var(--ink); font-family: "IBM Plex Sans", Helvetica, Arial, sans-serif;
+               -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .slide { width: 1920px; height: 1080px; padding: 110px 140px; position: relative; overflow: hidden;
+           page-break-after: always; break-after: page; display: flex; flex-direction: column; }
+  .slide:last-child { page-break-after: auto; break-after: auto; }
+  .mono { font-family: "IBM Plex Mono", monospace; }
+  .kicker { font-size: 26px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 28px; }
+  h1 { font-size: 112px; line-height: 1.02; letter-spacing: -3px; font-weight: 700; }
+  h2 { font-size: 72px; line-height: 1.08; letter-spacing: -1.8px; font-weight: 700; max-width: 1500px; }
+  p.lead { font-size: 38px; line-height: 1.4; color: var(--muted); max-width: 1450px; margin-top: 36px; }
+  .foot { position: absolute; left: 140px; right: 140px; bottom: 56px; display: flex; justify-content: space-between;
+          font-size: 22px; color: var(--muted); }
+  .foot .mark { display: flex; align-items: center; gap: 12px; font-weight: 600; color: var(--ink); }
+  .card { background: var(--surface); border: 2px solid var(--line); border-radius: 24px; padding: 44px; }
+  .grid { display: grid; gap: 32px; margin-top: 64px; }
+  .g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: repeat(3, 1fr); } .g4 { grid-template-columns: repeat(4, 1fr); }
+  .card h3 { font-size: 36px; font-weight: 700; margin-bottom: 16px; letter-spacing: -0.5px; }
+  .card p, .card li { font-size: 28px; line-height: 1.45; color: var(--muted); }
+  .card ul { list-style: none; } .card li { margin-top: 10px; padding-left: 34px; position: relative; }
+  .card li::before { content: ""; position: absolute; left: 0; top: 16px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); }
+  .pill { display: inline-block; padding: 8px 20px; border-radius: 999px; font-size: 22px; font-weight: 600; }
+  .ok { background: var(--accent-soft); color: var(--accent); } .bad { background: var(--err-soft); color: var(--err); }
+  .inf { background: var(--info-soft); color: var(--info); } .wrn { background: var(--warn-soft); color: var(--warn); }
+  .big { white-space: nowrap; font-size: 130px; font-weight: 700; letter-spacing: -4px; line-height: 1; color: var(--accent); }
+  .num { font-size: 30px; font-weight: 700; width: 64px; height: 64px; border-radius: 50%; background: var(--ink); color: #fff;
+         display: flex; align-items: center; justify-content: center; margin-bottom: 26px; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 56px; background: var(--surface);
+          border: 2px solid var(--line); border-radius: 24px; overflow: hidden; }
+  th, td { text-align: left; padding: 24px 34px; font-size: 28px; border-bottom: 2px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  th { font-size: 22px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); background: var(--ground); }
+  td:first-child { font-weight: 700; width: 280px; }
+  td.can { color: var(--accent); } td.cannot { color: var(--err); }
+  .dark { background: var(--ink); color: #fff; } .dark p.lead { color: #B9C3BF; } .dark .foot { color: #8FA19A; } .dark .foot .mark { color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- 1. Title -->
+<section class="slide dark" style="justify-content:center">
+  <svg width="120" height="120" viewBox="0 0 64 64" fill="none" style="margin-bottom:48px">
+    <path d="M32 6 L54 19 V45 L32 58 L10 45 V19 Z" stroke="#3FBF9A" stroke-width="5" stroke-linejoin="round"/>
+    <circle cx="32" cy="32" r="6" fill="#fff"/>
+  </svg>
+  <h1>Earmark</h1>
+  <p class="lead" style="font-size:46px;color:#E4E9E6;max-width:1500px">Fundraisers where the money can only go to a verified recipient, or back to the donors. Never to the organizer.</p>
+  <p class="lead" style="font-size:30px;margin-top:64px">HackYeah 2026 · Superteam Poland: <b style="color:#fff">Finance Without Intermediaries</b> · Built on Solana</p>
+  <div class="foot"><span class="mono">earmark.help</span><span class="mono">github.com/Softjey/earmark</span></div>
+</section>
+
+<!-- 2. Problem -->
+<section class="slide">
+  <div class="kicker">The problem</div>
+  <h2>In 2017, Poles donated to save a boy's sight. The boy never existed.</h2>
+  <div class="grid g3" style="margin-top:80px">
+    <div class="card"><div class="big">6 500</div><p style="margin-top:20px">people donated on a Polish crowdfunding platform</p></div>
+    <div class="card"><div class="big">500k zł</div><p style="margin-top:20px">raised for "Antoś", a made-up story</p></div>
+    <div class="card"><div class="big" style="color:var(--err)">1</div><p style="margin-top:20px">organizer received it all and spent it on himself</p></div>
+  </div>
+  <p class="lead">The platform paid the organizer. Everything else was trust, and fraud like this makes people trust the honest fundraisers less too.</p>
+  <div class="foot"><span class="mark">Earmark</span><span>02</span></div>
+</section>
+
+<!-- 3. Intermediaries -->
+<section class="slide">
+  <div class="kicker">Who is trusted today</div>
+  <h2>Two intermediaries stand between the donor and the cause</h2>
+  <div class="grid g2">
+    <div class="card"><span class="pill wrn">Intermediary 1</span><h3 style="margin-top:24px">The platform</h3>
+      <ul><li>holds the money</li><li>checks stories by hand</li><li>decides payouts and refunds</li><li>takes a fee</li></ul></div>
+    <div class="card"><span class="pill bad">Intermediary 2</span><h3 style="margin-top:24px">The organizer</h3>
+      <ul><li>receives the money</li><li>is trusted to spend it as promised</li><li>cannot prove they never touched it</li></ul></div>
+  </div>
+  <p class="lead">More vetting by the platform only moves the trust from one party to another.</p>
+  <div class="foot"><span class="mark">Earmark</span><span>03</span></div>
+</section>
+
+<!-- 4. Solution -->
+<section class="slide">
+  <div class="kicker">The solution</div>
+  <h2>A vault with exactly two exits, written in code</h2>
+  <svg viewBox="0 0 1640 520" width="1640" height="520" style="margin-top:56px" font-family="IBM Plex Sans, sans-serif">
+    <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0E1A17"/></marker>
+          <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0B6B55"/></marker>
+          <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#24467A"/></marker></defs>
+    <rect x="0" y="190" width="300" height="140" rx="20" fill="#fff" stroke="#D9DFDC" stroke-width="3"/>
+    <text x="150" y="252" text-anchor="middle" font-size="36" font-weight="700" fill="#0E1A17">Donors</text>
+    <text x="150" y="294" text-anchor="middle" font-size="24" fill="#4A5752">donate ePLN</text>
+    <line x1="310" y1="260" x2="590" y2="260" stroke="#0E1A17" stroke-width="4" marker-end="url(#a)"/>
+    <rect x="600" y="150" width="420" height="220" rx="24" fill="#0E1A17"/>
+    <text x="810" y="240" text-anchor="middle" font-size="40" font-weight="700" fill="#fff">Fundraiser vault</text>
+    <text x="810" y="285" text-anchor="middle" font-size="24" fill="#B9C3BF">owned by the program</text>
+    <text x="810" y="320" text-anchor="middle" font-size="24" fill="#B9C3BF">no private key exists</text>
+    <path d="M1030 210 C1150 140 1190 90 1300 90" stroke="#0B6B55" stroke-width="4" fill="none" marker-end="url(#g)"/>
+    <rect x="1310" y="20" width="330" height="140" rx="20" fill="#E3F1EC" stroke="#0B6B55" stroke-width="3"/>
+    <text x="1475" y="80" text-anchor="middle" font-size="32" font-weight="700" fill="#0B6B55">Verified recipient</text>
+    <text x="1475" y="120" text-anchor="middle" font-size="22" fill="#0B6B55">auto, when target is reached</text>
+    <path d="M1030 310 C1150 380 1190 430 1300 430" stroke="#24467A" stroke-width="4" fill="none" marker-end="url(#b)"/>
+    <rect x="1310" y="360" width="330" height="140" rx="20" fill="#E9EEF7" stroke="#24467A" stroke-width="3"/>
+    <text x="1475" y="420" text-anchor="middle" font-size="32" font-weight="700" fill="#24467A">Back to each donor</text>
+    <text x="1475" y="460" text-anchor="middle" font-size="22" fill="#24467A">cancelled or deadline missed</text>
+    <rect x="660" y="430" width="300" height="80" rx="40" fill="#FBE7E4"/>
+    <text x="810" y="482" text-anchor="middle" font-size="28" font-weight="700" fill="#A3261B">Organizer: never</text>
+  </svg>
+  <p class="lead" style="margin-top:24px">Only two code paths move tokens out of a vault. The organizer is never a possible destination, and neither are we.</p>
+  <div class="foot"><span class="mark">Earmark</span><span>04</span></div>
+</section>
+
+<!-- 5. How it works -->
+<section class="slide">
+  <div class="kicker">How it works</div>
+  <h2>Four steps, each one a public transaction</h2>
+  <div class="grid g4" style="margin-top:80px">
+    <div class="card"><div class="num">1</div><h3>Verify once</h3><p>A verifier links a wallet to a registered organisation (KRS, RPWDL). Once per organisation, not per fundraiser.</p></div>
+    <div class="card"><div class="num">2</div><h3>Create</h3><p>The organizer sets the recipient, target and deadline, plus the SHA-256 of the invoice. These cannot be changed later.</p></div>
+    <div class="card"><div class="num">3</div><h3>Confirm</h3><p>The recipient confirms the document hash on-chain. No donations are accepted before that.</p></div>
+    <div class="card"><div class="num">4</div><h3>Pay out or refund</h3><p>The donation that hits the target pays the recipient in the same transaction. Otherwise a keeper refunds every donor.</p></div>
+  </div>
+  <div class="foot"><span class="mark">Earmark</span><span>05</span></div>
+</section>
+
+<!-- 6. Roles -->
+<section class="slide">
+  <div class="kicker">Who can do what</div>
+  <h2>Nobody holds the power to redirect money</h2>
+  <table>
+    <tr><th>Role</th><th>Can</th><th>Cannot</th></tr>
+    <tr><td>Verifier</td><td class="can">mark a wallet as a verified recipient, revoke it</td><td class="cannot">move any money, create or cancel fundraisers</td></tr>
+    <tr><td>Organizer</td><td class="can">create a fundraiser, cancel it before payout</td><td class="cannot">receive any money, change target, recipient or deadline</td></tr>
+    <tr><td>Recipient</td><td class="can">confirm or cancel a fundraiser naming it</td><td class="cannot">withdraw before the target is reached</td></tr>
+    <tr><td>Donor</td><td class="can">donate, get refunded after a cancel or missed deadline</td><td class="cannot">receive anyone else's refund</td></tr>
+    <tr><td>Us</td><td class="can">nothing, once the upgrade authority is final</td><td class="cannot">edit balances, pay out, block refunds</td></tr>
+  </table>
+  <div class="foot"><span class="mark">Earmark</span><span>06</span></div>
+</section>
+
+<!-- 7. Trust -->
+<section class="slide">
+  <div class="kicker">Remaining trust, and its limits</div>
+  <h2>One question left: does this wallet belong to this organisation?</h2>
+  <div class="grid g3" style="margin-top:44px">
+    <div class="card"><span class="pill inf">Bounded</span><h3 style="margin-top:24px">The verifier can't move money</h3><p>The worst case if its key leaks is a fake recipient. That is visible on-chain, and recipients verified in the last 7 days are flagged on /audit.</p></div>
+    <div class="card"><span class="pill ok">Re-checkable</span><h3 style="margin-top:24px">Check it yourself</h3><p>The registry number is stored on-chain, and every fundraiser page links to the official KRS / RPWDL search. Any invoice file can be checked against the confirmed hash right in the browser.</p></div>
+    <div class="card"><span class="pill wrn">Production</span><h3 style="margin-top:24px">Not us</h3><p>A multisig council of independent parties, then attestations from banks' KYB checks via the Solana Attestation Service.</p></div>
+  </div>
+  <p class="lead" style="font-size:30px;margin-top:28px">If the organizer and the recipient collude, the thief is a registered legal entity that signed the invoice on-chain under its own name, not an anonymous person.</p>
+  <div class="foot"><span class="mark">Earmark</span><span>07</span></div>
+</section>
+
+<!-- 8. Why chain -->
+<section class="slide dark" style="justify-content:center">
+  <div class="kicker" style="color:#3FBF9A">Why a blockchain, not a database?</div>
+  <h2 style="color:#fff">A database operator can edit balances, pay anyone, refund selectively. That is exactly what went wrong in 2017.</h2>
+  <p class="lead" style="font-size:42px">On Solana, "only to the recipient or back to the donors" is code that even its authors cannot bypass, and anyone can check every transfer without asking us.</p>
+  <div class="foot"><span class="mark">Earmark</span><span>08</span></div>
+</section>
+
+<!-- 9. Built -->
+<section class="slide">
+  <div class="kicker">Built at HackYeah</div>
+  <h2>Works end to end on Solana devnet</h2>
+  <div class="grid g3">
+    <div class="card"><h3>Anchor program</h3><ul><li>all money rules on-chain</li><li>auto payout, permissionless refunds</li><li>23 integration tests</li></ul></div>
+    <div class="card"><h3>Web app</h3><ul><li>screens for donors, organizers, recipients, verifier</li><li>public /audit page with fraud flags</li><li>live at earmark.help</li></ul></div>
+    <div class="card"><h3>Around it</h3><ul><li>keeper bot that refunds automatically</li><li>ePLN test stablecoin and faucet</li><li>card on-ramp (Ramp Network)</li></ul></div>
+  </div>
+  <p class="lead" style="font-size:32px">No medical or personal data on-chain, only document hashes. The token is a single config field, so a regulated PLN or EUR stablecoin can replace ePLN.</p>
+  <div class="foot"><span class="mark">Earmark</span><span>09</span></div>
+</section>
+
+<!-- 10. Beyond -->
+<section class="slide">
+  <div class="kicker">Beyond medical fundraisers</div>
+  <h2>One primitive: money that can only be spent as intended</h2>
+  <div class="grid g4">
+    <div class="card"><h3>Disaster relief</h3><p>paid directly to suppliers</p></div>
+    <div class="card"><h3>NGO and public grants</h3><p>released on milestones</p></div>
+    <div class="card"><h3>Benefits</h3><p>from employers or insurers, spendable only as intended</p></div>
+    <div class="card"><h3>City co-funding</h3><p>"residents raise X and the city adds Y, otherwise refund"</p></div>
+  </div>
+  <div class="card" style="margin-top:32px;padding:36px 44px"><h3>Next steps</h3><p>Multisig verifier council → Solana Attestation Service · registry API integration · regulated stablecoin with BLIK / SEPA on-ramp · milestone payouts · Polish UI · pilot with a Polish hospital or foundation</p></div>
+  <div class="foot"><span class="mark">Earmark</span><span>10</span></div>
+</section>
+
+<!-- 11. Try it -->
+<section class="slide dark" style="justify-content:center">
+  <h1 style="color:#fff">Try it</h1>
+  <div style="margin-top:64px;font-size:40px;line-height:1.9">
+    <div><span style="color:#8FA19A;display:inline-block;width:280px">App</span><span class="mono">earmark.help</span></div>
+    <div><span style="color:#8FA19A;display:inline-block;width:280px">Code</span><span class="mono">github.com/Softjey/earmark</span></div>
+    <div><span style="color:#8FA19A;display:inline-block;width:280px">Video</span><span class="mono">youtu.be/xNkNep-AmJg</span></div>
+    <div><span style="color:#8FA19A;display:inline-block;width:280px">Program</span><span class="mono" style="font-size:32px">GWaY7mkSSwBzK6KfSGEJa9EriyvyE5k25yZQ9q4PCfMf</span></div>
+  </div>
+  <p class="lead" style="font-size:30px;margin-top:56px">Phantom on Devnet → devnet SOL from faucet.solana.com → free ePLN from the app's faucet → donate.</p>
+  <div class="foot"><span class="mark">Earmark</span><span>Solana devnet</span></div>
+</section>
+
+</body>
+</html>
