@@ -60,7 +60,9 @@ export function NewFundraiserForm() {
     setDeadline(localInput(new Date(Date.now() + (3 + Math.floor(Math.random() * 25)) * 86400_000)));
     if (verifiedList.length > 0) {
       setCustom(false);
-      setRecipient(pick(verifiedList).account.wallet.toBase58());
+      // Demo recipient is always the eye clinic; fall back to any verified one.
+      const eyeClinic = verifiedList.find((r) => /eye/i.test(r.account.name)) ?? pick(verifiedList);
+      setRecipient(eyeClinic.account.wallet.toBase58());
     }
     await onFile(demoDocument(d.title));
   };
