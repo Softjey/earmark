@@ -23,9 +23,11 @@ function wordAt(sceneId: string, lineIdx: number, phrase: string, pacing: Pacing
 }
 
 // v11 = v10 without the "bruh" before the refund split screen
-const useV10 = () => ["v10", "v11", "v12"].includes(useCut().look);
+const useV10 = () => ["v10", "v11", "v12", "v13"].includes(useCut().look);
+/** v12 sound and caption choices, kept by v13 */
+const isV12 = (look: string) => look === "v12" || look === "v13";
 
-function useWordAt(sceneId: string, lineIdx: number, phrase: string): number {
+export function useWordAt(sceneId: string, lineIdx: number, phrase: string): number {
   return wordAt(sceneId, lineIdx, phrase, useCut().pacing);
 }
 
@@ -102,7 +104,7 @@ const CAPTION: React.CSSProperties = {
 };
 
 /** Bold meme-documentary caption that punches in at frame `at`. */
-function Cap({
+export function Cap({
   at,
   children,
   size = 96,
@@ -143,8 +145,8 @@ function Cap({
   );
 }
 
-const Y = ({ children }: { children: React.ReactNode }) => <span style={{ color: YELLOW }}>{children}</span>;
-const R = ({ children }: { children: React.ReactNode }) => <span style={{ color: "#FF5A4E" }}>{children}</span>;
+export const Y = ({ children }: { children: React.ReactNode }) => <span style={{ color: YELLOW }}>{children}</span>;
+export const R = ({ children }: { children: React.ReactNode }) => <span style={{ color: "#FF5A4E" }}>{children}</span>;
 
 function Tag({ at, children, x = 120, y = 110 }: { at: number; children: React.ReactNode; x?: number; y?: number }) {
   const frame = useCurrentFrame();
@@ -413,7 +415,7 @@ export function Scale8() {
         <Cap at={fifty - l1 + 10} y={580} size={90} center>
           fake fundraisers for victims
         </Cap>
-        <Source>Source: Polish police cybercrime bureau (CBZC), 2024{useCut().look === "v12" ? "" : " · Photo: Tabrus, CC0"}</Source>
+        <Source>Source: Polish police cybercrime bureau (CBZC), 2024{isV12(useCut().look) ? "" : " · Photo: Tabrus, CC0"}</Source>
       </Shot>
       <Shot from={l2 - 2} to={l3 - 2}>
         {v10 ? (
@@ -461,7 +463,7 @@ export function V8Audio({ scenes }: { scenes: { id: string; from: number; frames
   const fifty = at("scale") + wordAt("scale", 1, "a hundred and fifty", pacing);
   const policeShot = at("scale") + sceneOf("scale", pacing).lines[1].from;
   const ninetySix = at("scale") + wordAt("scale", 2, "ninety-six", pacing);
-  if (look === "v10" || look === "v11" || look === "v12") {
+  if (look === "v10" || look === "v11" || isV12(look)) {
     // fewer "drama" hits: one dun-dun-dun on the twist, one boom on the biggest number (v12: Among Us reveal, no boom);
     // the refund split screen gets a happy / a losing sound
     const refunded = twist + spentLine;
@@ -471,11 +473,11 @@ export function V8Audio({ scenes }: { scenes: { id: string; from: number; frames
         {hit("scratch", scammed - 3, "record-scratch", 0.5)}
         {hit("violin", scammed + 2, "sad-violin", (f) => 0.4 * interpolate(f, [0, 90, 150], [1, 1, 0], { extrapolateRight: "clamp" }))}
         {hit("kaching", hundred, "ka-ching", 0.35)}
-        {look === "v12" ? hit("reveal", twist + 2, "among-us-role-reveal-sound", 0.4) : hit("dun", twist + 3, "dun-dun-dun", 0.4)}
+        {isV12(look) ? hit("reveal", twist + 2, "among-us-role-reveal-sound", 0.4) : hit("dun", twist + 3, "dun-dun-dun", 0.4)}
         {look === "v10" && hit("bruh", twist + wordAt("twistL", 1, "on himself", pacing) + 20, "bruh", 0.35)}
         {hit("yay", refunded, "kids-yay", (f) => 0.3 * interpolate(f, [0, others - refunded - 4, others - refunded + 8], [1, 1, 0], { extrapolateRight: "clamp" }))}
         {hit("trombone", others, "sad-trombone", 0.35)}
-        {look !== "v12" && hit("boom-96", ninetySix + 2, "vine-boom", 0.35)}
+        {!isV12(look) && hit("boom-96", ninetySix + 2, "vine-boom", 0.35)}
       </>
     );
   }

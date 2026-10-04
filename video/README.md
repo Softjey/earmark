@@ -3,7 +3,8 @@
 Remotion project for the animated parts of the demo video (see *Video cut* in [docs/DEMO.md](../docs/DEMO.md)).
 Colors and fonts follow [docs/design/](../docs/design/README.md).
 
-**Final intro: `IntroLewandowskiV12Sarah` → `out/intro-lewandowski-v12-sarah.mp4`** (124 s, ElevenLabs "Sarah"). To rebuild it:
+**Final intro: `IntroLewandowskiV12Sarah` → `out/intro-lewandowski-v12-sarah.mp4`** (124 s, ElevenLabs "Sarah").
+`IntroLewandowskiV13Sarah` is the same cut with the "With Earmark" scene replaced by real app footage (see below). To rebuild it:
 `python3 media/fetch.py && ../voiceover/.venv/bin/python media/sad-edit.py` (third-party media, from `media/`), then
 `pnpm --dir video render:intro-lewandowski-v12-sarah`. Credits for the description: [`media/CREDITS.md`](media/CREDITS.md).
 The other compositions below are earlier cuts kept for comparison.
@@ -12,6 +13,7 @@ The other compositions below are earlier cuts kept for comparison.
 |---|---|---|---|
 | `Intro` | 89 s | `out/intro.mp4` | Antoś story, the twist, fake fundraisers across causes (sourced stats), "Today" vs "With Earmark" money flow, title |
 | `IntroLewandowski` | 93 s | `out/intro-lewandowski.mp4` | Voiced variant that opens with "In 2017, Robert Lewandowski got scammed" (the Lewandowskis gave 100 000 zł to the same fake fundraiser) |
+| `IntroLewandowskiV13Sarah` | 124 s | `out/intro-lewandowski-v13-sarah.mp4` | v12-sarah with the "With Earmark" diagram replaced by screenshots of the running app and Solana Explorer (`src/v13.tsx`, `public/app/`): rejected own-wallet transaction, recipient confirmation, automatic payout (+1 000 to the clinic, vault 0) and a refund |
 | `IntroLewandowskiV12` / `IntroLewandowskiV12Sarah` | 102 / 124 s | `out/intro-lewandowski-v12[-sarah].mp4` | v11 with the v10 ending ("This is Earmark."), the Among Us role-reveal sound on "Antoś never existed", no sound on "$96 M", and no photo credit on screen |
 | `IntroLewandowskiV11` / `IntroLewandowskiV11Sarah` | 102 / 125 s | `out/intro-lewandowski-v11[-sarah].mp4` | v10 without the "bruh" before the refund split screen, and a closing "This is... Earmark." (scene `titleC`) |
 | `IntroLewandowskiV10` | 102 s | `out/intro-lewandowski-v10.mp4` | v9 with: the happy photo edited into a sad one for "got scammed" (`media/sad-edit.py`), a different clip on every shot, tension-only music until Earmark (`generate.py score-v10`), fewer drama hits, a happy sound on "refunded" and a losing one on "6 500+ others" |
@@ -57,6 +59,13 @@ put them in the video description when publishing. `media/sad-edit.py` makes the
 
 ElevenLabs narration: `voiceover/elevenlabs.py <variant> sarah` reads the key from `ELEVENLABS_API_KEY` or the repo-root
 `.env.local`, skips lines that already have audio (it costs credits) and writes `public/vo-sarah/` plus `src/vo-durations-sarah.json`.
+
+## App footage (v13)
+
+`public/app/*.png` are screenshots of the local production app (`pnpm --dir app build && pnpm --dir app start`) and of
+Solana Explorer, showing real devnet transactions made by `scripts/video-state.ts` (steps `create`, `reject`, `confirm`,
+`donate`, `payout`, `refund`; signatures in the git-ignored `scripts/.keys/video-state.json`). The fundraiser titles
+come from the local `app/data/metadata.json`, which is git-ignored like all metadata.
 
 ## Music and sound effects
 
