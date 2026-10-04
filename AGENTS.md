@@ -84,6 +84,26 @@ run `pnpm --dir app build`, stop whatever listens on port 3000 (`lsof -nP -iTCP:
 `pnpm --dir app start -p 3000` in the background. The production server does not hot-reload, so repeat this after every
 further edit, and tell the user to refresh.
 
+## Deploying the web app (Railway)
+
+Live: https://earmark-app-production.up.railway.app (project `earmark`, services `earmark-app` + `Postgres`,
+environment `production`). The root `Dockerfile` builds only `app/`; the on-chain program is untouched by a web deploy.
+
+- **Deploy:** from the repo root run `railway up --service earmark-app --ci` (uploads the working tree, no git push needed),
+  then check `railway logs --service earmark-app` and `curl` the URL. Typecheck first: `pnpm --dir app typecheck`.
+- **Variables** (on `earmark-app`): `NEXT_PUBLIC_CLUSTER`, `NEXT_PUBLIC_PROGRAM_ID`, `NEXT_PUBLIC_TPLN_MINT`,
+  optional `NEXT_PUBLIC_RPC_URL` are inlined at **build** time, so changing one needs a new deploy, not a restart.
+  `FAUCET_SECRET_KEY` is runtime-only: never make it a Dockerfile `ARG`, never print it. `DATABASE_URL` is the reference
+  `${{Postgres.DATABASE_URL}}`. Set them with `railway variable set --service earmark-app --skip-deploys K=V`.
+- **Metadata persistence:** fundraiser stories are in the Postgres `metadata` table, so redeploys keep them. Never
+  rely on the container filesystem. To push local `app/data/metadata.json` into Postgres use
+  `scripts/seed-metadata.ts` (idempotent) with a public `DATABASE_URL`; the DB has no public endpoint by default, so open a
+  TCP proxy only for the seed and **remove it afterwards**.
+- **CLI quirks:** `railway volume add` panics on CLI 5.49; use the Railway MCP `create-volume` if a volume is ever needed.
+  Do not delete services, volumes or proxies without the user's go-ahead.
+- Program changes (`programs/earmark`) are a separate devnet upgrade, see the budget section above; a web deploy never needs one.
+- After changing deploy setup, update this section and the *Hosting* section of README.md in the same commit.
+
 ## Keeping the docs alive (required)
 
 Docs are part of the definition of done. In the **same commit** as the code change:

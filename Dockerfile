@@ -24,7 +24,7 @@ RUN pnpm --dir app build
 
 FROM build AS runtime
 ENV NODE_ENV=production
-# Mount a Railway volume at /repo/app/data to keep metadata.json across deploys.
+# Metadata lives in Postgres (DATABASE_URL, Railway reference ${{Postgres.DATABASE_URL}}); no volume needed.
 # FAUCET_SECRET_KEY is a runtime-only secret: set it in Railway Variables, never as an ARG.
 WORKDIR /repo/app
 EXPOSE 3000

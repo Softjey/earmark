@@ -144,7 +144,7 @@ The root `Dockerfile` builds only `app/` (the program is already on devnet). In 
 
 - Build-time (inlined by `next build`): `NEXT_PUBLIC_CLUSTER=devnet`, `NEXT_PUBLIC_PROGRAM_ID`, `NEXT_PUBLIC_TPLN_MINT`, and ideally `NEXT_PUBLIC_RPC_URL` (a Helius/QuickNode devnet URL; the public one rate-limits).
 - Runtime secret: `FAUCET_SECRET_KEY` (never a build arg).
-- A volume mounted at `/repo/app/data` so `metadata.json` survives redeploys. Keep a single replica.
+- `DATABASE_URL=${{Postgres.DATABASE_URL}}`, a reference to the Railway Postgres service. Stories live in the `metadata` table (created on first use), so they survive redeploys. Without `DATABASE_URL` the app falls back to `app/data/metadata.json` (local dev only).
 
 Local check: `docker build -t earmark-app . && docker run -p 3000:3000 earmark-app`.
 
@@ -157,5 +157,5 @@ Local check: `docker build -t earmark-app . && docker run -p 3000:3000 earmark-a
 - The devnet program must be upgraded before the document-hash rename (formerly *quote hash*) is live; until then new fundraisers cannot be created from the current app.
 - ePLN is a devnet test token; production would use a stablecoin and a fiat on-ramp.
 - The *Get test ePLN* faucet (`/api/faucet`) holds the ePLN mint-authority key on the server. That is test money and not part of the trust model; it has no per-wallet rate limit, and its cap on newly opened token accounts is in memory, so it resets on restart.
-- Fundraiser titles and stories are stored by `/api/metadata` in a local JSON file (`app/data/`), write-once per fundraiser; only the supporting document's SHA-256 is on-chain. Production would use content-addressed storage (IPFS/Arweave).
+- Fundraiser titles and stories are stored by `/api/metadata` in Postgres (`DATABASE_URL`; a local JSON file in `app/data/` when it is unset), write-once per fundraiser; only the supporting document's SHA-256 is on-chain. Production would use content-addressed storage (IPFS/Arweave).
 - The audit page reads the 100 most recent program transactions and recomputes flags in the browser; it is a hint for humans, not a fraud verdict.

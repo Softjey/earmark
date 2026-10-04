@@ -51,7 +51,7 @@ concept the user sees is the wallet.
         ▼                             ▼
 ┌──────────────────────────┐  ┌──────────────────────────┐
 │ Anchor program           │  │ Metadata JSON            │
-│ programs/earmark          │  │ app/data/metadata.json   │
+│ programs/earmark          │  │ Postgres `metadata` table│
 │ ALL money rules          │  │ (no money logic, no      │
 │                          │  │  personal data on-chain)  │
 └───────┬──────────────────┘  └──────────────────────────┘
@@ -143,7 +143,7 @@ are in [docs/design/](design/README.md). The frontend must follow them.
 | `/verifier` | verifier | verify a recipient wallet (name + registry no.) |
 | `/audit` *(P1)* | everyone | where the donated money is (paid / in vaults / refunded), red flags, per-fundraiser ledger, filterable money movements |
 
-Metadata: `POST /api/metadata` writes `app/data/metadata.json` (write-once, keyed by fundraiser pubkey; holds `title`, `story` and an optional descriptive `category` (medical, humanitarian, disaster, children, animals, community, other) used only for browsing and filtering, never by the program; sent after the create tx confirms); `metadata_uri = /api/metadata/<fundraiser pubkey>`. `GET /api/metadata` returns all entries for the list page. `/recipient` and `/verifier` links appear in the header only for wallets that hold that role.
+Metadata: `POST /api/metadata` writes the Postgres `metadata` table (`DATABASE_URL`; falls back to `app/data/metadata.json` when unset; write-once, keyed by fundraiser pubkey; holds `title`, `story` and an optional descriptive `category` (medical, humanitarian, disaster, children, animals, community, other) used only for browsing and filtering, never by the program; sent after the create tx confirms); `metadata_uri = /api/metadata/<fundraiser pubkey>`. `GET /api/metadata` returns all entries for the list page. `/recipient` and `/verifier` links appear in the header only for wallets that hold that role.
 `/audit` reads accounts and the last 100 program transactions client-side. Red flags (all computed in the browser, thresholds in `app/src/lib/audit.ts`): recipient verified < 7 days ago and already in a fundraiser; recipient in > 3 fundraisers created within 7 days; target > 10× the median target; deadline passed or cancelled with ePLN still in the vault; organizer with ≥ 3 cancelled fundraisers. Each flag links to the fundraisers/accounts that triggered it.
 
 **ePLN faucet (devnet only, not part of the trust model):** `POST /api/faucet {wallet}` mints `amount` whole ePLN (default 100 = `FAUCET_AMOUNT`, max 1 000 000 per request) to the wallet's ATA. The mint authority is a dedicated faucet key (`FAUCET_SECRET_KEY`, set up by `scripts/setup-faucet.ts`, funded with 0.1 SOL), never the deployer. Limits: no per-wallet or per-IP rate limit (devnet test money); at most 40 token accounts opened on the faucet's rent (in-memory counter; resets on restart). The header shows *Get test ePLN* for connected wallets; it opens a small panel to enter the amount.
