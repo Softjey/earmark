@@ -409,7 +409,7 @@ def score(scenes: list[dict], drive: bool, v5: bool = False, groove: bool = Fals
     holds on E for the question, turns to C major for Earmark and resolves on C for the title.
     v5 keeps mid and high frequencies under the dark part too (a quiet arpeggio and an airy upper pad), so the
     bed never sounds like silence on laptop speakers, and makes the twist dip gentler."""
-    start = {s["id"].rstrip("LB"): s["start"] for s in scenes}
+    start = {s["id"].rstrip("LBC"): s["start"] for s in scenes}
     seconds = scenes[-1]["start"] + scenes[-1]["length"]
     n = int(seconds * SR)
     dark, question, bright, end = start["twist"], start["question"], start["earmark"], start["title"]
@@ -563,7 +563,7 @@ def score_v9(scenes: list[dict]) -> np.ndarray:
     section carries the scam and the stakes, and only Earmark brings the hopeful part."""
     seconds = scenes[-1]["start"] + scenes[-1]["length"]
     n = int(seconds * SR)
-    start = {s["id"].rstrip("LB"): s["start"] for s in scenes}
+    start = {s["id"].rstrip("LBC"): s["start"] for s in scenes}
     dark = start["twist"]
     scammed = word_time(scenes, "hook", 0, "got scammed")
     uneasy = scammed + 3.8  # after the violin has said its piece
@@ -617,7 +617,7 @@ def score_v10(scenes: list[dict]) -> np.ndarray:
     riser into Earmark and the C-major section after it (taken from the v5 score)."""
     seconds = scenes[-1]["start"] + scenes[-1]["length"]
     n = int(seconds * SR)
-    start = {s["id"].rstrip("LB"): s["start"] for s in scenes}
+    start = {s["id"].rstrip("LBC"): s["start"] for s in scenes}
     dark, question, bright = start["twist"], start["question"], start["earmark"]
     scammed = word_time(scenes, "hook", 0, "got scammed")
     tense_in = scammed + 3.8  # after the violin

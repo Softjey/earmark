@@ -119,6 +119,17 @@
       "earmarkB",
       "why",
       "titleB"
+    ],
+    "lewandowski-v11": [
+      "hook",
+      "storyL",
+      "twistL",
+      "scale",
+      "today",
+      "question",
+      "earmarkB",
+      "why",
+      "titleC"
     ]
   },
   "scenes": [
@@ -316,6 +327,19 @@
         {
           "id": "titleB-2",
           "text": "This is Earmark."
+        }
+      ]
+    },
+    {
+      "id": "titleC",
+      "lines": [
+        {
+          "id": "titleC-1",
+          "text": "No middleman holding the money. Just rules that nobody can bend."
+        },
+        {
+          "id": "titleC-2",
+          "text": "This is... Earmark."
         }
       ]
     }

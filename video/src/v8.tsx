@@ -22,7 +22,8 @@ function wordAt(sceneId: string, lineIdx: number, phrase: string, pacing: Pacing
   return line.from + Math.round((line.frames * i) / Math.max(1, text.length));
 }
 
-const useV10 = () => useCut().look === "v10";
+// v11 = v10 without the "bruh" before the refund split screen
+const useV10 = () => ["v10", "v11"].includes(useCut().look);
 
 function useWordAt(sceneId: string, lineIdx: number, phrase: string): number {
   return wordAt(sceneId, lineIdx, phrase, useCut().pacing);
@@ -460,7 +461,7 @@ export function V8Audio({ scenes }: { scenes: { id: string; from: number; frames
   const fifty = at("scale") + wordAt("scale", 1, "a hundred and fifty", pacing);
   const policeShot = at("scale") + sceneOf("scale", pacing).lines[1].from;
   const ninetySix = at("scale") + wordAt("scale", 2, "ninety-six", pacing);
-  if (look === "v10") {
+  if (look === "v10" || look === "v11") {
     // fewer "drama" hits: one dun-dun-dun on the twist, one boom on the biggest number;
     // the refund split screen gets a happy / a losing sound
     const refunded = twist + spentLine;
@@ -471,7 +472,7 @@ export function V8Audio({ scenes }: { scenes: { id: string; from: number; frames
         {hit("violin", scammed + 2, "sad-violin", (f) => 0.4 * interpolate(f, [0, 90, 150], [1, 1, 0], { extrapolateRight: "clamp" }))}
         {hit("kaching", hundred, "ka-ching", 0.35)}
         {hit("dun", twist + 3, "dun-dun-dun", 0.4)}
-        {hit("bruh", twist + wordAt("twistL", 1, "on himself", pacing) + 20, "bruh", 0.35)}
+        {look === "v10" && hit("bruh", twist + wordAt("twistL", 1, "on himself", pacing) + 20, "bruh", 0.35)}
         {hit("yay", refunded, "kids-yay", (f) => 0.3 * interpolate(f, [0, others - refunded - 4, others - refunded + 8], [1, 1, 0], { extrapolateRight: "clamp" }))}
         {hit("trombone", others, "sad-trombone", 0.35)}
         {hit("boom-96", ninetySix + 2, "vine-boom", 0.35)}

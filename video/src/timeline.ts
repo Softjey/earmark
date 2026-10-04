@@ -21,6 +21,7 @@ const TAIL: Record<string, number> = {
   why: 40,
   title: 60,
   titleB: 60,
+  titleC: 70,
 };
 
 export type Pacing = "calm" | "dynamic" | "brisk" | "sarah";

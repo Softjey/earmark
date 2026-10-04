@@ -20,10 +20,12 @@
     "render:intro-lewandowski-v9": "remotion render src/index.ts IntroLewandowskiV9 out/intro-lewandowski-v9.mp4",
     "render:intro-lewandowski-v10": "remotion render src/index.ts IntroLewandowskiV10 out/intro-lewandowski-v10.mp4",
     "render:intro-lewandowski-v10-sarah": "remotion render src/index.ts IntroLewandowskiV10Sarah out/intro-lewandowski-v10-sarah.mp4",
+    "render:intro-lewandowski-v11": "remotion render src/index.ts IntroLewandowskiV11 out/intro-lewandowski-v11.mp4",
+    "render:intro-lewandowski-v11-sarah": "remotion render src/index.ts IntroLewandowskiV11Sarah out/intro-lewandowski-v11-sarah.mp4",
     "render:outro": "remotion render src/index.ts Outro out/outro.mp4",
     "render:role": "remotion render src/index.ts --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png",
     "render:roles": "pnpm render:role RoleOrganizer out/role-organizer.mov && pnpm render:role RoleClinic out/role-clinic.mov && pnpm render:role RoleDonor1 out/role-donor-1.mov && pnpm render:role RoleDonor2 out/role-donor-2.mov",
-    "render:all": "pnpm render:intro && pnpm render:intro-voice && pnpm render:intro-lewandowski && pnpm render:intro-lewandowski-v2 && pnpm render:intro-lewandowski-v3 && pnpm render:intro-lewandowski-v3-dynamic && pnpm render:intro-lewandowski-v4 && pnpm render:intro-lewandowski-v4-dynamic && pnpm render:intro-lewandowski-v5 && pnpm render:intro-lewandowski-v5-dynamic && pnpm render:intro-lewandowski-v6-dynamic && pnpm render:intro-lewandowski-v7 && pnpm render:intro-lewandowski-v8 && pnpm render:intro-lewandowski-v9 && pnpm render:intro-lewandowski-v10 && pnpm render:intro-lewandowski-v10-sarah && pnpm render:outro && pnpm render:roles",
+    "render:all": "pnpm render:intro && pnpm render:intro-voice && pnpm render:intro-lewandowski && pnpm render:intro-lewandowski-v2 && pnpm render:intro-lewandowski-v3 && pnpm render:intro-lewandowski-v3-dynamic && pnpm render:intro-lewandowski-v4 && pnpm render:intro-lewandowski-v4-dynamic && pnpm render:intro-lewandowski-v5 && pnpm render:intro-lewandowski-v5-dynamic && pnpm render:intro-lewandowski-v6-dynamic && pnpm render:intro-lewandowski-v7 && pnpm render:intro-lewandowski-v8 && pnpm render:intro-lewandowski-v9 && pnpm render:intro-lewandowski-v10 && pnpm render:intro-lewandowski-v10-sarah && pnpm render:intro-lewandowski-v11 && pnpm render:intro-lewandowski-v11-sarah && pnpm render:outro && pnpm render:roles",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

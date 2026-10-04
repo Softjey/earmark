@@ -511,6 +511,7 @@ const VIEWS: Record<string, () => React.ReactNode> = {
   why: Why,
   title: () => <Title />,
   titleB: () => <Title id="titleB" second="Just rules that nobody can bend." />,
+  titleC: () => <Title id="titleC" second="Just rules that nobody can bend." />,
 };
 
 const VIEWS7: Record<string, () => React.ReactNode> = {
@@ -549,6 +550,7 @@ const MOOD: Record<string, Mood> = {
   why: "hope",
   title: "resolve",
   titleB: "resolve",
+  titleC: "resolve",
 };
 
 /** One music stem per run of scenes that share a mood, faded in and out at the edges. */
@@ -651,7 +653,7 @@ export function Intro({
     <CutContext.Provider value={{ pacing, sfx, sounds, fx, sfxGain, look }}>
       <AbsoluteFill style={{ fontFamily: SANS, background: C.ink }}>
         {scenes.map((s) => {
-          const edit = look === "v8" || look === "v10"; // v10 reuses the v8 scenes with its own swaps
+          const edit = look === "v8" || look === "v10" || look === "v11"; // v10/v11 reuse the v8 scenes with their own swaps
           const View = (look === "v7" && VIEWS7[s.id]) || (edit && VIEWS8[s.id]) || VIEWS[s.id];
           return (
             <Sequence key={s.id} from={s.from} durationInFrames={s.frames}>
@@ -669,10 +671,10 @@ export function Intro({
         })}
         {look === "v7" && <Grain />}
         {music && <Music scenes={scenes} dynamic={pacing === "dynamic"} />}
-        {score && look !== "v8" && look !== "v10" && <Audio src={staticFile(`music/${score}.mp3`)} volume={sounds === "v5" ? 0.17 : pacing === "dynamic" ? 0.17 : 0.14} />}
+        {score && look !== "v8" && look !== "v10" && look !== "v11" && <Audio src={staticFile(`music/${score}.mp3`)} volume={sounds === "v5" ? 0.17 : pacing === "dynamic" ? 0.17 : 0.14} />}
         {score && look === "v8" && <Audio src={staticFile(`music/${score}.mp3`)} volume={(f) => 0.17 * v8MusicDuck(scenes, pacing)(f)} />}
-        {score && look === "v10" && <Audio src={staticFile(`music/${score}.mp3`)} volume={0.17} />}
-        {(look === "v8" || look === "v10") && sfx !== "none" && <V8Audio scenes={scenes} />}
+        {score && (look === "v10" || look === "v11") && <Audio src={staticFile(`music/${score}.mp3`)} volume={0.17} />}
+        {(look === "v8" || look === "v10" || look === "v11") && sfx !== "none" && <V8Audio scenes={scenes} />}
         {sounds === "v5" && sfx !== "none" && twist && <TwistSwell at={twist.from + twist.lines[0].from} />}
       </AbsoluteFill>
     </CutContext.Provider>
