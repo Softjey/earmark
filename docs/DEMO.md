@@ -64,11 +64,33 @@ selectively (exactly what happened in 2017). Here the rule "only to the recipien
 enforced by code that even the operator cannot bypass, and every donor can verify it without asking
 anyone.
 
+**Who is the verifier? Isn't that just a new intermediary?**
+Today it is one key we hold. But an intermediary has two powers: deciding *where the money goes* and
+deciding *who is legitimate*. The verifier has only the second, and it is bounded: it cannot move,
+freeze or redirect money, every verification is public with the registry number in it, and the
+fundraiser page has a *Check in KRS / RPWDL yourself* link, so a donor repeats the check instead of
+trusting us. Worst case (key stolen): a fake recipient, visible and flagged on `/audit`. In production
+it should not be us: a multisig of independent parties (NGO federation, law firm, partner bank), later
+attestations from parties that already verify organisations, such as a bank's KYB.
+
+**How do you know the wallet really belongs to the clinic?**
+Once per organisation: the organisation signs "KRS X controls wallet Y" with the wallet, and the verifier
+confirms it **through the contact data in the official registry** (registered address, e-mail, ePUAP),
+never through contacts the applicant supplied. A hospital does not have to run crypto software itself;
+a custodial wallet with a regulated provider works.
+
 **What can't it catch?**
-A fake organisation that passed verification, or a recipient colluding with an organizer. Mitigation: the
-registry check (KRS/RPWDL in Poland, national registries elsewhere) and the public audit
-page, which flags new recipients and unusual volume. Fundraisers for living costs (no single payee)
-are out of scope.
+A fake organisation that passed verification, or a recipient colluding with an organizer. We don't hide
+it, but the cost of fraud changes: before, an anonymous person took the money and vanished; now a
+registered legal entity, with a registry number, an address and a board, has to sign on-chain that the
+document is theirs, and the trail is public forever. `/audit` flags new recipients, unusual volume and
+repeated cancellations. Fundraisers for living costs (no single payee) are out of scope.
+
+**ePLN isn't real money. How does a donor pay with BLIK, and how does the clinic get złoty?**
+ePLN stands in for a regulated stablecoin (EURC, or a PLN e-money token under MiCA); the program
+takes any mint. A card/BLIK on-ramp is a payment rail, not an intermediary: it converts currency,
+but the destination is fixed by the program before the donor pays. The clinic off-ramps through its
+own bank *after* the money has arrived, like any incoming transfer.
 
 **Is this only for medical fundraisers?**
 No. The program knows only "verified recipient", "target", "deadline" and "document hash". Medical care,

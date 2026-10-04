@@ -21,7 +21,7 @@ progress. See [tickets](docs/tickets/README.md).
 | **Target user** | Donors and organizers of fundraisers for any cause with one identifiable payee, in Europe, piloting in Poland |
 | **Intermediaries today** | The crowdfunding platform, which holds the money, verifies stories by hand, decides payouts and refunds, and takes a fee; and the organizer, who receives the money and is trusted to spend it as promised |
 | **What changes** | Money is held by a program-owned vault. It can be paid out **only** to the verified recipient named in the fundraiser, **automatically** when the target is reached, or returned to **each donor on their own** if the fundraiser is cancelled or misses its deadline. A fundraiser cannot start without the recipient's on-chain confirmation of its supporting document (invoice, quote or budget). |
-| **Remaining trust** | A verifier confirms once that a wallet belongs to a real organisation (an official public registry, e.g. KRS or RPWDL in Poland). The verifier cannot move money. |
+| **Remaining trust** | A verifier confirms once that a wallet belongs to a real organisation (an official public registry, e.g. KRS or RPWDL in Poland). The verifier cannot move money, and anyone can repeat its check from the fundraiser page. See [Trust model](#trust-model-what-is-still-trusted-and-why-it-is-bounded). |
 
 Full spec: [docs/PLAN.md](docs/PLAN.md) · Demo & Q&A: [docs/DEMO.md](docs/DEMO.md)
 
@@ -72,17 +72,82 @@ selectively, which is what happened in 2017. Here the rule "only to the recipien
 is code that even its authors cannot bypass, and every donor can check it and every transfer on a
 public explorer or on the app's `/audit` page without asking anyone.
 
-## What it can't catch, and next steps
+## Trust model: what is still trusted, and why it is bounded
 
-It does not stop a fake organisation that passed verification, or a recipient colluding with an organizer
-(see [Limitations](#limitations)). Mitigations: the verifier checks an official public registry
-(KRS / RPWDL in Poland, national registries elsewhere), and the audit page flags new recipients and
-unusual volume.
+Earmark does not remove trust. It removes the party who **decides where the money goes**, and narrows what
+is left to one question: *does this wallet belong to this registered organisation?* That answer is public and
+anyone can check it again.
 
-Next: on-chain attestations (Solana Attestation Service) or a multi-sig verifier council instead of a
-single verifier key; registry integrations; Polish UI; milestone payouts for long
-treatments; municipality co-funding ("residents raise X **and** the city adds Y, otherwise refund");
-stablecoins (EURC/USDC) with a fiat on-ramp (cards, BLIK, SEPA).
+### Who is the verifier?
+
+- **In this hackathon build:** one key held by the Earmark team (address under [Deployment](#deployment)).
+- **What it can do:** create a `Recipient` record (name and registry number) for a wallet, or revoke one.
+  Every verification is a public transaction with the registry number in it.
+- **What it cannot do:** move, freeze or redirect money, or create, cancel or confirm fundraisers. If the key
+  leaks, the worst case is a fake recipient. Any fundraiser naming it is visible, the audit page flags a
+  recipient that was verified less than 7 days ago, and the registry number can be checked against the
+  registry.
+- **In production it should not be us.** The program checks only that `config.verifier` signed, so the
+  key can be a multisig of independent parties (e.g. an NGO federation, a law firm, a partner bank) with
+  M-of-N signatures. Later it can be replaced by attestations from parties that already verify organisations
+  for a living, such as a bank's KYB check on the organisation's account, issued via the Solana Attestation
+  Service.
+
+### Check the verifier yourself
+
+The fundraiser page and the verifier panel show the recipient's registry number with a
+*Check in KRS / RPWDL yourself* link. The link opens the official public search
+([KRS](https://wyszukiwarka-krs.ms.gov.pl/), [RPWDL](https://rpwdl.ezdrowie.gov.pl/)) and copies the
+number. Neither registry offers a stable link to one entry, so the donor pastes the number. A donor does
+not have to trust the verifier's word; they can repeat the check in ten seconds. (Demo recipients use
+placeholder numbers such as `RPWDL-0001`, which are not real entries.)
+
+### How a wallet is proven to belong to an organisation (verification procedure)
+
+The program cannot check the off-chain world, so the verifier follows a fixed procedure before signing
+`verify_recipient`:
+
+1. The organisation signs a message with the wallet: *"Organisation with KRS 0000123456 controls wallet X"*.
+2. The verifier looks the organisation up in the official registry and contacts it **through the contact data
+   in the registry** (registered address, official e-mail or ePUAP), never through contact data the applicant
+   supplied, and gets the signed message confirmed there.
+3. Only then does the verifier sign `verify_recipient(name, "KRS-0000123456")`. The registry number goes
+   on-chain so anyone can repeat step 2.
+
+This is done **once per organisation**, not per fundraiser: one verified hospital serves every fundraiser for
+its patients. The organisation's wallet can be custodial with a regulated provider (on the organisation's
+side, not ours); a hospital does not need to run crypto software itself.
+
+### Organizer and recipient colluding
+
+Not prevented by the program, and we do not claim it is. What changes is the cost of the fraud:
+
+| | Before (Antoś, 2017) | With Earmark |
+|---|---|---|
+| Who receives the money | an anonymous private person | a registered legal entity with a registry number, address and board |
+| What they signed | nothing | an on-chain confirmation that this document is theirs and they expect this amount |
+| Trace | the platform's internal records | public and permanent |
+
+To steal, a registered organisation has to commit fraud under its own name. The audit page flags new
+recipients, unusual volume and repeated cancellations so that pattern is visible early.
+
+### Real money: ePLN, on-ramps and off-ramps
+
+- **ePLN is a devnet stand-in** for a regulated stablecoin (EURC, or a PLN e-money token under MiCA). The
+  program is mint-agnostic: the token is one field (`config.mint`) set at deployment.
+- **An on-ramp (card, BLIK, SEPA → stablecoin) does not bring the intermediary back.** An intermediary decides
+  *where* money goes. An on-ramp only converts currency. The destination is fixed by the program before the
+  donor pays, so the on-ramp has no say over it.
+- **The off-ramp happens after** the money has reached the right organisation: the recipient converts it
+  through its own bank or provider, as with any incoming transfer. By then the donor's question, *"did the
+  money reach the clinic?"*, has already been answered on-chain.
+
+### Next steps
+
+Multisig verifier council, then attestations (Solana Attestation Service); registry API integration so the
+verifier panel fetches the entry automatically; a regulated stablecoin with a fiat on-ramp (cards, BLIK,
+SEPA); Polish UI; milestone payouts for long treatments; municipality co-funding ("residents raise X
+**and** the city adds Y, otherwise refund").
 
 ## Repo map
 
@@ -157,11 +222,15 @@ docker compose down        # keeps the pgdata volume; add -v to wipe it
 ## Limitations
 
 - A fake organisation that passes verification, or a recipient colluding with an organizer, is not stopped by
-  the program; the audit page only flags it.
+  the program; the audit page only flags it (see [Trust model](#trust-model-what-is-still-trusted-and-why-it-is-bounded)).
+- The verifier is a single key held by the team in this build; the wallet-ownership procedure in the trust model is
+  a manual process, not automated.
+- The *Check in KRS / RPWDL* link opens the registry search and copies the number; neither registry has a stable
+  deep link to one entry. Demo recipients use placeholder numbers that are not real registry entries.
 - Fundraisers without a single payee (e.g. living costs, or aid split across many individuals) are out of scope.
 - The fundraiser category (medical, humanitarian, …) is a browsing label in the off-chain metadata; the program neither knows nor enforces it.
 - The devnet program must be upgraded before the document-hash rename (formerly *quote hash*) is live; until then new fundraisers cannot be created from the current app.
-- ePLN is a devnet test token; production would use a stablecoin and a fiat on-ramp.
+- ePLN is a devnet test token; production would use a regulated stablecoin and a fiat on-ramp (see *Real money* in the trust model).
 - The *Get test ePLN* faucet (`/api/faucet`) holds the ePLN mint-authority key on the server. That is test money and not part of the trust model; it has no per-wallet rate limit, and its cap on newly opened token accounts is in memory, so it resets on restart.
 - Fundraiser titles and stories are stored by `/api/metadata` in Postgres (`DATABASE_URL`; a local JSON file in `app/data/` when it is unset), write-once per fundraiser; only the supporting document's SHA-256 is on-chain. Production would use content-addressed storage (IPFS/Arweave).
 - The audit page reads the 100 most recent program transactions and recomputes flags in the browser; it is a hint for humans, not a fraud verdict.

@@ -2,6 +2,7 @@
 
 import { PublicKey } from "@solana/web3.js";
 import { useState } from "react";
+import { RegistryCheck } from "./RegistryCheck";
 import { ArmedButton, ErrorAlert, Field, Notice, PageTitle, btnPrimary, inputCls } from "./ui";
 import { configPda, fetchRecipients } from "@/lib/chain";
 import { formatDate, shortKey } from "@/lib/format";
@@ -83,7 +84,7 @@ export function VerifierPanel() {
           <Field label="Name" htmlFor="name">
             <input id="name" required disabled={!isVerifier} value={name} onChange={(e) => setName(e.target.value)} className={inputCls} />
           </Field>
-          <Field label="Registry number" htmlFor="reg" hint="Number in the official registry you checked, e.g. KRS for a Polish NGO or RPWDL for a healthcare provider.">
+          <Field label="Registry number" htmlFor="reg" hint="Number in the official registry you checked, with its prefix (e.g. KRS-0000123456 for a Polish NGO, RPWDL-000000018572 for a healthcare provider), so donors can check it themselves.">
             <input id="reg" required disabled={!isVerifier} value={registry} onChange={(e) => setRegistry(e.target.value)} className={inputCls} />
           </Field>
           {problem && <ErrorAlert error={problem} />}
@@ -116,6 +117,7 @@ export function VerifierPanel() {
                     <td className="px-5 py-3">
                       {r.account.name}
                       <span className="block text-sm text-muted">{r.account.registryId}</span>
+                      <RegistryCheck registryId={r.account.registryId} />
                     </td>
                     <td className="px-5 py-3 font-mono text-xs text-muted">{shortKey(r.account.wallet.toBase58())}</td>
                     <td className="px-5 py-3">{formatDate(r.account.verifiedAt.toNumber())}</td>

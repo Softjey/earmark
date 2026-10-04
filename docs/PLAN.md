@@ -31,7 +31,9 @@ Today a donor has to trust two parties:
 
 **Remaining trust (said openly):** someone has to confirm that a wallet belongs to a real organisation
 (checked once against an official public registry: in Poland e.g. KRS for NGOs, RPWDL for healthcare providers). The verifier can only mark wallets
-as verified. **It cannot move any money.**
+as verified. **It cannot move any money.** The registry number is stored on-chain and the app links to
+the official registry search, so any donor can repeat the check. Who the verifier is, how wallet
+ownership is proven, collusion and real-money ramps: see *Trust model* in [README.md](../README.md).
 
 ## 3. Target user
 
@@ -71,7 +73,7 @@ rules keep working. Personal and medical data never go on-chain (RODO/GDPR); onl
 | Account | Seeds | Fields |
 |---|---|---|
 | `Config` | `["config"]` | `verifier: Pubkey`, `mint: Pubkey`, `bump` |
-| `Recipient` | `["recipient", wallet]` | `wallet`, `name: String(64)`, `registry_id: String(32)` (number in the official registry the verifier checked, e.g. KRS or RPWDL), `verified_at: i64`, `active: bool`, `bump` |
+| `Recipient` | `["recipient", wallet]` | `wallet`, `name: String(64)`, `registry_id: String(32)` (number in the official registry the verifier checked, with its prefix, e.g. `KRS-0000123456` or `RPWDL-000000018572`; the app derives the registry link from the prefix), `verified_at: i64`, `active: bool`, `bump` |
 | `Fundraiser` | `["fundraiser", organizer, id: u64]` | `organizer`, `recipient` (wallet), `id`, `target: u64`, `raised: u64`, `deadline: i64`, `document_hash: [u8;32]`, `metadata_uri: String(128)`, `status`, `created_at`, `bump`, `vault_bump` |
 | `Vault` | `["vault", fundraiser]` | SPL token account, authority = `Fundraiser` PDA |
 | `Donation` | `["donation", fundraiser, donor]` | `donor`, `amount: u64`, `refunded: bool`, `bump` |
@@ -137,7 +139,7 @@ are in [docs/design/](design/README.md). The frontend must follow them.
 | Route | Who | What |
 |---|---|---|
 | `/` | everyone | list of fundraisers with progress, status, verified badge, category filter |
-| `/fundraisers/[pubkey]` | donor | story, progress, `Donate`, `Get my money back`, explorer links |
+| `/fundraisers/[pubkey]` | donor | story, progress, `Donate`, `Get my money back`, explorer links, *Check in KRS / RPWDL yourself* (opens the registry search, copies the number) |
 | `/new` | organizer | create fundraiser (category, recipient picker, target, deadline, supporting document → hash) |
 | `/recipient` | recipient | pending fundraisers to confirm / cancel |
 | `/verifier` | verifier | verify a recipient wallet (name + registry no.) |

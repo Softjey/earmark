@@ -7,6 +7,7 @@ import { PublicKey } from "@solana/web3.js";
 import { useEffect, useMemo, useState } from "react";
 import { fundraiserTitle } from "./FundraiserCard";
 import { ProgressBar } from "./ProgressBar";
+import { RegistryCheck } from "./RegistryCheck";
 import { StatusBadge } from "./StatusBadge";
 import { TxLink } from "./TxLink";
 import { ArmedButton, ErrorAlert, Notice, btnDark, btnPrimary, card, inputCls } from "./ui";
@@ -222,6 +223,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
                   ? `Registry no. ${recipient.registryId} · verified ${formatDate(recipient.verifiedAt.toNumber())}`
                   : "No verification record"}
               </span>
+              {recipient && <RegistryCheck registryId={recipient.registryId} />}
             </div>
             {recipient?.active ? (
               <VerifiedBadge />
