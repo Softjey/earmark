@@ -105,33 +105,7 @@
   <div class="foot"><span class="mark">Earmark</span><span>03</span></div>
 </section>
 
-<!-- 5. How it works -->
-<section class="slide">
-  <div class="kicker">How it works</div>
-  <h2>Four steps, each one a public transaction</h2>
-  <div class="grid g4" style="margin-top:80px">
-    <div class="card"><div class="num">1</div><h3>Verify once</h3><p>A verifier links a wallet to a registered organisation (KRS, RPWDL). Once per organisation, not per fundraiser.</p></div>
-    <div class="card"><div class="num">2</div><h3>Create</h3><p>The organizer sets the recipient, target and deadline, plus the SHA-256 of the invoice. These cannot be changed later.</p></div>
-    <div class="card"><div class="num">3</div><h3>Confirm</h3><p>The recipient confirms the document hash on-chain. No donations are accepted before that.</p></div>
-    <div class="card"><div class="num">4</div><h3>Pay out or refund</h3><p>The donation that hits the target pays the recipient in the same transaction. Otherwise a keeper refunds every donor.</p></div>
-  </div>
-  <div class="foot"><span class="mark">Earmark</span><span>04</span></div>
-</section>
 
-<!-- 6. Roles -->
-<section class="slide">
-  <div class="kicker">Who can do what</div>
-  <h2>Nobody holds the power to redirect money</h2>
-  <table>
-    <tr><th>Role</th><th>Can</th><th>Cannot</th></tr>
-    <tr><td>Verifier</td><td class="can">mark a wallet as a verified recipient, revoke it</td><td class="cannot">move any money, create or cancel fundraisers</td></tr>
-    <tr><td>Organizer</td><td class="can">create a fundraiser, cancel it before payout</td><td class="cannot">receive any money, change target, recipient or deadline</td></tr>
-    <tr><td>Recipient</td><td class="can">confirm or cancel a fundraiser naming it</td><td class="cannot">withdraw before the target is reached</td></tr>
-    <tr><td>Donor</td><td class="can">donate, get refunded after a cancel or missed deadline</td><td class="cannot">receive anyone else's refund</td></tr>
-    <tr><td>Us</td><td class="can">nothing, once the upgrade authority is final</td><td class="cannot">edit balances, pay out, block refunds</td></tr>
-  </table>
-  <div class="foot"><span class="mark">Earmark</span><span>05</span></div>
-</section>
 
 <!-- 7. Trust -->
 <section class="slide">
@@ -143,7 +117,7 @@
     <div class="card"><span class="pill wrn">Production</span><h3 style="margin-top:24px">Not us</h3><p>A multisig council of independent parties, then attestations from banks' KYB checks via the Solana Attestation Service.</p></div>
   </div>
   <p class="lead" style="font-size:30px;margin-top:28px">If the organizer and the recipient collude, the thief is a registered legal entity that signed the invoice on-chain under its own name, not an anonymous person.</p>
-  <div class="foot"><span class="mark">Earmark</span><span>06</span></div>
+  <div class="foot"><span class="mark">Earmark</span><span>04</span></div>
 </section>
 
 
@@ -157,7 +131,7 @@
     <div class="card"><h3>Around it</h3><ul><li>keeper bot that refunds automatically</li><li>ePLN test stablecoin and faucet</li><li>card on-ramp (Ramp Network)</li></ul></div>
   </div>
   <p class="lead" style="font-size:32px">No medical or personal data on-chain, only document hashes. The token is a single config field, so a regulated PLN or EUR stablecoin can replace ePLN.</p>
-  <div class="foot"><span class="mark">Earmark</span><span>07</span></div>
+  <div class="foot"><span class="mark">Earmark</span><span>05</span></div>
 </section>
 
 <!-- 10. Beyond -->
@@ -171,7 +145,7 @@
     <div class="card"><h3>City co-funding</h3><p>"residents raise X and the city adds Y, otherwise refund"</p></div>
   </div>
   <div class="card" style="margin-top:32px;padding:36px 44px"><h3>Next steps</h3><p>Multisig verifier council → Solana Attestation Service · registry API integration · regulated stablecoin with BLIK / SEPA on-ramp · milestone payouts · Polish UI · pilot with a Polish hospital or foundation</p></div>
-  <div class="foot"><span class="mark">Earmark</span><span>08</span></div>
+  <div class="foot"><span class="mark">Earmark</span><span>06</span></div>
 </section>
 
 <!-- 11. Try it -->
