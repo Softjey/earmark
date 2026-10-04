@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Earmark cover</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 900px; overflow: hidden; background: #0E1A17; font-family: "IBM Plex Sans", Helvetica, sans-serif; }
+  .wrap { position: relative; width: 1600px; height: 900px; padding: 96px 110px; display: flex; flex-direction: column; justify-content: center;
+          background: radial-gradient(900px 600px at 85% 50%, rgba(11,107,85,.35), transparent 70%), #0E1A17; }
+  .brand { display: flex; align-items: center; gap: 22px; }
+  .brand span { font-size: 64px; font-weight: 700; color: #fff; letter-spacing: -1.5px; }
+  h1 { margin-top: 44px; font-size: 76px; line-height: 1.05; letter-spacing: -2px; color: #fff; font-weight: 700; max-width: 820px; }
+  h1 em { font-style: normal; color: #3FBF9A; }
+  p { margin-top: 30px; font-size: 30px; line-height: 1.4; color: #B9C3BF; max-width: 760px; }
+  .tag { margin-top: 48px; display: flex; gap: 14px; }
+  .tag b { font-size: 22px; font-weight: 600; padding: 10px 22px; border-radius: 999px; border: 2px solid #2C3F39; color: #E4E9E6; }
+  svg.flow { position: absolute; right: 90px; top: 50%; transform: translateY(-50%); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <svg width="72" height="72" viewBox="0 0 64 64" fill="none"><path d="M32 6 L54 19 V45 L32 58 L10 45 V19 Z" stroke="#3FBF9A" stroke-width="5" stroke-linejoin="round"/><circle cx="32" cy="32" r="6" fill="#fff"/></svg>
+    <span>Earmark</span>
+  </div>
+  <h1>Donations that can only reach <em>the cause</em>, or come back.</h1>
+  <p>A Solana vault that pays only a verified recipient or refunds every donor. Never the organizer.</p>
+  <div class="tag"><b>Solana</b><b>HackYeah 2026</b><b>Finance Without Intermediaries</b></div>
+
+  <svg class="flow" width="560" height="560" viewBox="0 0 560 560" font-family="IBM Plex Sans, sans-serif">
+    <defs>
+      <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#3FBF9A"/></marker>
+      <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8FB0E0"/></marker>
+      <marker id="w" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#E4E9E6"/></marker>
+    </defs>
+    <!-- donors -->
+    <circle cx="70" cy="200" r="22" fill="#2C3F39"/><circle cx="70" cy="280" r="22" fill="#2C3F39"/><circle cx="70" cy="360" r="22" fill="#2C3F39"/>
+    <path d="M98 200 C150 200 160 260 196 272" stroke="#E4E9E6" stroke-width="3" fill="none" marker-end="url(#w)"/>
+    <path d="M98 280 L196 280" stroke="#E4E9E6" stroke-width="3" fill="none" marker-end="url(#w)"/>
+    <path d="M98 360 C150 360 160 300 196 288" stroke="#E4E9E6" stroke-width="3" fill="none" marker-end="url(#w)"/>
+    <!-- vault -->
+    <path d="M290 170 L380 222 V338 L290 390 L200 338 V222 Z" fill="#13241F" stroke="#3FBF9A" stroke-width="6" stroke-linejoin="round"/>
+    <circle cx="290" cy="280" r="20" fill="#fff"/>
+    <!-- exits -->
+    <path d="M388 240 C440 200 450 140 480 120" stroke="#3FBF9A" stroke-width="4" fill="none" marker-end="url(#g)"/>
+    <rect x="440" y="40" width="110" height="74" rx="16" fill="#E3F1EC"/>
+    <path d="M478 77 l14 14 l26 -28" stroke="#0B6B55" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="495" y="28" text-anchor="middle" font-size="20" font-weight="600" fill="#3FBF9A">recipient</text>
+    <path d="M388 320 C440 360 450 420 480 440" stroke="#8FB0E0" stroke-width="4" fill="none" marker-end="url(#b)"/>
+    <rect x="440" y="446" width="110" height="74" rx="16" fill="#E9EEF7"/>
+    <path d="M520 483 h-36 m0 0 l12 -12 m-12 12 l12 12" stroke="#24467A" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="495" y="546" text-anchor="middle" font-size="20" font-weight="600" fill="#8FB0E0">donors</text>
+    <!-- organizer blocked -->
+    <path d="M290 398 L290 470" stroke="#A3261B" stroke-width="4" stroke-dasharray="8 8"/>
+    <circle cx="290" cy="500" r="26" fill="#3A1A16" stroke="#E0574A" stroke-width="4"/>
+    <path d="M279 489 l22 22 m0 -22 l-22 22" stroke="#E0574A" stroke-width="5" stroke-linecap="round"/>
+    <text x="290" y="552" text-anchor="middle" font-size="20" font-weight="600" fill="#E0574A">organizer</text>
+  </svg>
+</div>
+</body>
+</html>
