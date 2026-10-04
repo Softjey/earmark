@@ -9,7 +9,7 @@ import { fundraiserTitle } from "./FundraiserCard";
 import { ProgressBar } from "./ProgressBar";
 import { StatusBadge } from "./StatusBadge";
 import { TxLink } from "./TxLink";
-import { ErrorAlert, Notice, btnPrimary, card, inputCls } from "./ui";
+import { ArmedButton, ErrorAlert, Notice, btnDark, btnPrimary, card, inputCls } from "./ui";
 import { VerifiedBadge } from "./VerifiedBadge";
 import {
   configPda,
@@ -59,6 +59,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
   const now = useNow();
   const donate = useAction();
   const refund = useAction();
+  const respond = useAction();
   const [amount, setAmount] = useState("100");
   const [justDonated, setJustDonated] = useState<string>();
 
@@ -150,6 +151,15 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
       if (!wallet) return;
       const donorToken = getAssociatedTokenAddressSync(config.mint, wallet.publicKey);
       await program.methods.refund().accountsPartial({ caller: wallet.publicKey, donor: wallet.publicKey, fundraiser: key, donorToken }).rpc();
+      await Promise.all([reload(), reloadActivity()]);
+    });
+
+  const isRecipient = !!me && me.equals(f.recipient);
+  const onRespond = (kind: "confirm" | "cancel") =>
+    respond.run(async () => {
+      if (!me) return;
+      const m = kind === "confirm" ? program.methods.confirmFundraiser() : program.methods.cancel();
+      await m.accountsPartial(kind === "confirm" ? { recipientWallet: me, fundraiser: key } : { signer: me, fundraiser: key }).rpc();
       await Promise.all([reload(), reloadActivity()]);
     });
 
@@ -298,8 +308,21 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
 
           {status === "pendingConfirmation" && (
             <p className="rounded-input bg-info-soft p-3 text-sm text-info">
-              Waiting for {recipientName} to confirm the fundraiser. Donations open after the recipient confirms.
+              {isRecipient
+                ? "This fundraiser names your wallet. Check the document fingerprint against your file, then confirm or reject it. Donations open after you confirm."
+                : `Waiting for ${recipientName} to confirm the fundraiser. Donations open after the recipient confirms.`}
             </p>
+          )}
+          {status === "pendingConfirmation" && isRecipient && (
+            <>
+              <ErrorAlert error={respond.error} />
+              <div className="flex flex-wrap gap-3">
+                <button type="button" className={btnDark} disabled={respond.busy} onClick={() => onRespond("confirm")}>
+                  Confirm fundraiser
+                </button>
+                <ArmedButton label="Reject" confirmLabel="Yes, reject" disabled={respond.busy} onConfirm={() => onRespond("cancel")} />
+              </div>
+            </>
           )}
 
           {status === "released" && (
