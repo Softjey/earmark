@@ -5,10 +5,11 @@ import { PublicKey } from "@solana/web3.js";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { VerifiedBadge } from "./VerifiedBadge";
-import { ErrorAlert, Field, Notice, PageTitle, btnPrimary, inputCls } from "./ui";
+import { ErrorAlert, Field, Notice, PageTitle, btnOutline, btnPrimary, inputCls } from "./ui";
 import { configPda, fetchRecipients, fundraiserPda } from "@/lib/chain";
 import { useAction, useLoad, useProgram } from "@/lib/hooks";
 import { formatDate, parseTpln } from "@/lib/format";
+import { DEMO_FUNDRAISERS, demoDocument, pick } from "@/lib/demo-data";
 import { CATEGORIES, STORY_MAX, TITLE_MAX, saveMetadata, type CategoryId } from "@/lib/metadata";
 
 /** SHA-256 of the file, computed in the browser. The file itself never leaves the device. */
@@ -48,6 +49,20 @@ export function NewFundraiserForm() {
   const onFile = async (f?: File) => {
     setFile(f);
     setFingerprint(f ? await sha256(f) : undefined);
+  };
+
+  const fillDemo = async () => {
+    const d = pick(DEMO_FUNDRAISERS);
+    setTitle(d.title);
+    setStory(d.story);
+    setCategory("medical");
+    setTarget(String(d.target));
+    setDeadline(localInput(new Date(Date.now() + (3 + Math.floor(Math.random() * 25)) * 86400_000)));
+    if (verifiedList.length > 0) {
+      setCustom(false);
+      setRecipient(pick(verifiedList).account.wallet.toBase58());
+    }
+    await onFile(demoDocument(d.title));
   };
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -95,6 +110,9 @@ export function NewFundraiserForm() {
       <PageTitle title="Start a fundraiser">
         Choose the verified recipient that will be paid. You never receive the money yourself, and the recipient must confirm the fundraiser before anyone can donate.
       </PageTitle>
+      <button type="button" onClick={fillDemo} className={`${btnOutline} self-start`}>
+        Fill demo data
+      </button>
       <form onSubmit={onSubmit} className="flex flex-col gap-6">
         <Field label="Title" htmlFor="title">
           <input id="title" required maxLength={TITLE_MAX} value={title} onChange={(e) => setTitle(e.target.value)} className={inputCls} />
@@ -180,7 +198,7 @@ export function NewFundraiserForm() {
           </Field>
         </div>
         <Field label="Supporting document" htmlFor="document" hint="An invoice, quote or budget from the recipient (PDF or image). The file stays on your device. Only its fingerprint (SHA-256) is stored on-chain.">
-          <input id="document" type="file" accept="application/pdf,image/*" required onChange={(e) => onFile(e.target.files?.[0])} className={`${inputCls} py-2.5`} />
+          <input id="document" type="file" accept="application/pdf,image/*" required={!file} onChange={(e) => onFile(e.target.files?.[0])} className={`${inputCls} py-2.5`} />
           {file && fingerprint && (
             <div className="flex flex-wrap gap-x-4 gap-y-1 rounded-input bg-ground px-4 py-3 text-sm">
               <span>{file.name}</span>
