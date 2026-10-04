@@ -69,8 +69,20 @@ The program is **already deployed** to devnet and `init_config` has been called 
 - `seed-demo.ts` is safe to re-run (costs a few cents, creates a new fundraiser B each time).
 - **Never delete `scripts/.keys/`** (git-ignored): `verifier.json` is the on-chain verifier key and cannot be
   replaced. The deployer wallet `~/.config/solana/id.json` is the upgrade authority and ePLN mint authority.
+- **Every demo wallet that signs a transaction needs SOL for fees**, and Phantom shows "You don't have enough SOL"
+  with 0 SOL. This includes the recipient wallets (`scripts/.keys/clinic*.json`), which only sign confirm/reject/cancel.
+  When a wallet has 0 SOL, transfer a little from the deployer, not the faucet:
+  `solana transfer -u devnet <wallet> 0.03 --allow-unfunded-recipient` (`seed-recipients.ts` and `seed-demo.ts` also top up).
+  Check with `solana balance -u devnet <wallet>` before telling the user a flow "should work".
 - Never run `set-upgrade-authority --final` without the user's explicit go-ahead; it is irreversible.
 - Do not use `anchor deploy` (its IDL step needs npx and fails); the script uses `solana program deploy`.
+
+## Showing UI changes to the user (required)
+
+The user checks the app on **http://localhost:3000 in production mode, not `next dev`**. After any change under `app/`:
+run `pnpm --dir app build`, stop whatever listens on port 3000 (`lsof -nP -iTCP:3000 -sTCP:LISTEN`), then start
+`pnpm --dir app start -p 3000` in the background. The production server does not hot-reload, so repeat this after every
+further edit, and tell the user to refresh.
 
 ## Keeping the docs alive (required)
 
