@@ -43,6 +43,7 @@ CLIPS = {
 SOUNDS = [
     "record-scratch", "sad-violin", "vine-boom", "ka-ching", "dun-dun-dun", "bruh", "windows-xp-error", "police-siren", "huh",
     "kids-yay", "sad-trombone",  # v10: the refunded / not refunded split screen
+    "among-us-role-reveal-sound",  # v12: "Antoś never existed"
 ]
 
 

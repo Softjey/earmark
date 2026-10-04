@@ -7,6 +7,7 @@ Colors and fonts follow [docs/design/](../docs/design/README.md).
 |---|---|---|---|
 | `Intro` | 89 s | `out/intro.mp4` | Antoś story, the twist, fake fundraisers across causes (sourced stats), "Today" vs "With Earmark" money flow, title |
 | `IntroLewandowski` | 93 s | `out/intro-lewandowski.mp4` | Voiced variant that opens with "In 2017, Robert Lewandowski got scammed" (the Lewandowskis gave 100 000 zł to the same fake fundraiser) |
+| `IntroLewandowskiV12` / `IntroLewandowskiV12Sarah` | 102 / 124 s | `out/intro-lewandowski-v12[-sarah].mp4` | v11 with the v10 ending ("This is Earmark."), the Among Us role-reveal sound on "Antoś never existed", no sound on "$96 M", and no photo credit on screen |
 | `IntroLewandowskiV11` / `IntroLewandowskiV11Sarah` | 102 / 125 s | `out/intro-lewandowski-v11[-sarah].mp4` | v10 without the "bruh" before the refund split screen, and a closing "This is... Earmark." (scene `titleC`) |
 | `IntroLewandowskiV10` | 102 s | `out/intro-lewandowski-v10.mp4` | v9 with: the happy photo edited into a sad one for "got scammed" (`media/sad-edit.py`), a different clip on every shot, tension-only music until Earmark (`generate.py score-v10`), fewer drama hits, a happy sound on "refunded" and a losing one on "6 500+ others" |
 | `IntroLewandowskiV10Sarah` | 124 s | `out/intro-lewandowski-v10-sarah.mp4` | Same as v10, narrated by ElevenLabs "Sarah" (`voiceover/elevenlabs.py`, model eleven_v4) |

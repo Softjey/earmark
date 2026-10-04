@@ -1,6 +1,7 @@
 # Third-party media in the v8 cut
 
-Downloaded by [`fetch.py`](fetch.py) into `public/v8/` (git-ignored). Credit these in the video description.
+Downloaded by [`fetch.py`](fetch.py) into `public/v8/` (git-ignored). Credit these in the video description: from v12 on, no
+photo credit is shown on screen.
 
 ## Photos (Wikimedia Commons)
 
@@ -27,6 +28,6 @@ it only allows personal, non-commercial use.)
 
 ## Sound effects ([myinstants.com](https://www.myinstants.com))
 
-record-scratch, sad-violin, vine-boom, ka-ching, dun-dun-dun, bruh, windows-xp-error, police-siren, huh, kids-yay, sad-trombone. User-uploaded
+record-scratch, sad-violin, vine-boom, ka-ching, dun-dun-dun, bruh, windows-xp-error, police-siren, huh, kids-yay, sad-trombone, among-us-role-reveal-sound. User-uploaded
 meme sounds with no stated licence; several are excerpts of copyrighted works. Fine for a hackathon demo, but a
 monetised or platform-checked upload (YouTube Content ID) may flag them.
