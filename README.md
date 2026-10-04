@@ -138,6 +138,16 @@ git-ignored, so on a fresh clone the ID in `declare_id!` and `Anchor.toml` is re
 | Design | [Claude Design canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt) · mockups & tokens in [docs/design](docs/design/README.md) |
 | Demo video | _TBD (T17)_ |
 
+### Hosting the web app (Railway, Docker)
+
+The root `Dockerfile` builds only `app/` (the program is already on devnet). In Railway set:
+
+- Build-time (inlined by `next build`): `NEXT_PUBLIC_CLUSTER=devnet`, `NEXT_PUBLIC_PROGRAM_ID`, `NEXT_PUBLIC_TPLN_MINT`, and ideally `NEXT_PUBLIC_RPC_URL` (a Helius/QuickNode devnet URL; the public one rate-limits).
+- Runtime secret: `FAUCET_SECRET_KEY` (never a build arg).
+- A volume mounted at `/repo/app/data` so `metadata.json` survives redeploys. Keep a single replica.
+
+Local check: `docker build -t earmark-app . && docker run -p 3000:3000 earmark-app`.
+
 ## Limitations
 
 - A fake organisation that passes verification, or a recipient colluding with an organizer, is not stopped by
