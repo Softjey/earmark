@@ -95,6 +95,23 @@ takes any mint. A card/BLIK on-ramp is a payment rail, not an intermediary: it c
 but the destination is fixed by the program before the donor pays. The clinic off-ramps through its
 own bank *after* the money has arrived, like any incoming transfer.
 
+**What if the treatment doesn't happen after the payout?**
+The program's guarantee ends when the money reaches the recipient, and we say so. But now a registered organisation
+that confirmed the invoice on-chain holds it, not an anonymous person, and every donor's wallet and amount is public.
+Returning unspent money is its legal duty; an on-chain *return to donors* instruction is a next step.
+
+**Why all or nothing? 95 % raised and the patient gets nothing?**
+One invoice, one price: 70 % of a surgery buys no surgery. A minimum the recipient agrees to up front, or milestone
+payouts, would be new program rules, decided before anyone donates.
+
+**Can the organizer post the same invoice twice?**
+The same file, no: its hash is locked to one fundraiser. An edited copy has a new hash, so then the check is the
+recipient, which would have to confirm the same invoice twice under its own name.
+
+**You store the story. Can you change it?**
+Not unnoticed: its SHA-256 is in the on-chain `metadata_uri`, the server accepts only matching text, and the
+fundraiser page recomputes the hash and shows a warning if it differs. We could still take it offline.
+
 **Is this only for medical fundraisers?**
 No. The program knows only "verified recipient", "target", "deadline" and "document hash". Medical care,
 humanitarian aid for a war zone, flood relief, a children's charity, an animal shelter: each needs one

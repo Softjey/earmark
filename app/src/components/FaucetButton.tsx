@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { TxLink } from "./TxLink";
 import { btnDark, btnOutline, inputCls } from "./ui";
 import { useProgram } from "@/lib/hooks";
+import { rampEnabled, rampUrl } from "@/lib/ramp";
 
 type Result = { kind: "ok"; amount: number; signature: string } | { kind: "error"; message: string };
 
@@ -102,6 +103,17 @@ export function FaucetButton() {
             )}
             {result?.kind === "error" && <span className="text-error">{result.message}</span>}
           </span>
+          {rampEnabled && (
+            <div className="flex flex-col gap-1.5 border-t border-line pt-3">
+              <a href={rampUrl(me.toBase58())} target="_blank" rel="noreferrer" className={`${btnOutline} justify-center`}>
+                Buy with a card (Ramp) ↗
+              </a>
+              <span className="text-xs text-muted">
+                Ramp&apos;s sandbox sells devnet SOL for network fees to this wallet with a test card. In production the same widget sells
+                the stablecoin you donate with, so no exchange account is needed.
+              </span>
+            </div>
+          )}
         </form>
       )}
     </div>

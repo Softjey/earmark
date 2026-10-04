@@ -10,7 +10,7 @@ import { configPda, fetchRecipients, fundraiserPda } from "@/lib/chain";
 import { useAction, useLoad, useProgram } from "@/lib/hooks";
 import { formatDate, parseTpln } from "@/lib/format";
 import { DEMO_FUNDRAISERS, demoDocument, pick } from "@/lib/demo-data";
-import { CATEGORIES, STORY_MAX, TITLE_MAX, saveMetadata, type CategoryId } from "@/lib/metadata";
+import { CATEGORIES, STORY_MAX, TITLE_MAX, metadataHash, metadataUri, saveMetadata, type CategoryId } from "@/lib/metadata";
 import { hex, sha256 } from "@/lib/document";
 
 /** `datetime-local` value, in the user's timezone. */
@@ -85,13 +85,15 @@ export function NewFundraiserForm() {
       const config = await program.account.config.fetch(configPda(program.programId));
       const id = new BN(Date.now());
       const fundraiser = fundraiserPda(program.programId, wallet.publicKey, id);
-      // Only the hash and a link go on-chain; the title and story stay in the metadata JSON.
+      // Only hashes and a link go on-chain; the title and story stay in the metadata store, pinned by their hash.
+      const meta = { title: title.trim(), story: story.trim(), category };
+      const uri = metadataUri(fundraiser.toBase58(), await metadataHash(meta));
       await program.methods
-        .createFundraiser(id, new BN(units.toString()), new BN(deadlineSec), Array.from(fingerprint), `/api/metadata/${fundraiser.toBase58()}`)
+        .createFundraiser(id, new BN(units.toString()), new BN(deadlineSec), Array.from(fingerprint), uri)
         .accountsPartial({ organizer: wallet.publicKey, recipientWallet, mint: config.mint })
         .rpc();
       try {
-        await saveMetadata(fundraiser.toBase58(), { title, story, category });
+        await saveMetadata(fundraiser.toBase58(), meta);
       } catch (err) {
         // The fundraiser exists and works without its text; don't lose the user on a metadata hiccup.
         setWarning(`The fundraiser was created, but its title and story could not be saved (${(err as Error).message}).`);

@@ -24,7 +24,7 @@ import {
 } from "@/lib/chain";
 import { useAction, useLoad, useNow, useProgram } from "@/lib/hooks";
 import { formatDate, formatDateTime, formatTpln, parseTpln, shortKey, timeAgo, timeLeft } from "@/lib/format";
-import { fetchAllMetadata } from "@/lib/metadata";
+import { checkStory, fetchAllMetadata } from "@/lib/metadata";
 
 const CODE_URL = "https://github.com/Softjey/earmark/blob/main/programs/earmark/src/instructions/donate.rs";
 
@@ -85,7 +85,8 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
         fetchAllMetadata().then((all) => all[key.toBase58()]),
         me ? program.account.donation.fetchNullable(donationPda(program.programId, key, me)) : null,
       ]);
-      return { fundraiser, recipient, config, meta, donation };
+      const storyCheck = meta ? await checkStory(fundraiser.metadataUri, meta) : undefined;
+      return { fundraiser, recipient, config, meta, donation, storyCheck };
     },
     [program, key?.toBase58(), me?.toBase58()],
     15_000,
@@ -117,7 +118,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
   if (loading) return <Notice>Loading fundraiser…</Notice>;
   if (!data) return <Notice>Fundraiser not found on this network.</Notice>;
 
-  const { fundraiser: f, recipient, config, meta, donation } = data;
+  const { fundraiser: f, recipient, config, meta, donation, storyCheck } = data;
   const status = statusOf(f, now);
   const deadline = f.deadline.toNumber();
   const target = BigInt(f.target.toString());
@@ -203,6 +204,17 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
           <div className={card}>
             <h2 className="text-xl font-semibold">Story</h2>
             <p className="whitespace-pre-wrap text-[#2b3733]">{meta.story}</p>
+            {storyCheck === "match" && (
+              <p className="text-xs text-muted">✓ This text matches the fingerprint the organizer stored on-chain, so nobody has edited it since.</p>
+            )}
+            {storyCheck === "mismatch" && (
+              <p className="rounded-input bg-warn-soft px-3 py-2 text-sm font-semibold text-warn">
+                This text does not match the fingerprint stored on-chain. It was changed after the fundraiser was created.
+              </p>
+            )}
+            {storyCheck === "unanchored" && (
+              <p className="text-xs text-muted">Created before stories were fingerprinted on-chain; this text cannot be checked.</p>
+            )}
           </div>
         )}
 

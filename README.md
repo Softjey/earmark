@@ -142,10 +142,27 @@ recipients, unusual volume and repeated cancellations so that pattern is visible
   program is mint-agnostic: the token is one field (`config.mint`) set at deployment.
 - **An on-ramp (card, BLIK, SEPA → stablecoin) does not bring the intermediary back.** An intermediary decides
   *where* money goes. An on-ramp only converts currency. The destination is fixed by the program before the
-  donor pays, so the on-ramp has no say over it.
+  donor pays, so the on-ramp has no say over it. The faucet panel already links Ramp Network's hosted widget
+  (*Buy with a card*, needs `NEXT_PUBLIC_RAMP_API_KEY`), which sends the purchase to the donor's own wallet.
 - **The off-ramp happens after** the money has reached the right organisation: the recipient converts it
   through its own bank or provider, as with any incoming transfer. By then the donor's question, *"did the
   money reach the clinic?"*, has already been answered on-chain.
+
+### After the payout: what if the treatment does not happen?
+
+The program's job ends when the money reaches the recipient. If the patient dies, moves to another clinic, or the
+treatment turns out cheaper, there is no on-chain way back, and we do not claim one. The difference from 2017 is
+**who holds the money**: a registered organisation that issued the invoice and confirmed it on-chain, not an
+anonymous person. Unspent money is then the recipient's ordinary legal duty (return it to the donors, whose wallets
+and amounts are public, or move it to another fundraiser with their consent), enforceable like any contract with a
+registered entity. A later version can add a *return to donors* instruction the recipient signs, which would send
+the money back pro rata to the donors recorded on-chain.
+
+### Why all or nothing?
+
+A fundraiser is backed by one invoice with one price. Paying 70 % of a surgery buys no surgery, so a missed target
+means every donor gets their money back. Partial payouts (a minimum the recipient agrees to in advance) and milestone
+payouts for long treatments are possible extensions; they would be new program rules, not decisions anyone makes later.
 
 ### Next steps
 
@@ -212,7 +229,7 @@ git-ignored, so on a fresh clone the ID in `declare_id!` and `Anchor.toml` is re
 
 The root `Dockerfile` builds only `app/` (the program is already on devnet). In Railway set:
 
-- Build-time (inlined by `next build`): `NEXT_PUBLIC_CLUSTER=devnet`, `NEXT_PUBLIC_PROGRAM_ID`, `NEXT_PUBLIC_TPLN_MINT`, and ideally `NEXT_PUBLIC_RPC_URL` (a Helius/QuickNode devnet URL; the public one rate-limits).
+- Build-time (inlined by `next build`): `NEXT_PUBLIC_CLUSTER=devnet`, `NEXT_PUBLIC_PROGRAM_ID`, `NEXT_PUBLIC_TPLN_MINT`, and ideally `NEXT_PUBLIC_RPC_URL` (a Helius/QuickNode devnet URL; the public one rate-limits); optional `NEXT_PUBLIC_RAMP_API_KEY` for the card on-ramp.
 - Runtime secret: `FAUCET_SECRET_KEY` (never a build arg).
 - `DATABASE_URL=${{Postgres.DATABASE_URL}}`, a reference to the Railway Postgres service. Stories live in the `metadata` table (created on first use), so they survive redeploys. Without `DATABASE_URL` the app falls back to `app/data/metadata.json` (local dev only).
 
@@ -237,5 +254,10 @@ docker compose down        # keeps the pgdata volume; add -v to wipe it
 - The devnet program must be upgraded before the document-hash rename (formerly *quote hash*) is live; until then new fundraisers cannot be created from the current app.
 - ePLN is a devnet test token; production would use a regulated stablecoin and a fiat on-ramp (see *Real money* in the trust model).
 - The *Get test ePLN* faucet (`/api/faucet`) holds the ePLN mint-authority key on the server. That is test money and not part of the trust model; it has no per-wallet rate limit, and its cap on newly opened token accounts is in memory, so it resets on restart.
-- Fundraiser titles and stories are stored by `/api/metadata` in Postgres (`DATABASE_URL`; a local JSON file in `app/data/` when it is unset), write-once per fundraiser; only the supporting document's SHA-256 is on-chain. Production would use content-addressed storage (IPFS/Arweave).
+- Fundraiser titles and stories are stored by `/api/metadata` in Postgres (`DATABASE_URL`; a local JSON file in `app/data/` when it is unset), write-once per fundraiser. Their SHA-256 is in the on-chain `metadata_uri`, so the server cannot change a story unnoticed (the page shows a mismatch), but it could still delete or withhold one. Production would use content-addressed storage (IPFS/Arweave). Fundraisers created before this have no story hash.
+- The document lock stops the same file from backing two fundraisers, not an edited copy of the same invoice; that case relies on the recipient refusing to confirm it twice.
+- After the payout there is no on-chain refund: if the treatment does not happen, returning the money is the recipient's legal duty, not a program rule (see *After the payout*).
+- All or nothing: a fundraiser that misses its target pays the recipient nothing, even at 95 %.
+- A verification does not expire. The fundraiser page shows when the recipient was verified, but a recipient that closed or lost its licence stays verified until the verifier revokes it, and a revoked wallet cannot be re-verified.
+- *Buy with a card (Ramp)* appears only when `NEXT_PUBLIC_RAMP_API_KEY` is set (Ramp's widget refuses to open without a host key); in this build it sells devnet SOL for fees in Ramp's demo environment, not ePLN.
 - The audit page reads the 100 most recent program transactions and recomputes flags in the browser; it is a hint for humans, not a fraud verdict.

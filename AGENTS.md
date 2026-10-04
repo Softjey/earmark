@@ -92,7 +92,7 @@ environment `production`). The root `Dockerfile` builds only `app/`; the on-chai
 - **Deploy:** from the repo root run `railway up --service earmark-app --ci` (uploads the working tree, no git push needed),
   then check `railway logs --service earmark-app` and `curl` the URL. Typecheck first: `pnpm --dir app typecheck`.
 - **Variables** (on `earmark-app`): `NEXT_PUBLIC_CLUSTER`, `NEXT_PUBLIC_PROGRAM_ID`, `NEXT_PUBLIC_TPLN_MINT`,
-  optional `NEXT_PUBLIC_RPC_URL` are inlined at **build** time, so changing one needs a new deploy, not a restart.
+  optional `NEXT_PUBLIC_RPC_URL` and `NEXT_PUBLIC_RAMP_API_KEY` (shows the Ramp card on-ramp) are inlined at **build** time, so changing one needs a new deploy, not a restart.
   `FAUCET_SECRET_KEY` is runtime-only: never make it a Dockerfile `ARG`, never print it. `DATABASE_URL` is the reference
   `${{Postgres.DATABASE_URL}}`. Set them with `railway variable set --service earmark-app --skip-deploys K=V`.
 - **Metadata persistence:** fundraiser stories are in the Postgres `metadata` table, so redeploys keep them. Never
