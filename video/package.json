@@ -28,6 +28,7 @@
     "render:intro-lewandowski-v14-sarah": "remotion render src/index.ts IntroLewandowskiV14Sarah out/intro-lewandowski-v14-sarah.mp4",
     "render:intro-lewandowski-v15-sarah": "remotion render src/index.ts IntroLewandowskiV15Sarah out/intro-lewandowski-v15-sarah.mp4",
     "render:intro-lewandowski-v16-sarah": "remotion render src/index.ts IntroLewandowskiV16Sarah out/intro-lewandowski-v16-sarah.mp4",
+    "thumbnail": "remotion still src/index.ts Thumbnail out/youtube/thumbnail.png",
     "render:outro": "remotion render src/index.ts Outro out/outro.mp4",
     "render:role": "remotion render src/index.ts --codec=prores --prores-profile=4444 --pixel-format=yuva444p10le --image-format=png",
     "render:roles": "pnpm render:role RoleOrganizer out/role-organizer.mov && pnpm render:role RoleClinic out/role-clinic.mov && pnpm render:role RoleDonor1 out/role-donor-1.mov && pnpm render:role RoleDonor2 out/role-donor-2.mov",

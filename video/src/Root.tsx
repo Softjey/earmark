@@ -1,5 +1,6 @@
 import { Composition } from "remotion";
 import { Intro } from "./Intro";
+import { Thumbnail } from "./Thumbnail";
 import { introFrames } from "./timeline";
 import { Outro, OUTRO_FRAMES } from "./Outro";
 import { ROLE_FRAMES, RoleBadge, type RoleBadgeProps } from "./RoleBadge";
@@ -26,6 +27,7 @@ export function RemotionRoot() {
         defaultProps={{ voice: true, variant: "lewandowski" as const }}
         {...SIZE}
       />
+      <Composition id="Thumbnail" component={Thumbnail} durationInFrames={1} width={1280} height={720} fps={30} />
       <Composition
         id="IntroLewandowskiV16Sarah"
         component={Intro}
