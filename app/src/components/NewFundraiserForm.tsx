@@ -11,13 +11,7 @@ import { useAction, useLoad, useProgram } from "@/lib/hooks";
 import { formatDate, parseTpln } from "@/lib/format";
 import { DEMO_FUNDRAISERS, demoDocument, pick } from "@/lib/demo-data";
 import { CATEGORIES, STORY_MAX, TITLE_MAX, saveMetadata, type CategoryId } from "@/lib/metadata";
-
-/** SHA-256 of the file, computed in the browser. The file itself never leaves the device. */
-async function sha256(file: File): Promise<Uint8Array> {
-  return new Uint8Array(await crypto.subtle.digest("SHA-256", await file.arrayBuffer()));
-}
-
-const hex = (b: Uint8Array) => Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
+import { hex, sha256 } from "@/lib/document";
 
 /** `datetime-local` value, in the user's timezone. */
 function localInput(d: Date): string {

@@ -6,6 +6,7 @@ import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
 import { useEffect, useMemo, useState } from "react";
 import { fundraiserTitle } from "./FundraiserCard";
+import { DocumentCheck } from "./DocumentCheck";
 import { ProgressBar } from "./ProgressBar";
 import { RegistryCheck } from "./RegistryCheck";
 import { StatusBadge } from "./StatusBadge";
@@ -237,6 +238,7 @@ export function FundraiserPage({ pubkey }: { pubkey: string }) {
               SHA-256 {Buffer.from(f.documentHash).toString("hex").slice(0, 4)}…{Buffer.from(f.documentHash).toString("hex").slice(-4)}
             </span>
           </div>
+          <DocumentCheck documentHash={f.documentHash} confirmed={status !== "pendingConfirmation"} />
           <p className="text-xs text-muted">
             On-chain details: recipient wallet{" "}
             <a href={`https://explorer.solana.com/address/${f.recipient.toBase58()}`} target="_blank" rel="noreferrer" className="font-mono">

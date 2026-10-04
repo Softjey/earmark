@@ -22,5 +22,6 @@
 | [T17](T17-demo-video-3-min-rehearsal.md) | Demo video (≤ 3 min) + rehearsal | P0 | pitch | T08, T10–T12 | in progress |
 | [T18](T18-submission-on-hacktribe.md) | Submission on HackTribe | P0 | pitch | T15–T17 | todo |
 | [T19](T19-generalize-beyond-medical.md) | Generalize beyond medical fundraisers | P0 | program, frontend, docs | T12 | in progress |
+| [T20](T20-trust-model-donor-checks.md) | Trust model + donor-side registry and document checks | P0 | frontend, docs | T10, T15 | done |
 
 Status values: `todo` · `in progress` · `done` · `cut`. Keep this table in sync with each ticket's **Status** line.

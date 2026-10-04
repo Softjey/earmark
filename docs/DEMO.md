@@ -6,6 +6,8 @@
       **Verifier**, **Eye Clinic** (the demo recipient; any verified organisation behaves the same), **Organizer** (also plays the fraudster), **Donor 1**, **Donor 2**
 - [ ] Recipient is already verified (`scripts/seed-demo.ts`); optionally add four more (a hospital, a relief fund, an animal shelter, a flood-recovery association) with `scripts/seed-recipients.ts` so the picker on `/new` looks populated
 - [ ] Fundraiser **B** created by the seed script: target 1 000, 300 donated by Donor 1, deadline ≈ 2 min after the demo starts
+- [ ] Two files on the desktop for the Q&A: the invoice you attach in step 2, and an edited copy of it
+      (to show *Verify the document yourself*: original → ✓ match, edited → ✗ not this document)
 - [ ] Explorer tabs open: program account (upgrade authority = none), recipient token account
 - [ ] Run the production build, not `dev` (dev compiles every page on first visit): `pnpm --dir app build && pnpm --dir app start`
 - [ ] Backup video recorded (T17)
@@ -83,7 +85,8 @@ a custodial wallet with a regulated provider works.
 A fake organisation that passed verification, or a recipient colluding with an organizer. We don't hide
 it, but the cost of fraud changes: before, an anonymous person took the money and vanished; now a
 registered legal entity, with a registry number, an address and a board, has to sign on-chain that the
-document is theirs, and the trail is public forever. `/audit` flags new recipients, unusual volume and
+document is theirs, and the trail is public forever. Anyone shown the invoice can drop it on the
+fundraiser page (*Verify the document yourself*) and see whether it is exactly the confirmed one. `/audit` flags new recipients, unusual volume and
 repeated cancellations. Fundraisers for living costs (no single payee) are out of scope.
 
 **ePLN isn't real money. How does a donor pay with BLIK, and how does the clinic get złoty?**

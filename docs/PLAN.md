@@ -139,7 +139,7 @@ are in [docs/design/](design/README.md). The frontend must follow them.
 | Route | Who | What |
 |---|---|---|
 | `/` | everyone | list of fundraisers with progress, status, verified badge, category filter |
-| `/fundraisers/[pubkey]` | donor | story, progress, `Donate`, `Get my money back`, explorer links, *Check in KRS / RPWDL yourself* (opens the registry search, copies the number) |
+| `/fundraisers/[pubkey]` | donor | story, progress, `Donate`, `Get my money back`, explorer links, *Check in KRS / RPWDL yourself* (opens the registry search, copies the number), *Verify the document yourself* (drop a file → SHA-256 in the browser vs the on-chain `document_hash`; the file is not uploaded) |
 | `/new` | organizer | create fundraiser (category, recipient picker, target, deadline, supporting document → hash) |
 | `/recipient` | recipient | pending fundraisers to confirm / cancel |
 | `/verifier` | verifier | verify a recipient wallet (name + registry no.) |

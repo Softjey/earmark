@@ -128,6 +128,11 @@ Not prevented by the program, and we do not claim it is. What changes is the cos
 | What they signed | nothing | an on-chain confirmation that this document is theirs and they expect this amount |
 | Trace | the platform's internal records | public and permanent |
 
+The document itself can be checked too: the fundraiser page has *Verify the document yourself*. Anyone who
+was shown the invoice (in the organizer's post, or by a journalist) drops the file there; the browser
+computes its SHA-256, without uploading it, and shows whether it is exactly the document the recipient
+confirmed on-chain. A forged or edited invoice does not match.
+
 To steal, a registered organisation has to commit fraud under its own name. The audit page flags new
 recipients, unusual volume and repeated cancellations so that pattern is visible early.
 
