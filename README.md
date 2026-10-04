@@ -23,7 +23,7 @@ progress. See [tickets](docs/tickets/README.md).
 | **What changes** | Money is held by a program-owned vault. It can be paid out **only** to the verified recipient named in the fundraiser, **automatically** when the target is reached, or returned to **each donor on their own** if the fundraiser is cancelled or misses its deadline. A fundraiser cannot start without the recipient's on-chain confirmation of its supporting document (invoice, quote or budget). |
 | **Remaining trust** | A verifier confirms once that a wallet belongs to a real organisation (an official public registry, e.g. KRS or RPWDL in Poland). The verifier cannot move money, and anyone can repeat its check from the fundraiser page. See [Trust model](#trust-model-what-is-still-trusted-and-why-it-is-bounded). |
 
-Full spec: [docs/PLAN.md](docs/PLAN.md) · Demo & Q&A: [docs/DEMO.md](docs/DEMO.md)
+Full spec: [docs/PLAN.md](docs/PLAN.md) · Demo: [docs/DEMO.md](docs/DEMO.md) · Judge Q&A: [docs/QA.md](docs/QA.md)
 
 ## Where the intermediary disappears
 

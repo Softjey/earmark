@@ -11,7 +11,7 @@ organisation or back to the donors, never to the organizer. Keep the program and
 "Finance Without Intermediaries" challenge (HackYeah 2026).
 
 - Spec and architecture: [docs/PLAN.md](docs/PLAN.md). **This is the source of truth.**
-- Demo script and judge Q&A: [docs/DEMO.md](docs/DEMO.md)
+- Demo script: [docs/DEMO.md](docs/DEMO.md); full judge Q&A (MVP vs production answers): [docs/QA.md](docs/QA.md)
 - Work items: [docs/tickets/](docs/tickets/README.md)
 - **UI design: [docs/design/](docs/design/README.md)** (mockups per screen + design tokens; source canvas:
   https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt ). **Any frontend work must follow these mockups and tokens.** Read

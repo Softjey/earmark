@@ -46,6 +46,8 @@ Role badges are ProRes 4444 with alpha: place them on a track above the screen r
 
 ## Expected questions
 
+Short versions. Full answers, each with what the MVP does and what a production system would do: [QA.md](QA.md).
+
 **Where exactly does the intermediary disappear?**
 `programs/earmark/src/instructions/donate.rs` (payout to the recipient's token account when
 `raised == target`) and `refund.rs`. No other instruction moves tokens out of the vault, and the
@@ -101,8 +103,9 @@ that confirmed the invoice on-chain holds it, not an anonymous person, and every
 Returning unspent money is its legal duty; an on-chain *return to donors* instruction is a next step.
 
 **Why all or nothing? 95 % raised and the patient gets nothing?**
-One invoice, one price: 70 % of a surgery buys no surgery. A minimum the recipient agrees to up front, or milestone
-payouts, would be new program rules, decided before anyone donates.
+Left out of the MVP on purpose: one invoice has one price, so the safe default is refunding everyone. In production the
+recipient sets a `min_target` when it confirms (e.g. it accepts 80 % because another fund covers the rest), and a
+co-funder can commit the gap conditionally. Both are rules fixed before the first donation.
 
 **Can the organizer post the same invoice twice?**
 The same file, no: its hash is locked to one fundraiser. An edited copy has a new hash, so then the check is the
