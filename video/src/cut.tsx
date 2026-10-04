@@ -15,7 +15,7 @@ export type Cut = {
   /** overall level of the effects; v5 plays them at half volume */
   sfxGain: number;
   /** "v7": the more animated scenes from v7.tsx, a slow camera push on every scene, film grain */
-  look: "classic" | "v7" | "v8" | "v10" | "v11" | "v12" | "v13" | "v14";
+  look: "classic" | "v7" | "v8" | "v10" | "v11" | "v12" | "v13" | "v14" | "v15";
 };
 
 export const CutContext = createContext<Cut>({ pacing: "calm", sfx: "none", sounds: "v3", fx: true, sfxGain: 1, look: "classic" });

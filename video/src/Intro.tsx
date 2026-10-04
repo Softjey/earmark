@@ -11,6 +11,8 @@ import { EarmarkPullBack, Grain, Hook7, Scale7, Story7, Twist7, Why7 } from "./v
 import { Hook8, Scale8, Story8, Twist8, V8Audio, v8MusicDuck } from "./v8";
 import { AppShots } from "./v13";
 import { DiagramWithApp } from "./v14";
+import { DiagramWithBrowser } from "./v15";
+import shots from "./app-shots.json";
 
 function Story({ id = "story", lewandowski = false }: { id?: string; lewandowski?: boolean }) {
   const frame = useCurrentFrame();
@@ -540,6 +542,10 @@ const VIEWS8: Record<string, () => React.ReactNode> = {
 const VIEWS13: Record<string, () => React.ReactNode> = { earmarkB: AppShots };
 // v14: the diagram stays and the screenshots pop out of its nodes
 const VIEWS14: Record<string, () => React.ReactNode> = { earmarkB: DiagramWithApp };
+// v15: same idea with full-page 2x browser windows and a zooming camera (tx ids from scripts/video-state.ts)
+const VIEWS15: Record<string, () => React.ReactNode> = {
+  earmarkB: () => <DiagramWithBrowser a={shots.a} b={shots.b} reject={shots.reject} payout={shots.aPayout} />,
+};
 
 type Mood = "story" | "dark" | "riser" | "hope" | "resolve";
 
@@ -660,8 +666,8 @@ export function Intro({
     <CutContext.Provider value={{ pacing, sfx, sounds, fx, sfxGain, look }}>
       <AbsoluteFill style={{ fontFamily: SANS, background: C.ink }}>
         {scenes.map((s) => {
-          const edit = look === "v8" || look === "v10" || look === "v11" || look === "v12" || look === "v13" || look === "v14"; // v10/v11 reuse the v8 scenes with their own swaps
-          const View = (look === "v7" && VIEWS7[s.id]) || (look === "v13" && VIEWS13[s.id]) || (look === "v14" && VIEWS14[s.id]) || (edit && VIEWS8[s.id]) || VIEWS[s.id];
+          const edit = look === "v8" || look === "v10" || look === "v11" || look === "v12" || look === "v13" || look === "v14" || look === "v15"; // v10/v11 reuse the v8 scenes with their own swaps
+          const View = (look === "v7" && VIEWS7[s.id]) || (look === "v13" && VIEWS13[s.id]) || (look === "v14" && VIEWS14[s.id]) || (look === "v15" && VIEWS15[s.id]) || (edit && VIEWS8[s.id]) || VIEWS[s.id];
           return (
             <Sequence key={s.id} from={s.from} durationInFrames={s.frames}>
               <SceneFrame frames={s.frames}>
@@ -678,10 +684,10 @@ export function Intro({
         })}
         {look === "v7" && <Grain />}
         {music && <Music scenes={scenes} dynamic={pacing === "dynamic"} />}
-        {score && look !== "v8" && look !== "v10" && look !== "v11" && look !== "v12" && look !== "v13" && look !== "v14" && <Audio src={staticFile(`music/${score}.mp3`)} volume={sounds === "v5" ? 0.17 : pacing === "dynamic" ? 0.17 : 0.14} />}
+        {score && look !== "v8" && look !== "v10" && look !== "v11" && look !== "v12" && look !== "v13" && look !== "v14" && look !== "v15" && <Audio src={staticFile(`music/${score}.mp3`)} volume={sounds === "v5" ? 0.17 : pacing === "dynamic" ? 0.17 : 0.14} />}
         {score && look === "v8" && <Audio src={staticFile(`music/${score}.mp3`)} volume={(f) => 0.17 * v8MusicDuck(scenes, pacing)(f)} />}
-        {score && (look === "v10" || look === "v11" || look === "v12" || look === "v13" || look === "v14") && <Audio src={staticFile(`music/${score}.mp3`)} volume={0.17} />}
-        {(look === "v8" || look === "v10" || look === "v11" || look === "v12" || look === "v13" || look === "v14") && sfx !== "none" && <V8Audio scenes={scenes} />}
+        {score && (look === "v10" || look === "v11" || look === "v12" || look === "v13" || look === "v14" || look === "v15") && <Audio src={staticFile(`music/${score}.mp3`)} volume={0.17} />}
+        {(look === "v8" || look === "v10" || look === "v11" || look === "v12" || look === "v13" || look === "v14" || look === "v15") && sfx !== "none" && <V8Audio scenes={scenes} />}
         {sounds === "v5" && sfx !== "none" && twist && <TwistSwell at={twist.from + twist.lines[0].from} />}
       </AbsoluteFill>
     </CutContext.Provider>
