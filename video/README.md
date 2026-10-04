@@ -3,6 +3,11 @@
 Remotion project for the animated parts of the demo video (see *Video cut* in [docs/DEMO.md](../docs/DEMO.md)).
 Colors and fonts follow [docs/design/](../docs/design/README.md).
 
+**Final intro: `IntroLewandowskiV12Sarah` → `out/intro-lewandowski-v12-sarah.mp4`** (124 s, ElevenLabs "Sarah"). To rebuild it:
+`python3 media/fetch.py && ../voiceover/.venv/bin/python media/sad-edit.py` (third-party media, from `media/`), then
+`pnpm --dir video render:intro-lewandowski-v12-sarah`. Credits for the description: [`media/CREDITS.md`](media/CREDITS.md).
+The other compositions below are earlier cuts kept for comparison.
+
 | Composition | Length | Output | What |
 |---|---|---|---|
 | `Intro` | 89 s | `out/intro.mp4` | Antoś story, the twist, fake fundraisers across causes (sourced stats), "Today" vs "With Earmark" money flow, title |
