@@ -10,8 +10,11 @@ Built on Solana for the Superteam Poland challenge *Finance Without Intermediari
 > boy named Antoś. Antoś did not exist. The platform paid the money to the organizer, who spent it on
 > himself. With Earmark he could still invent the story, but he could never receive the money.
 
-**Status:** program and web app work end to end on Solana devnet; pitch deck and demo video are in
-progress. See [tickets](docs/tickets/README.md).
+**Try it:** [earmark.help](https://earmark.help) (Solana devnet) · **Video:** [youtu.be/xNkNep-AmJg](https://youtu.be/xNkNep-AmJg) ·
+**Pitch deck:** [docs/pitch/earmark-pitch.pdf](docs/pitch/earmark-pitch.pdf)
+
+**Status:** the program and the web app work end to end on Solana devnet: create a fundraiser, recipient confirmation,
+donations, automatic payout, and refunds. See [tickets](docs/tickets/README.md).
 
 ## Design rationale
 
@@ -218,12 +221,14 @@ git-ignored, so on a fresh clone the ID in `declare_id!` and `Anchor.toml` is re
 | | |
 |---|---|
 | Network | Solana devnet |
+| Web app | [earmark.help](https://earmark.help) (mirror: [earmark-app-production.up.railway.app](https://earmark-app-production.up.railway.app)) |
 | Program ID | [`GWaY7mkSSwBzK6KfSGEJa9EriyvyE5k25yZQ9q4PCfMf`](https://explorer.solana.com/address/GWaY7mkSSwBzK6KfSGEJa9EriyvyE5k25yZQ9q4PCfMf?cluster=devnet) |
 | ePLN mint | [`9ho3Zsfuzz5kxxLNs1U2Prmk2kYAgyvertDpe3NqzmYr`](https://explorer.solana.com/address/9ho3Zsfuzz5kxxLNs1U2Prmk2kYAgyvertDpe3NqzmYr?cluster=devnet) |
 | Verifier | `4gWcjmyT4pwTL89nNym8z3UxAtXZeK6fajk3191suDc8` |
 | Upgrade authority | deployer wallet `AAm3Sq5dWC7ZNr6wAidip51vKmupYKm4mXi5FuYwSmRg` (set to final before the demo) |
 | Design | [Claude Design canvas](https://claude.ai/artifact/5wixJuW4EKfGg4tGmjYFVt) · mockups & tokens in [docs/design](docs/design/README.md) |
-| Demo video | _TBD (T17)_ |
+| Demo video | [youtu.be/xNkNep-AmJg](https://youtu.be/xNkNep-AmJg) |
+| Pitch deck | [docs/pitch/earmark-pitch.pdf](docs/pitch/earmark-pitch.pdf) (7 slides; speaker notes in [NOTES.md](docs/pitch/NOTES.md)) |
 
 ### Hosting the web app (Railway, Docker)
 
@@ -251,7 +256,6 @@ docker compose down        # keeps the pgdata volume; add -v to wipe it
   deep link to one entry. Demo recipients use placeholder numbers that are not real registry entries.
 - Fundraisers without a single payee (e.g. living costs, or aid split across many individuals) are out of scope.
 - The fundraiser category (medical, humanitarian, …) is a browsing label in the off-chain metadata; the program neither knows nor enforces it.
-- The devnet program must be upgraded before the document-hash rename (formerly *quote hash*) is live; until then new fundraisers cannot be created from the current app.
 - ePLN is a devnet test token; production would use a regulated stablecoin and a fiat on-ramp (see *Real money* in the trust model).
 - The *Get test ePLN* faucet (`/api/faucet`) holds the ePLN mint-authority key on the server. That is test money and not part of the trust model; it has no per-wallet rate limit, and its cap on newly opened token accounts is in memory, so it resets on restart.
 - Fundraiser titles and stories are stored by `/api/metadata` in Postgres (`DATABASE_URL`; a local JSON file in `app/data/` when it is unset), write-once per fundraiser. Their SHA-256 is in the on-chain `metadata_uri`, so the server cannot change a story unnoticed (the page shows a mismatch), but it could still delete or withhold one. Production would use content-addressed storage (IPFS/Arweave). Fundraisers created before this have no story hash.

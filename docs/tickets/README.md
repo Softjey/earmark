@@ -18,7 +18,7 @@
 | [T13](T13-frontend-tpln-faucet-button.md) | Frontend: ePLN faucet button | P1 | frontend | T07, T09 | done |
 | [T14](T14-public-transparency-audit-page.md) | Public transparency & audit page | P1 | frontend | T10 | done |
 | [T15](T15-readme-design-rationale.md) | README & design rationale | P0 | docs | — | done |
-| [T16](T16-pitch-deck-10-slides-pdf.md) | Pitch deck (≤ 10 slides, PDF) | P0 | pitch | T15 | todo |
+| [T16](T16-pitch-deck-10-slides-pdf.md) | Pitch deck (≤ 10 slides, PDF) | P0 | pitch | T15 | done |
 | [T17](T17-demo-video-3-min-rehearsal.md) | Demo video (≤ 3 min) + rehearsal | P0 | pitch | T08, T10–T12 | in progress |
 | [T18](T18-submission-on-hacktribe.md) | Submission on HackTribe | P0 | pitch | T15–T17 | todo |
 | [T19](T19-generalize-beyond-medical.md) | Generalize beyond medical fundraisers | P0 | program, frontend, docs | T12 | in progress |

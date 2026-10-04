@@ -3,7 +3,7 @@
 - **Priority:** P0
 - **Area:** pitch
 - **Depends on:** T15
-- **Status:** todo
+- **Status:** done
 - **Owner:** —
 
 ## Description
@@ -28,7 +28,7 @@ Answers the first question judges ask. Full text in [QA.md](../QA.md#isnt-the-ve
 
 ## Acceptance criteria
 
-- [ ] ≤ 10 slides, exported as PDF to `pitch/earmark.pdf`
+- [x] ≤ 10 slides, exported as PDF to `docs/pitch/earmark-pitch.pdf` (7 slides, source `docs/pitch/pitch.html`)
 
 ## Docs to update when done
 

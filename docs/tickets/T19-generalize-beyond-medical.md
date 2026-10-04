@@ -24,7 +24,7 @@ Remove medical wording and assumptions from the program, app and docs.
 - [x] No "clinic" / "quote" / "medical" wording left in the program or in app UI copy (except examples)
 - [x] `anchor test --validator legacy` passes (23 tests)
 - [x] Category selectable on `/new`, shown on cards and the fundraiser page, filterable on `/`
-- [ ] Devnet program upgraded to the renamed build (needs ~1.8 SOL temporarily; see AGENTS.md *Devnet budget*)
+- [x] Devnet program upgraded to the renamed build (on-chain bytes match `target/deploy/earmark.so`) (needs ~1.8 SOL temporarily; see AGENTS.md *Devnet budget*)
 - [ ] Demo video intro and voice-over reworded (they still tell only the medical story)
 
 ## Docs to update when done
